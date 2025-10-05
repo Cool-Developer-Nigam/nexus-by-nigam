@@ -50,6 +50,10 @@ class JournalListActivity : AppCompatActivity() {
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
+        binding.floatingActionButton.setOnClickListener {
+            startActivity(Intent(this, AddJournalActivity::class.java))
+        }
+
 //        Post arrayList
         journalList = arrayListOf<Journal>()
 
@@ -110,17 +114,10 @@ class JournalListActivity : AppCompatActivity() {
                    binding.NoPostTv.visibility = View.VISIBLE
                 }
             }.addOnFailureListener {
-                Toast.makeText(
-                    this,
-                    "Error: ${it.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                startActivity(
-                    Intent(
-                        this,
-                        MainActivity::class.java
-                    )
-                )
+                Toast.makeText(this,"Error: ${it.message}",Toast.LENGTH_SHORT).show()
+
+//                startActivity(Intent(this, MainActivity::class.java))
+
             }
 
     }

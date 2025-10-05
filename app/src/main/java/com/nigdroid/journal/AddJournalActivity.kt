@@ -27,6 +27,7 @@ class AddJournalActivity : AppCompatActivity() {
     var currentUserId: String=""
     var currentUserName: String=""
 
+
 //    Firebase firestore
     var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     lateinit var storageReference: StorageReference
@@ -52,8 +53,10 @@ class AddJournalActivity : AppCompatActivity() {
 //                currentUserId=JournalUser.instance!!.userId.toString()
 //                currentUserName=JournalUser.instance!!.username.toString()
 
+                val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+                currentUserName = sharedPref.getString("username", "Unknown") ?: "Unknown"
                 currentUserId= auth.currentUser!!.uid
-                currentUserName=auth.currentUser!!.displayName.toString()
+
 
                 postUsernameTv.text=currentUserName
                 tvPostDate.text= Date().toString()

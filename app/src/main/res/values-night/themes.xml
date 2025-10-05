@@ -2,28 +2,31 @@
 
     <style name="Base.Theme.Journal" parent="Theme.AppCompat.Light.DarkActionBar">
 
-        <item name="colorPrimary">@color/semi_transparent_blue</item>
-        <item name="colorPrimaryDark">@color/semi_transparent_blue</item>
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/semi_transparent_light</item>
+        <item name="colorPrimaryDark">@color/teal_200</item>
         <item name="colorAccent">@color/teal_200</item>
 
+        <!-- 🟢 Status bar transparent for edge-to-edge -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowLightStatusBar">true</item>
 
-        <item name="android:statusBarColor">@color/semi_transparent_blue</item>
-        <item name="android:windowLightStatusBar">true</item> <!-- dark icons for contrast -->
-
-
-        <item name="actionBarStyle">@style/CustomActionBar</item>
+        <!-- Custom ActionBar -->
+        <item name="actionBarStyle">@style/CustomActionBar.Light</item>
     </style>
 
+    <style name="Theme.Journal" parent="Base.Theme.Journal" />
 
-    <style name="CustomActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
-        <item name="background">@color/semi_transparent_blue</item>
+    <!-- Custom ActionBar style -->
+    <style name="CustomActionBar.Light" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="background">@color/teal_200</item>
         <item name="android:height">42dp</item>
-        <item name="titleTextStyle">@style/ActionBarTitleText</item>
+        <item name="titleTextStyle">@style/ActionBarTitleText.Light</item>
     </style>
 
-
-    <style name="ActionBarTitleText" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <item name="android:textColor">@android:color/white</item>
+    <style name="ActionBarTitleText.Light" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@android:color/black</item>
         <item name="android:textSize">16sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>

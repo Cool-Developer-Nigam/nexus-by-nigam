@@ -16,6 +16,8 @@
         android:layout_margin="12dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="6dp"
+        android:shadowColor="#00000033"
+        android:backgroundTint="#ECE6BD"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -25,7 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="10dp"
+
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -39,17 +43,17 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@{journal.username}"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/black" />
 
                 <ImageView
-                    android:id="@+id/imgShare"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_share"
+                    android:id="@+id/img_delete"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:src="@drawable/remove"
                     android:contentDescription="Share"
-                    app:tint="@android:color/darker_gray" />
+                  />
 
             </LinearLayout>
 
@@ -57,8 +61,8 @@
             <ImageView
                 android:id="@+id/imgJournal"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop"
+                android:layout_height="wrap_content"
+                android:scaleType="fitCenter"
                 android:contentDescription="Journal Image"
                 app:imageUrl="@{journal.imageUrl}"
                 android:layout_marginBottom="8dp" />
@@ -66,13 +70,13 @@
 
             <TextView
                 android:id="@+id/tvTitle"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@{journal.title}"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:textStyle="bold" />
 
             <!-- Description -->
             <TextView
