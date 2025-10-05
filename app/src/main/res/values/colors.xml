@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="semi_transparent_blue">#8003A9F4</color> <!-- 80 = 50% opacity -->
+    <color name="semi_transparent_light">#CCFFFFFF</color> <!-- 80% White -->
+    <color name="teal_200">#03DAC5</color>
+
+</resources>

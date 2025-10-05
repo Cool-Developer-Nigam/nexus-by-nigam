@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.Journal" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="colorPrimary">@color/semi_transparent_blue</item>
+        <item name="colorPrimaryDark">@color/semi_transparent_blue</item>
+        <item name="colorAccent">@color/teal_200</item>
+
+
+        <item name="android:statusBarColor">@color/semi_transparent_blue</item>
+        <item name="android:windowLightStatusBar">true</item> <!-- dark icons for contrast -->
+
+
+        <item name="actionBarStyle">@style/CustomActionBar</item>
+    </style>
+
+
+    <style name="CustomActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="background">@color/semi_transparent_blue</item>
+        <item name="android:height">42dp</item>
+        <item name="titleTextStyle">@style/ActionBarTitleText</item>
+    </style>
+
+
+    <style name="ActionBarTitleText" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+</resources>
