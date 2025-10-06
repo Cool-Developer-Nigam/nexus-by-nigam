@@ -17,6 +17,7 @@
         android:theme="@style/Theme.Journal">
         <activity
             android:name=".AddJournalActivity"
+            android:windowSoftInputMode="adjustPan"
             android:exported="false" />
         <activity
             android:name=".JournalListActivity"

@@ -1,39 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/costum_background"
-    tools:context=".AddJournalActivity"
-    android:paddingTop="?actionBarSize"
-
-    >
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
-
+        android:background="@drawable/costum_background"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="?actionBarSize"
+            android:paddingBottom="24dp"
+            tools:context=".AddJournalActivity">
 
-
-
+            <!-- Camera Button (Initially Visible) -->
             <ImageView
                 android:id="@+id/postCameraButton"
                 android:layout_width="120dp"
@@ -44,21 +29,38 @@
                 android:padding="20dp"
                 android:scaleType="centerInside"
                 android:src="@android:drawable/ic_menu_camera"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
+            <!-- Display Image (Hidden by default, shown when image is selected) -->
             <ImageView
-                android:id="@+id/display_image"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:id="@+id/displayImage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:maxHeight="400dp"
+                android:minHeight="200dp"
+                android:visibility="gone"
+                android:background="@android:color/darker_gray"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.5" />
+                tools:visibility="visible"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <!-- Guideline for content alignment -->
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/imageBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="postCameraButton,displayImage" />
 
             <!-- Post Title Label -->
             <TextView
@@ -72,7 +74,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/postCameraButton" />
+                app:layout_constraintTop_toBottomOf="@id/imageBarrier" />
 
             <!-- Post Date -->
             <TextView
@@ -87,68 +89,76 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/postUsernameTv" />
 
+            <!-- Post Title Input -->
+            <EditText
+                android:id="@+id/etPostTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/edt_txt_bg"
+                android:hint="Post Title"
+                android:inputType="textCapSentences"
+                android:padding="12dp"
+                android:maxLines="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPostDate" />
+
+            <!-- Thoughts Input -->
+            <EditText
+                android:id="@+id/etThoughts"
+                android:layout_width="0dp"
+                android:layout_height="250dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/edt_txt_bg"
+                android:gravity="top|start"
+                android:hint="Thoughts"
+                android:inputType="textMultiLine|textCapSentences"
+                android:padding="12dp"
+                android:scrollbars="vertical"
+                android:overScrollMode="always"
+                android:scrollbarStyle="insideInset"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etPostTitle" />
+
+            <!-- Save Button -->
+            <Button
+                android:id="@+id/PostSaveJournalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="16dp"
+                android:paddingStart="48dp"
+                android:paddingEnd="48dp"
+                android:backgroundTint="@android:color/holo_blue_dark"
+                android:text="SAVE"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etThoughts" />
+
+            <!-- Progress Bar (Centered Overlay) -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminateTint="@color/black"
+                android:visibility="invisible"
+                android:elevation="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+    </ScrollView>
 
-        <!-- Post Title Input -->
-        <EditText
-            android:id="@+id/etPostTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/edt_txt_bg"
-            android:hint="Post Title"
-            android:inputType="textCapSentences"
-            android:padding="12dp" />
-
-        <!-- Thoughts Input -->
-        <EditText
-            android:id="@+id/etThoughts"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="24dp"
-            android:background="@drawable/edt_txt_bg"
-            android:gravity="top|start"
-            android:hint="Thoughts"
-            android:inputType="textMultiLine"
-            android:padding="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/etPostTitle" />
-
-
-        <Button
-            android:id="@+id/PostSaveJournalButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="100dp"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:text="SAVE"
-            android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-    </LinearLayout>
-
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminateTint="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
-        />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

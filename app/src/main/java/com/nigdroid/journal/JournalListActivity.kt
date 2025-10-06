@@ -98,7 +98,7 @@ class JournalListActivity : AppCompatActivity() {
                         document.data["thoughts"].toString(),
                         document.data["imageUrl"].toString(),
                         document.data["userId"].toString(),
-                        document.data["timeAdded"] as Timestamp,
+                        document.data["timeAdded"].toString(),
                         document.data["username"].toString()
                     )
                        journalList.add(journal)

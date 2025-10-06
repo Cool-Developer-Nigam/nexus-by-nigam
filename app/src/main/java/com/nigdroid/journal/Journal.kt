@@ -7,6 +7,6 @@ data class Journal(
     val thoughts: String = "",
     val imageUrl: String = "",
     val userId: String = "",
-    val timeAdded: Timestamp? = null,
+    val timeAdded: String="",
     val username: String = ""
 )

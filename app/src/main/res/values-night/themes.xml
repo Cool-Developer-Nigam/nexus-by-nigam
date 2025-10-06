@@ -1,12 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Base.Theme.Journal" parent="Theme.AppCompat.Light.DarkActionBar">
 
+
+    <style name="Base.Theme.Journal" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Primary colors -->
         <item name="colorPrimary">@color/semi_transparent_light</item>
         <item name="colorPrimaryDark">@color/teal_200</item>
         <item name="colorAccent">@color/teal_200</item>
-
         <!-- 🟢 Status bar transparent for edge-to-edge -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>

@@ -17,7 +17,7 @@
         app:cardCornerRadius="12dp"
         app:cardElevation="6dp"
         android:shadowColor="#00000033"
-        android:backgroundTint="#ECE6BD"
+        android:backgroundTint="@color/cream"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

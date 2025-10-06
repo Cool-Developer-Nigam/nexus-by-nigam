@@ -6,5 +6,8 @@
     <color name="semi_transparent_light">#9DFFFFFF</color>
     <color name="edt_txt">#E6FFFA</color>
     <color name="teal_200">#03DAC5</color>
+    <color name="cream">#E5E0C4</color>
+    <color name="blue">#1976D2</color>
+    <color name="transparent">#00FFFFFF</color>
 
 </resources>
