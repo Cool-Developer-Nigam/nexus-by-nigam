@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/dialog_bottom_background"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:background="@drawable/dialog_bottom_background">
 
-        <!-- Header with Logo and Title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,63 +27,56 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:text="Confirm Image.."
+                android:text="Confirm Signout.."
                 android:textColor="#2C2C2C"
                 android:textSize="22sp"
                 android:textStyle="bold"/>
 
         </LinearLayout>
 
-        <!-- Message -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:layout_marginBottom="18dp"
+            android:text="Are you sure you want to get logged out from this account ? "
+            android:textSize="16sp"
+            android:layout_margin="15dp"
+            android:textColor="@android:color/darker_gray"
             android:gravity="start"
-            android:lineSpacingExtra="4dp"
-            android:text="Do you want to use this image for your journal post?"
-            android:textColor="#666666"
-            android:textSize="17sp"/>
+            android:layout_marginBottom="24dp" />
 
-        <!-- Buttons Container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
 
-            <!-- Yes Button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_confirm_yes"
+                android:id="@+id/btn_cancel"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:text="Cancel"
+                android:textColor="@color/black"
+                android:backgroundTint="@android:color/white"
+                app:strokeColor="@color/black"
+                app:strokeWidth="1dp"
+                app:cornerRadius="8dp"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/button_primary_green"
-                android:text="Yes"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:backgroundTint="@null"
-                app:elevation="2dp"/>
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
-            <!-- No Button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_confirm_no"
+                android:id="@+id/btn_delete"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/button_secondary_outline"
-                android:text="No"
-                android:textAllCaps="false"
-                android:textColor="@color/blue"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:backgroundTint="@null"
-                app:elevation="0dp"/>
+                android:text="Logout"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#C84E7E"
+                app:cornerRadius="8dp"
+                android:layout_marginStart="8dp" />
+
         </LinearLayout>
+
     </LinearLayout>
+
 </layout>

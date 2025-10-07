@@ -2,27 +2,36 @@ package com.nigdroid.journal
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
+import android.widget.LinearLayout
 import android.widget.Toast
+
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.nigdroid.journal.databinding.ActivityJournalListBinding
+import androidx.core.content.edit
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.nigdroid.journal.databinding.DialogConfirmDeleteBinding
+import com.nigdroid.journal.databinding.DialogConfirmImageBinding
+import com.nigdroid.journal.databinding.DialogConfirmSignoutBinding
 
 class JournalListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityJournalListBinding
+
+    private lateinit var toolbar: Toolbar
 
     //    Firebase references
     lateinit var firebaseAuth: FirebaseAuth
@@ -33,13 +42,13 @@ class JournalListActivity : AppCompatActivity() {
     lateinit var journalList: MutableList<Journal>
     lateinit var adapter: JournalRecyclerAdapter
 
-    lateinit var noPostsTextView: TextView
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_journal_list)
+
+        setupCustomToolbar()
 
 //  Firebase authentification
         firebaseAuth = Firebase.auth
@@ -59,66 +68,91 @@ class JournalListActivity : AppCompatActivity() {
 
     }
 
+private fun setupCustomToolbar() {
+    toolbar = binding.toolbarLayout.toolbar
+    setSupportActionBar(toolbar)
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu, menu)
+    // Hide default title
+    supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        return super.onCreateOptionsMenu(menu)
+    binding.toolbarLayout.signoutBtn.setOnClickListener {
+       showDeleteConfirmationDialog()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_add -> {
-                startActivity(Intent(this, AddJournalActivity::class.java))
-            }
 
-            R.id.action_signout -> {
-                firebaseAuth.signOut()
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-            }
+}
+    private fun showDeleteConfirmationDialog() {
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
+
+        // Use data binding
+        val dialogBinding = DialogConfirmSignoutBinding.inflate(layoutInflater)
+
+        dialogBinding.btnDelete.setOnClickListener {
+            firebaseAuth.signOut()
+            startActivity(Intent(this, MainActivity::class.java))
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+            finish()
         }
-        return super.onOptionsItemSelected(item)
+
+        dialogBinding.btnCancel.setOnClickListener {
+            Toast.makeText(this, "Singout Cancelled", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     //    Getting all posts from firebase
+    // Replace the onStart() method in JournalListActivity with this:
+
     override fun onStart() {
         super.onStart()
 
-        collectionReference.whereEqualTo(
-            "userId",
-            user.uid
-        )
+        // Clear the list before fetching to avoid duplicates
+        journalList.clear()
+
+        collectionReference.whereEqualTo("userId", user.uid)
             .get()
             .addOnSuccessListener {
                 if (!it.isEmpty) {
-                   for(document in it){
-                    val journal = Journal(
-                        document.data["title"].toString(),
-                        document.data["thoughts"].toString(),
-                        document.data["imageUrl"].toString(),
-                        document.data["userId"].toString(),
-                        document.data["timeAdded"].toString(),
-                        document.data["username"].toString()
+                    // Edit the shared preference data
+                    val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+                    sharedPref.edit {
+                        putString(
+                            "username",
+                            it.documents[0].data?.get("username").toString()
+                        )
+                    }
+
+                    for (document in it) {
+                        val journal = Journal(
+                            document.data["title"].toString(),
+                            document.data["thoughts"].toString(),
+                            document.data["imageUrl"].toString(),
+                            document.data["userId"].toString(),
+                            document.data["timeAdded"].toString(),
+                            document.data["username"].toString()
+                        )
+                        journalList.add(journal)
+                    }
+
+                    // RecyclerView adapter
+                    adapter = JournalRecyclerAdapter(this,
+                        journalList.reversed() as MutableList<Journal>
                     )
-                       journalList.add(journal)
-
-                   }
-
-//        Recyclerview adapter
-                    adapter = JournalRecyclerAdapter(this,journalList)
-                    binding.recyclerView.setAdapter(adapter)
+                    binding.recyclerView.adapter = adapter
                     adapter.notifyDataSetChanged()
-                }
-                else{
-                   binding.NoPostTv.visibility = View.VISIBLE
-                }
-            }.addOnFailureListener {
-                Toast.makeText(this,"Error: ${it.message}",Toast.LENGTH_SHORT).show()
 
-//                startActivity(Intent(this, MainActivity::class.java))
-
+                    // Hide "No Posts" message
+                    binding.NoPostTv.visibility = View.GONE
+                } else {
+                    binding.NoPostTv.visibility = View.VISIBLE
+                }
             }
-
+            .addOnFailureListener {
+                Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 }

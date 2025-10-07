@@ -5,20 +5,28 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:name=".JournalUser"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/app_logo"
-        android:label="Self Journal"
+        android:label="My Journal"
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Journal">
         <activity
-            android:name=".AddJournalActivity"
-            android:windowSoftInputMode="adjustPan"
+            android:name=".EditJournalActivity"
+            android:theme="@style/Theme.Transparent"
             android:exported="false" />
+        <activity
+            android:name=".Show_Journal"
+            android:exported="false" />
+        <activity
+            android:name=".AddJournalActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".JournalListActivity"
             android:exported="false" />

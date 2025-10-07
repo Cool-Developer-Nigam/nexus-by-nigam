@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
@@ -29,6 +30,7 @@ import java.util.Locale
 class AddJournalActivity : AppCompatActivity() {
     lateinit var binding: ActivityAddJournalBinding
 
+    private lateinit var toolbar: Toolbar
     // Credential
     var currentUserId: String = ""
     var currentUserName: String = ""
@@ -48,6 +50,7 @@ class AddJournalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_journal)
+        setupCustomToolbar()
 
         // Setup thoughts EditText scrolling behavior
         setupThoughtsEditTextScrolling()
@@ -85,6 +88,24 @@ class AddJournalActivity : AppCompatActivity() {
             PostSaveJournalButton.setOnClickListener {
                 saveJournal()
             }
+
+        }
+    }
+
+
+    private fun setupCustomToolbar() {
+        toolbar = binding.toolbarLayout.toolbar
+        setSupportActionBar(toolbar)
+
+        // Hide default title
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        binding.toolbarLayout.save.setOnClickListener {
+            saveJournal()
+        }
+        binding.toolbarLayout.backBtn.setOnClickListener {
+            startActivity(Intent(this, JournalListActivity::class.java))
+            finish()
         }
     }
 
@@ -191,31 +212,19 @@ class AddJournalActivity : AppCompatActivity() {
                     collectionReference.add(journal)
                         .addOnSuccessListener {
                             binding.progressBar.visibility = View.INVISIBLE
-                            Toast.makeText(
-                                this,
-                                "Journal saved successfully",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this, "Journal saved successfully", Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this, JournalListActivity::class.java))
                             finish()
                         }
                         .addOnFailureListener { e ->
                             binding.progressBar.visibility = View.INVISIBLE
-                            Toast.makeText(
-                                this,
-                                "Failed to save journal: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(this,"Failed to save journal: ${e.message}",Toast.LENGTH_SHORT).show()
                         }
                 }
             }
             .addOnFailureListener { e ->
                 binding.progressBar.visibility = View.INVISIBLE
-                Toast.makeText(
-                    this,
-                    "Failed to upload image: ${e.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this,"Failed to upload image: ${e.message}",Toast.LENGTH_SHORT).show()
             }
     }
 

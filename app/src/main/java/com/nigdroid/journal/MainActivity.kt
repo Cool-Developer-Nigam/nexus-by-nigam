@@ -25,8 +25,7 @@ private lateinit var auth: FirebaseAuth
 
         // Initialize Firebase Auth
         auth = Firebase.auth
-
-
+        
         binding.btnCreateAccount.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)

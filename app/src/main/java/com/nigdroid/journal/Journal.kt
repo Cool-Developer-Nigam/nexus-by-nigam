@@ -1,7 +1,5 @@
 package com.nigdroid.journal
 
-import com.google.firebase.Timestamp
-
 data class Journal(
     val title: String = "",
     val thoughts: String = "",

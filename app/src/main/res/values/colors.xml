@@ -9,5 +9,7 @@
     <color name="cream">#E5E0C4</color>
     <color name="blue">#1976D2</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="grey">#828080</color>
+
 
 </resources>
