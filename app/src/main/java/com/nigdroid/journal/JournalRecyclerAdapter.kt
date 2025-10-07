@@ -104,17 +104,22 @@ class JournalRecyclerAdapter(
                             notifyItemRemoved(position)
                             notifyItemRangeChanged(position, journalList.size)
 
-                            Toast.makeText(context,"Journal deleted successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Journal deleted successfully", Toast.LENGTH_SHORT).show()
+
+                            // Notify activity if list is now empty
+                            if (journalList.isEmpty() && context is JournalListActivity) {
+                                (context as JournalListActivity).onJournalDeleted()
+                            }
                         }
                         .addOnFailureListener { e ->
-                            Toast.makeText(context,"Failed to delete journal: ${e.message}",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Failed to delete journal: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                 } else {
-                    Toast.makeText(context,"Journal not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Journal not found", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { e ->
-                Toast.makeText(context,"Error finding journal: ${e.message}",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error finding journal: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 

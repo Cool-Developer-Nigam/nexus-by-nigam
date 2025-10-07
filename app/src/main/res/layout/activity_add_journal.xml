@@ -27,41 +27,71 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Camera Button (Initially Visible) -->
-            <ImageView
-                android:id="@+id/postCameraButton"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginTop="16dp"
-                android:background="@android:color/darker_gray"
-                android:contentDescription="Add Journal Image"
-                android:padding="20dp"
-                android:scaleType="centerInside"
-                android:src="@android:drawable/ic_menu_camera"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar_layout" />
-
-            <!-- Display Image (Hidden by default, shown when image is selected) -->
-            <ImageView
-                android:id="@+id/displayImage"
+            <!-- Image Container Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/imageCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:maxHeight="400dp"
-                android:minHeight="200dp"
-                android:visibility="gone"
-                android:background="@android:color/darker_gray"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
-                tools:visibility="visible"
-                tools:src="@tools:sample/backgrounds/scenic" />
+                app:layout_constraintTop_toBottomOf="@id/toolbar_layout">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Camera Button (Initially Visible) -->
+                    <LinearLayout
+                        android:id="@+id/postCameraButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:background="@color/grey"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:contentDescription="Add Journal Image"
+                            android:src="@android:drawable/ic_menu_camera"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="12dp"
+                            app:tint="@android:color/white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Add Photo"
+                            android:textColor="@android:color/white"
+                            android:textSize="14sp"
+                            android:alpha="0.9" />
+                    </LinearLayout>
+
+                    <!-- Display Image (Hidden by default) -->
+                    <ImageView
+                        android:id="@+id/displayImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="300dp"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitXY"
+                        android:visibility="gone"
+                        tools:src="@tools:sample/backgrounds/scenic"
+                        tools:visibility="visible" />
+
+                    <!-- Remove Image Button (Shows when image is selected) -->
+
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
+
 
             <!-- Guideline for content alignment -->
             <androidx.constraintlayout.widget.Barrier
@@ -69,7 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="postCameraButton,displayImage" />
+                app:constraint_referenced_ids="imageCard" />
 
             <!-- Post Title Label -->
             <TextView

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -54,6 +55,9 @@ class EditJournalActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_edit_journal)
 
+        // Setup thoughts EditText scrolling behavior
+        setupThoughtsEditTextScrolling()
+
         storageReference = FirebaseStorage.getInstance().reference
 
         // Get journal data from intent
@@ -73,10 +77,58 @@ class EditJournalActivity : AppCompatActivity() {
         setupDismissOnOutsideClick()
     }
 
+    private fun setupThoughtsEditTextScrolling() {
+        binding.etThoughts.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: android.text.Editable?) {
+                scrollToCursorPosition()
+            }
+        })
+
+        // Allow EditText to scroll independently
+        binding.etThoughts.setOnTouchListener { v, event ->
+            handleEditTextTouch(v, event)
+        }
+    }
+
+    /**
+     * Scrolls the thoughts EditText to show the current cursor position
+     * Centers the cursor line in the visible area
+     */
+    private fun scrollToCursorPosition() {
+        val layout = binding.etThoughts.layout
+        if (layout != null) {
+            // Get the line where cursor is currently positioned
+            val cursorLine = layout.getLineForOffset(binding.etThoughts.selectionStart)
+            // Calculate scroll position to center the cursor line
+            val scrollY = layout.getLineTop(cursorLine) - binding.etThoughts.height / 2
+            // Scroll to the calculated position (ensuring it's not negative)
+            binding.etThoughts.scrollTo(0, Math.max(0, scrollY))
+        }
+    }
+
+    /**
+     * Handles touch events for the thoughts EditText
+     * Prevents parent views from intercepting scroll events
+     * @return false to allow normal touch event handling
+     */
+    private fun handleEditTextTouch(v: View, event: MotionEvent): Boolean {
+        v.parent.requestDisallowInterceptTouchEvent(true)
+        when (event.action and MotionEvent.ACTION_MASK) {
+            MotionEvent.ACTION_UP -> {
+                v.parent.requestDisallowInterceptTouchEvent(false)
+            }
+        }
+        return false
+    }
+
     private fun setupViews() {
         // Populate fields with current journal data
         binding.editTitleEt.setText(currentJournal.title)
-        binding.editThoughtsEt.setText(currentJournal.thoughts)
+        binding.etThoughts.setText(currentJournal.thoughts)
         binding.editUsernameTv.text = currentJournal.username
         binding.editDateTv.text = currentJournal.timeAdded
 
@@ -114,6 +166,9 @@ class EditJournalActivity : AppCompatActivity() {
 
         // Save button
         binding.btnSaveEdit.setOnClickListener {
+            updateJournal()
+        }
+        binding.saveBtn.setOnClickListener {
             updateJournal()
         }
     }
@@ -170,7 +225,7 @@ class EditJournalActivity : AppCompatActivity() {
 
     private fun updateJournal() {
         val title = binding.editTitleEt.text.toString().trim()
-        val thoughts = binding.editThoughtsEt.text.toString().trim()
+        val thoughts = binding.etThoughts.text.toString().trim()
 
         // Validate inputs
         if (TextUtils.isEmpty(title)) {
@@ -179,7 +234,7 @@ class EditJournalActivity : AppCompatActivity() {
         }
 
         if (TextUtils.isEmpty(thoughts)) {
-            binding.editThoughtsEt.error = "Thoughts are required"
+            binding.etThoughts.error = "Thoughts are required"
             return
         }
 

@@ -70,6 +70,15 @@
                 android:textStyle="bold" />
 
             <ImageView
+                android:id="@+id/save_btn"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="10dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/edit_icon"
+                app:tint="@color/black" />
+
+            <ImageView
                 android:id="@+id/close_btn"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
@@ -174,7 +183,7 @@
             app:boxStrokeColor="#C84E7E">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_thoughts_et"
+                android:id="@+id/et_thoughts"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:gravity="top|start"
