@@ -23,7 +23,6 @@
             android:layout_marginBottom="80dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="24dp"
-            android:backgroundTint="#EBECD9"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,6 +44,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp"
+        android:background="@drawable/costum_bg_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Edit Journal"
-                android:textColor="@color/black"
+                android:textColor="@color/DarkBrown"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -75,8 +75,8 @@
                 android:layout_height="32dp"
                 android:layout_marginEnd="10dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/edit_icon"
-                app:tint="@color/black" />
+                android:src="@drawable/icons_save"
+                />
 
             <ImageView
                 android:id="@+id/close_btn"
@@ -85,7 +85,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="4dp"
                 android:src="@drawable/remove"
-                app:tint="@color/black" />
+                />
 
         </LinearLayout>
 
@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="Username"
-            android:textColor="@color/black"
+            android:textColor="@color/orange"
             android:textSize="16sp"
             android:textStyle="bold" />
 

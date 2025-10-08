@@ -17,9 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Journal">
         <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Transparent" />
+        <activity
             android:name=".EditJournalActivity"
-            android:theme="@style/Theme.Transparent"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Transparent" />
         <activity
             android:name=".Show_Journal"
             android:exported="false" />
