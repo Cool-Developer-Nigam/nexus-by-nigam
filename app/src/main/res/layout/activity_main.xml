@@ -1,144 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
-        android:background="@drawable/costum_bg"
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:openDrawer="start">
 
-        <!-- App Logo -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/ivAppLogo"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:src="@drawable/app_logo"
-            android:layout_marginTop="80dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearance="@style/RoundedImageStyle" />
+        <!-- Main Content -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/main_bg">
 
-        <!-- Welcome Text -->
-        <TextView
-            android:id="@+id/tvWelcome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Welcome to our Journal App"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="#CDC477"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/ivAppLogo"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <!-- Toolbar with hamburger icon and YouTube title -->
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                android:elevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:navigationIcon="@drawable/ic_menu"
+                app:title="YouTube"
+                app:titleTextColor="@android:color/white" />
 
-        <!-- Email AutoCompleteTextView -->
-        <AutoCompleteTextView
-            android:id="@+id/etEmail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Email"
-            android:textColorHint="@color/grey"
-            android:textColor="@color/black"
-            android:inputType="textEmailAddress"
-            android:padding="16dp"
-            android:background="@drawable/edt_txt_bg"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginTop="48dp"
-            app:layout_constraintTop_toBottomOf="@id/tvWelcome"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-        <!-- Password EditText -->
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:padding="16dp"
-            android:textColorHint="@color/grey"
-            android:textColor="@color/black"
-            android:background="@drawable/edt_txt_bg"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/etEmail"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <!-- Forgot Password Text -->
-        <TextView
-            android:id="@+id/forgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="32dp"
-            android:text="Forgot Password?"
-            android:textColor="#CDC477"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPassword" />
-
-        <!-- Login Button -->
-        <Button
-            android:id="@+id/btnLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LOGIN"
-            android:backgroundTint="@android:color/holo_blue_dark"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@id/forgotPassword"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-        <!-- Google Sign In Button -->
-        <LinearLayout
-            android:id="@+id/btnGoogle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/white_bg"
-            android:orientation="horizontal"
-            android:padding="10dp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnLogin">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:src="@drawable/google" />
-
-            <TextView
+            <!-- Stylish FAB with shadow ring - ABOVE bottom nav -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:text="Continue with Google"
-                android:textColor="@color/black" />
-        </LinearLayout>
+                android:layout_marginBottom="55dp"
+                android:clickable="true"
+                android:contentDescription="Add"
+                android:focusable="true"
+                android:src="@drawable/add"
+                app:backgroundTint="#FFFFFF"
+                app:borderWidth="0dp"
+                app:elevation="30dp"
+                app:fabCustomSize="75dp"
+                app:fabSize="auto"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:maxImageSize="38dp"
+                app:pressedTranslationZ="24dp"
+                app:rippleColor="#4DD64E7E"
+                app:shapeAppearance="@style/ShapeAppearance.App.CircleFAB"
+                app:tint="#D64E7E" />
 
-        <!-- Create Account Button -->
-        <TextView
-            android:id="@+id/btnCreateAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Don't have an account? Sign up"
-            android:textStyle="bold"
-            android:textColor="#CDC477"
-            android:layout_marginTop="44dp"
-            app:layout_constraintTop_toBottomOf="@id/btnGoogle"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            <!-- Bottom Navigation - BELOW FAB -->
+            <com.nigdroid.journal.CurvedBottomNavigationView
+                android:id="@+id/bottom_nav"
+                android:layout_width="0dp"
+                android:layout_height="75dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="20dp"
+                android:elevation="16dp"
+                app:itemIconTint="@color/bottom_nav_item_color"
+                app:itemTextColor="@color/bottom_nav_item_color"
+                app:labelVisibilityMode="labeled"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:menu="@menu/bottom_nav_menu" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Navigation Drawer -->
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="280dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/drawer_menu" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

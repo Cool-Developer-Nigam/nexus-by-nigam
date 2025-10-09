@@ -78,7 +78,7 @@ class JournalListActivity : AppCompatActivity() {
 
         dialogBinding.btnDelete.setOnClickListener {
             firebaseAuth.signOut()
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
             finish()
         }
