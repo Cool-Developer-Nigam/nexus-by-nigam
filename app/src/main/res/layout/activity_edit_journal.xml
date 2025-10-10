@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp"
-        android:background="@drawable/costum_bg_bg"
+        android:background="@drawable/costum_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -85,6 +85,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="4dp"
                 android:src="@drawable/remove"
+                app:tint="#6B7FED"
                 />
 
         </LinearLayout>
@@ -96,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:text="Username"
-            android:textColor="@color/orange"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -136,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
                     android:layout_margin="12dp"
-                    android:backgroundTint="#C84E7E"
+                    android:backgroundTint="#6B7FED"
                     app:fabSize="normal"
                     app:srcCompat="@drawable/ic_camera"
                     app:tint="@android:color/white" />

@@ -13,7 +13,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/main_bg">
+            android:background="@drawable/nav_header_bg">
 
             <!-- Toolbar with hamburger icon and YouTube title -->
             <com.google.android.material.appbar.MaterialToolbar
@@ -21,12 +21,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"
+                android:layout_marginTop="16dp"
                 android:elevation="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIcon="@drawable/ic_menu"
-                app:title="YouTube"
+                app:title="My Journal"
                 app:titleTextColor="@android:color/white" />
 
             <FrameLayout

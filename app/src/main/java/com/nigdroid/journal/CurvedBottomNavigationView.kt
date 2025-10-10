@@ -14,7 +14,7 @@ class CurvedBottomNavigationView @JvmOverloads constructor(
 
     private val path = Path()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#D64E7E")
+        color = Color.parseColor("#6B7FED")
         style = Paint.Style.FILL
     }
 
