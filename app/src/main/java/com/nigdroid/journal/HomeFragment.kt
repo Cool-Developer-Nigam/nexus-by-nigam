@@ -1,4 +1,4 @@
-package com.yourpackage.app
+package com.nigdroid.journal
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import com.nigdroid.journal.JournalListActivity
-import com.nigdroid.journal.R
 import com.nigdroid.journal.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -26,6 +24,10 @@ class HomeFragment : Fragment() {
 
         binding.JournalCard.setOnClickListener {
             val intent = Intent(requireContext(), JournalListActivity::class.java)
+            startActivity(intent)
+        }
+        binding.TodoCard.setOnClickListener {
+            val intent = Intent(requireContext(), TodoListActivity::class.java)
             startActivity(intent)
         }
         return binding.root

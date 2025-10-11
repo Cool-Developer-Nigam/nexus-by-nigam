@@ -65,7 +65,7 @@ class JournalListActivity : AppCompatActivity() {
         // Hide default title
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.toolbarLayout.signoutBtn.setOnClickListener {
+        binding.toolbarLayout.signout.setOnClickListener {
             showDeleteConfirmationDialog()
         }
     }
@@ -118,10 +118,7 @@ class JournalListActivity : AppCompatActivity() {
                     // Save username to shared preferences
                     val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
                     sharedPref.edit {
-                        putString(
-                            "username",
-                            querySnapshot.documents[0].data?.get("username").toString()
-                        )
+                        putString("username", querySnapshot.documents[0].data?.get("username").toString())
                     }
 
                     // Add journals to list

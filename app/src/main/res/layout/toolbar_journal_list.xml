@@ -4,96 +4,92 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-<com.google.android.material.appbar.AppBarLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:fitsSystemWindows="true"
-    android:elevation="4dp"
-    android:background="@android:color/transparent">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/toolbar_bg"
-        android:layout_marginHorizontal="16dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        app:contentInsetStart="0dp"
-        app:contentInsetEnd="0dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:elevation="4dp"
+        android:background="@android:color/transparent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/toolbar_bg"
+            android:layout_marginHorizontal="16dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetEnd="0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-            <!-- App Logo/Icon -->
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/toolbar_logo"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/app_logo"
-                app:shapeAppearance="@style/ToolbarRoundedImageStyle"
-                android:layout_marginStart="12dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <!-- Title -->
-            <TextView
-                android:id="@+id/toolbar_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="8dp"
-                android:text="My Journal"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:fontFamily="sans-serif-medium"
-                android:letterSpacing="0.01"
-                android:ellipsize="end"
-                android:maxLines="1"
-                app:layout_constraintStart_toEndOf="@id/toolbar_logo"
-                app:layout_constraintEnd_toStartOf="@id/signoutBtn"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-            <!-- Sign Out Button -->
-            <LinearLayout
-                android:id="@+id/signoutBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/signout"
-                    android:contentDescription="@string/sign_out"
-                    app:tint="@color/white" />
-
-                <TextView
+                <LinearLayout
+                    android:id="@+id/back_btn"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="6dp"
-                    android:text="@string/sign_out"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:layout_height="wrap_content"
+                    android:padding="3dp"
+                    android:background="@drawable/edt_txt_bg"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:src="@drawable/back_logo"
+                        app:tint="@color/black" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Back"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+                </LinearLayout>
 
-    </androidx.appcompat.widget.Toolbar>
+                <!-- Sign Out Button -->
+                <LinearLayout
+                    android:id="@+id/signout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="12dp"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
-</com.google.android.material.appbar.AppBarLayout>
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/signout"
+                        android:contentDescription="@string/sign_out" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="signout"
+                        android:layout_gravity="center_vertical"
+                        android:textStyle="bold"
+                        android:textColor="@color/cream"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
 </layout>

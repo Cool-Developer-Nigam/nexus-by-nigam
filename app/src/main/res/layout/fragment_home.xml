@@ -54,37 +54,30 @@
                 android:src="@drawable/profile_img"
                 app:shapeAppearanceOverlay="@style/CircleImageView" />
         </RelativeLayout>
-
         <!-- Search Bar -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
+            android:backgroundTint="#fff"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp">
 
-            <LinearLayout
+            <EditText
+                android:id="@+id/edt_txt_srch"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:background="@color/white"
-                android:padding="12dp">
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/white_bg"
+                android:drawableStart="@drawable/search_icon"
+                android:ems="10"
+                android:hint="Search For..."
+                android:inputType="text"
+                android:padding="8dp"
+                android:textColor="@color/black"
+                android:textColorHint="@color/grey" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/search_icon"
-                    app:tint="#9CA3AF" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Search For..."
-                    android:textColor="#9CA3AF"
-                    android:textSize="16sp" />
-            </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <!-- Upgrade Banner -->
@@ -172,6 +165,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/TodoCard"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:backgroundTint="@color/white"

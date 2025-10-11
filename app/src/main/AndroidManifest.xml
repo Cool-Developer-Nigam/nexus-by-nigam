@@ -17,6 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Journal">
         <activity
+            android:name=".AddTodoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TodoListActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
