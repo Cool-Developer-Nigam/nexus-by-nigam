@@ -199,6 +199,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/audioCard"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     app:cardCornerRadius="12dp"

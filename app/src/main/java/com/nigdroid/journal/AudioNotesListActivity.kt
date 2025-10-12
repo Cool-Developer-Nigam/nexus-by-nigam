@@ -1,0 +1,160 @@
+package com.nigdroid.journal
+
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import com.nigdroid.journal.databinding.ActivityAudioNotesListBinding
+
+class AudioNotesListActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityAudioNotesListBinding
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var toolbar: Toolbar
+    private lateinit var user: FirebaseUser
+    private val db = FirebaseFirestore.getInstance()
+    private lateinit var collectionReference: CollectionReference
+
+    private val pinnedNotes = mutableListOf<AudioNote>()
+    private val unpinnedNotes = mutableListOf<AudioNote>()
+
+    private lateinit var pinnedAdapter: AudioNotesRecyclerAdapter
+    private lateinit var unpinnedAdapter: AudioNotesRecyclerAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_audio_notes_list)
+
+        // Setup toolbar
+        setupCustomToolbar()
+
+        // Firebase auth
+        firebaseAuth = FirebaseAuth.getInstance()
+        user = firebaseAuth.currentUser!!
+        collectionReference = db.collection("AudioNotes")
+
+        setupRecyclerViews()
+
+        // FAB click listener
+        binding.fabAddAudio.setOnClickListener {
+            startActivity(Intent(this, AddAudioNoteActivity::class.java))
+        }
+    }
+
+    private fun setupCustomToolbar() {
+        toolbar = binding.toolbarLayout.toolbar
+        setSupportActionBar(toolbar)
+
+        // Hide default title
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+    }
+
+    private fun setupRecyclerViews() {
+        // Pinned notes
+        binding.pinnedRecyclerView.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        pinnedAdapter = AudioNotesRecyclerAdapter(this, pinnedNotes) { note ->
+            openAudioDetail(note)
+        }
+        binding.pinnedRecyclerView.adapter = pinnedAdapter
+
+        // Unpinned notes
+        binding.audioNotesRecyclerView.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        unpinnedAdapter = AudioNotesRecyclerAdapter(this, unpinnedNotes) { note ->
+            openAudioDetail(note)
+        }
+        binding.audioNotesRecyclerView.adapter = unpinnedAdapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadAudioNotes()
+    }
+
+    private fun loadAudioNotes() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.emptyStateLayout.visibility = View.GONE
+
+        collectionReference
+            .whereEqualTo("userId", user.uid)
+            .orderBy("timeModified", Query.Direction.DESCENDING)
+            .addSnapshotListener { querySnapshot, error ->
+                binding.progressBar.visibility = View.GONE
+
+                if (error != null) {
+                    Toast.makeText(this, "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                    binding.emptyStateLayout.visibility = View.VISIBLE
+                    return@addSnapshotListener
+                }
+
+                if (querySnapshot != null && !querySnapshot.isEmpty) {
+                    pinnedNotes.clear()
+                    unpinnedNotes.clear()
+
+                    for (document in querySnapshot) {
+                        val note = document.toObject(AudioNote::class.java).copy(
+                            id = document.id
+                        )
+
+                        if (note.isPinned) {
+                            pinnedNotes.add(note)
+                        } else {
+                            unpinnedNotes.add(note)
+                        }
+                    }
+
+                    // Update visibility
+                    if (pinnedNotes.isEmpty()) {
+                        binding.pinnedSection.visibility = View.GONE
+                    } else {
+                        binding.pinnedSection.visibility = View.VISIBLE
+                        pinnedAdapter.notifyDataSetChanged()
+                    }
+
+                    if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
+                        binding.emptyStateLayout.visibility = View.VISIBLE
+                        binding.othersSection.visibility = View.GONE
+                    } else if (unpinnedNotes.isEmpty()) {
+                        binding.othersSection.visibility = View.GONE
+                        binding.emptyStateLayout.visibility = View.GONE
+                    } else {
+                        binding.othersSection.visibility = View.VISIBLE
+                        binding.emptyStateLayout.visibility = View.GONE
+
+                        if (pinnedNotes.isEmpty()) {
+                            binding.othersSectionTitle.visibility = View.GONE
+                        } else {
+                            binding.othersSectionTitle.visibility = View.VISIBLE
+                        }
+
+                        unpinnedAdapter.notifyDataSetChanged()
+                    }
+
+                } else {
+                    binding.emptyStateLayout.visibility = View.VISIBLE
+                    binding.pinnedSection.visibility = View.GONE
+                    binding.othersSection.visibility = View.GONE
+                }
+            }
+    }
+
+    private fun openAudioDetail(note: AudioNote) {
+        val intent = Intent(this, AddAudioNoteActivity::class.java).apply {
+            putExtra("AUDIO_NOTE_ID", note.id)
+            putExtra("AUDIO_TITLE", note.title)
+            putExtra("IS_PINNED", note.isPinned)
+        }
+        startActivity(intent)
+    }
+}

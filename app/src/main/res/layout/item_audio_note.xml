@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/audioNoteCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    android:backgroundTint="@color/cream"
+    app:strokeColor="#E0E0E0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/audioNoteTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/pinIcon"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Audio Note Title"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/pinIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_pin"
+                android:visibility="gone"
+                app:tint="?attr/colorPrimary" />
+
+        </RelativeLayout>
+
+        <!-- Audio Player Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/white_bg"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp">
+
+            <ImageButton
+                android:id="@+id/btnPlayPreview"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Play audio"
+                android:src="@drawable/ic_play"
+                />
+
+            <!-- Waveform visualization placeholder -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="15dp"
+                    android:layout_margin="1dp"
+                    android:background="@color/pinkish"
+                    android:alpha="0.3" />
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="25dp"
+                    android:layout_margin="1dp"
+                    android:background="@color/pinkish"
+                    android:alpha="0.3" />
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="20dp"
+                    android:layout_margin="1dp"
+                    android:background="@color/pinkish"
+                    android:alpha="0.3" />
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="28dp"
+                    android:layout_margin="1dp"
+                    android:background="@color/pinkish"
+                    android:alpha="0.3" />
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="18dp"
+                    android:layout_margin="1dp"
+                    android:background="@color/pinkish"
+                    android:alpha="0.3" />
+                <View
+                    android:layout_width="3dp"
+                    android:layout_height="22dp"
+                    android:layout_margin="1dp"
+                    android:background="@color/pinkish"
+                    android:alpha="0.3" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/audioDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00"
+                android:textColor="@color/DarkBrown"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <!-- Transcription Preview -->
+        <TextView
+            android:id="@+id/transcriptionPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="Transcription text appears here..."
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Timestamp -->
+        <TextView
+            android:id="@+id/audioNoteTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 hours ago"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

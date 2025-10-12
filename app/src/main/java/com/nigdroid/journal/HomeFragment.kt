@@ -30,6 +30,10 @@ class HomeFragment : Fragment() {
             val intent = Intent(requireContext(), TodoListActivity::class.java)
             startActivity(intent)
         }
+        binding.audioCard.setOnClickListener {
+            val intent = Intent(requireContext(), AudioNotesListActivity::class.java)
+            startActivity(intent)
+        }
         return binding.root
     }
 }
