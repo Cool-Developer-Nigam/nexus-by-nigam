@@ -2,7 +2,6 @@ package com.nigdroid.journal
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -70,23 +69,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        // FAB click listener - OPTIMIZED
+        // FAB click listener - INSTANT RESPONSE
         binding.fabAdd.setOnClickListener {
-            // Check if fragment is already showing
-            val existingFragment = supportFragmentManager.findFragmentByTag("AddFragment")
-            if (existingFragment == null) {
-                showAddFragment()
-            }
+            AddOptionsDialog().show(supportFragmentManager, "AddOptionsDialog")
         }
-    }
-
-    private fun showAddFragment() {
-        // Use add() instead of replace() and add to android.R.id.content
-        // This adds the fragment over the entire screen including MainActivity
-        supportFragmentManager.beginTransaction()
-            .add(android.R.id.content, AddFragment(), "AddFragment")
-            .addToBackStack(null)
-            .commit()
     }
 
     private fun loadNavHeaderProfile() {
@@ -133,22 +119,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_home -> {
-                loadFragment(HomeFragment())
-                binding.bottomNav.selectedItemId = R.id.nav_home
-            }
-            R.id.nav_settings -> {
-                // Navigate to settings
-                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_share -> {
-                // Share app
-                Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_about -> {
-                // Show about
-                Toast.makeText(this, "About Us", Toast.LENGTH_SHORT).show()
-            }
+//            R.id.nav_home -> {
+//                loadFragment(HomeFragment())
+//                binding.bottomNav.selectedItemId = R.id.nav_home
+//            }
+//            R.id.nav_settings -> {
+//                // Navigate to settings
+//                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show()
+//            }
+//            R.id.nav_share -> {
+//                // Share app
+//                Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show()
+//            }
+//            R.id.nav_about -> {
+//                // Show about
+//                Toast.makeText(this, "About Us", Toast.LENGTH_SHORT).show()
+//            }
             R.id.nav_logout -> {
                 // Handle logout
                 firebaseAuth.signOut()

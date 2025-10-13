@@ -18,38 +18,56 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@drawable/toolbar_bg"
+                android:backgroundTint="@color/semi_trans"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                <ImageButton
-                    android:id="@+id/btnBack"
-                    android:layout_width="35dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/back_logo"
-                    android:backgroundTint="@android:color/white"
-                    android:contentDescription="Back"
-                    android:scaleType="centerInside" />
-
-                <TextView
+                <LinearLayout
+                    android:id="@+id/back_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="Note"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:padding="3dp"
+                    android:background="@drawable/edt_txt_bg"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
-                <ImageButton
-                    android:id="@+id/btnPin"
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="12dp"
+                        android:src="@drawable/back_logo"
+                        app:tint="@color/black" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="0dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Back"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:background="@drawable/edt_txt_bg"
                     android:layout_marginEnd="16dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Pin"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_pin_outline"
-                    app:tint="@android:color/white" />
+                    >
+                    <ImageButton
+                        android:id="@+id/btnPin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Pin"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_pin_outline"
+                        />
+                </LinearLayout>
+
 
             </androidx.appcompat.widget.Toolbar>
 
@@ -73,6 +91,8 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
+
+
 
                     <!-- Title Input -->
                     <com.google.android.material.textfield.TextInputLayout

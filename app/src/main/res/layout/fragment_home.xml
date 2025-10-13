@@ -137,16 +137,23 @@
                         android:id="@+id/JournalCard"
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-                        android:backgroundTint="@color/white"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="16dp"
                         app:cardElevation="2dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:background="@drawable/gradient_journal"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_journal"
-                            app:tint="#EC4899" />
+                                android:src="@drawable/ic_journal"
+                                app:tint="#F0ECEE" />
+                        </LinearLayout>
+
+
                     </androidx.cardview.widget.CardView>
 
                     <TextView
@@ -172,15 +179,21 @@
                         android:layout_width="64dp"
                         android:layout_height="64dp"
                         android:backgroundTint="@color/white"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="16dp"
                         app:cardElevation="2dp">
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_list"
-                            app:tint="#10B981" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:background="@drawable/gradient_todo"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_list"
+                                app:tint="#F0ECEE" />
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
                     <TextView
@@ -205,16 +218,23 @@
                         android:id="@+id/audioCard"
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="16dp"
                         android:backgroundTint="@color/white"
                         app:cardElevation="2dp">
 
-                        <ImageView
-                            android:layout_width="31dp"
-                            android:layout_height="33dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_audio"
-                            app:tint="#F97316" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:background="@drawable/gradient_audio"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+
+                                android:src="@drawable/ic_mic"
+                                app:tint="#F0ECEE" />
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
                     <TextView
@@ -239,16 +259,22 @@
                         android:id="@+id/textCard"
                         android:layout_width="64dp"
                         android:layout_height="64dp"
-                        app:cardCornerRadius="12dp"
+                        app:cardCornerRadius="16dp"
                         android:backgroundTint="@color/white"
                         app:cardElevation="2dp">
 
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_text"
-                            app:tint="#6366F1" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:background="@drawable/gradient_text_note"
+                            android:orientation="vertical">
+                            <ImageView
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:src="@drawable/ic_text"
+                                app:tint="#F0ECEE" />
+                        </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
                     <TextView

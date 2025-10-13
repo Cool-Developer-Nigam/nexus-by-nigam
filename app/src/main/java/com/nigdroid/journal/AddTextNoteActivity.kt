@@ -68,7 +68,7 @@ class AddTextNoteActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
-        binding.btnBack.setOnClickListener {
+        binding.backBtn.setOnClickListener {
             finish()
         }
 
