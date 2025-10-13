@@ -70,12 +70,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        // FAB click listener
+        // FAB click listener - OPTIMIZED
         binding.fabAdd.setOnClickListener {
-            loadFragment(AddFragment())
-            // Clear bottom nav selection
-            binding.bottomNav.menu.findItem(R.id.nav_placeholder)?.isChecked = true
+            // Check if fragment is already showing
+            val existingFragment = supportFragmentManager.findFragmentByTag("AddFragment")
+            if (existingFragment == null) {
+                showAddFragment()
+            }
         }
+    }
+
+    private fun showAddFragment() {
+        // Use add() instead of replace() and add to android.R.id.content
+        // This adds the fragment over the entire screen including MainActivity
+        supportFragmentManager.beginTransaction()
+            .add(android.R.id.content, AddFragment(), "AddFragment")
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun loadNavHeaderProfile() {

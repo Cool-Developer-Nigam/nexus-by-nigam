@@ -21,6 +21,11 @@
     <color name="grey">#706F6F</color>
     <color name="pinkish">#B3C84E7E</color>
 
+    <color name="journal_color">#FFA726</color>
+    <color name="text_note_color">#42A5F5</color>
+    <color name="todo_color">#66BB6A</color>
+    <color name="audio_color">#EF5350</color>
+
 
 
 </resources>
