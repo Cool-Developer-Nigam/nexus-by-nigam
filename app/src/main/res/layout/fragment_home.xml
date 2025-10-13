@@ -4,7 +4,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -37,6 +36,7 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/username"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cristin Alba"
@@ -100,7 +100,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="To Get Unlimited\nUpgrade Your Account"
+                    android:text="Discover More Features \nTap to Explore"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -233,6 +233,7 @@
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/textCard"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     app:cardCornerRadius="12dp"

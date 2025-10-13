@@ -50,6 +50,7 @@ class AddJournalActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_journal)
+
         setupCustomToolbar()
 
         // Setup thoughts EditText scrolling behavior

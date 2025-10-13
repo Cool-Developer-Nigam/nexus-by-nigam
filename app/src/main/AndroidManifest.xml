@@ -18,6 +18,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Journal">
         <activity
+            android:name=".AddTextNoteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TextNotesListActivity"
+            android:exported="false"
+            android:label="Notes" />
+        <activity
             android:name=".AddAudioNoteActivity"
             android:exported="false" />
         <activity

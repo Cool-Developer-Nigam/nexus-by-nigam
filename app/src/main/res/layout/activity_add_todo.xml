@@ -20,6 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@drawable/toolbar_bg"
+                android:layout_marginHorizontal="16dp"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                 <ImageButton
@@ -76,7 +77,7 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="@android:color/white"
+                    app:cardBackgroundColor="@color/audio_bg"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
                     app:strokeWidth="0dp">
@@ -86,7 +87,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Title"
                         app:boxBackgroundMode="none"
-                        app:hintTextColor="?attr/colorPrimary">
+                        app:hintTextColor="@color/grey">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etTitle"
@@ -95,7 +96,7 @@
                             android:inputType="text"
                             android:textSize="24sp"
                             android:textStyle="bold"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/DarkBrown"
                             android:padding="20dp"
                             android:background="@android:color/transparent" />
 
@@ -108,7 +109,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="@android:color/white"
+                    app:cardBackgroundColor="@color/audio_bg"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
                     app:strokeWidth="0dp">
@@ -125,7 +126,7 @@
                             android:text="Tasks"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/DarkBrown"
                             android:layout_marginBottom="12dp"
                             android:alpha="0.7" />
 
@@ -192,7 +193,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_margin="16dp"
-            app:cardBackgroundColor="@android:color/white"
+            app:cardBackgroundColor="@color/lightCream"
             app:cardCornerRadius="28dp"
             app:cardElevation="12dp">
 

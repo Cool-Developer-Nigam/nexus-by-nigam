@@ -12,11 +12,12 @@
     <color name="lightCream">#F9F2DB</color>
     <color name="DarkBrown">#5C431C</color>
     <color name="orange">#EC9337</color>
+    <color name="audio_bg">#DDE0F6</color>
 
     <color name="cream">#E5E0C4</color>
     <color name="blue">#5997D5</color>
     <color name="transparent">#00FFFFFF</color>
-    <color name="grey">#828080</color>
+    <color name="grey">#706F6F</color>
     <color name="pinkish">#B3C84E7E</color>
 
 

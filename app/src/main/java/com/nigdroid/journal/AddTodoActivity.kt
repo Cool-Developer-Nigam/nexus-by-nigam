@@ -1,14 +1,17 @@
 package com.nigdroid.journal
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.nigdroid.journal.databinding.ActivityAddTodoBinding
+import com.nigdroid.journal.databinding.DialogConfirmDeleteBinding
 
 class AddTodoActivity : AppCompatActivity() {
 
@@ -22,6 +25,7 @@ class AddTodoActivity : AppCompatActivity() {
     private var todoId: String? = null
     private var isPinned = false
     private var isEditMode = false
+    private var timeAdded: Long = 0L  // Add this to preserve original creation time
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +36,9 @@ class AddTodoActivity : AppCompatActivity() {
         // Check if editing existing todo
         todoId = intent.getStringExtra("TODO_ID")
         isEditMode = todoId != null
+
+        // Get timeAdded from intent if editing
+        timeAdded = intent.getLongExtra("TIME_ADDED", System.currentTimeMillis())
 
         // Setup UI
         setupToolbar()
@@ -57,7 +64,7 @@ class AddTodoActivity : AppCompatActivity() {
             updatePinIcon()
         }
 
-        // Set initial pin state
+        // Set initial pin state from intent
         isPinned = intent.getBooleanExtra("IS_PINNED", false)
         updatePinIcon()
     }
@@ -124,6 +131,7 @@ class AddTodoActivity : AppCompatActivity() {
                         todo?.let {
                             binding.etTitle.setText(it.title)
                             isPinned = it.isPinned
+                            timeAdded = it.timeAdded  // Preserve original creation time
                             updatePinIcon()
 
                             checklistItems.clear()
@@ -155,19 +163,19 @@ class AddTodoActivity : AppCompatActivity() {
 
         val currentTime = System.currentTimeMillis()
 
-        val todo = TodoItem(
-            id = todoId ?: "",
-            title = title,
-            items = filteredItems.toMutableList(),
-            userId = user.uid,
-            username = username,
-            timeAdded = if (isEditMode) intent.getLongExtra("TIME_ADDED", currentTime) else currentTime,
-            timeModified = currentTime,
-            isPinned = isPinned
-        )
-
         if (isEditMode && todoId != null) {
-            // Update existing todo
+            // Update existing todo - preserve the document ID and timeAdded
+            val todo = TodoItem(
+                id = todoId!!,
+                title = title,
+                items = filteredItems.toMutableList(),
+                userId = user.uid,
+                username = username,
+                timeAdded = timeAdded,  // Use preserved timeAdded
+                timeModified = currentTime,
+                isPinned = isPinned
+            )
+
             db.collection("TodoItems").document(todoId!!)
                 .set(todo)
                 .addOnSuccessListener {
@@ -178,9 +186,21 @@ class AddTodoActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error updating todo: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         } else {
-            // Create new todo
-            db.collection("TodoItems")
-                .add(todo)
+            // Create new todo - get the document reference first to set the ID
+            val docRef = db.collection("TodoItems").document()
+
+            val todo = TodoItem(
+                id = docRef.id,  // Set the ID from the document reference
+                title = title,
+                items = filteredItems.toMutableList(),
+                userId = user.uid,
+                username = username,
+                timeAdded = currentTime,
+                timeModified = currentTime,
+                isPinned = isPinned
+            )
+
+            docRef.set(todo)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Todo created successfully", Toast.LENGTH_SHORT).show()
                     finish()
@@ -192,14 +212,23 @@ class AddTodoActivity : AppCompatActivity() {
     }
 
     private fun showDeleteConfirmationDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Delete To-Do List")
-            .setMessage("Are you sure you want to delete this to-do list?")
-            .setPositiveButton("Delete") { _, _ ->
-                deleteTodo()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
+
+        // Use data binding
+        val dialogBinding = DialogConfirmDeleteBinding.inflate(LayoutInflater.from(this))
+
+        dialogBinding.btnDelete.setOnClickListener {
+            deleteTodo()
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     private fun deleteTodo() {

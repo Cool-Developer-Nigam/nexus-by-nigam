@@ -77,7 +77,7 @@
                 android:layout_marginRight="15dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:src="@drawable/remove"
+                android:src="@drawable/ic_delete"
                 android:contentDescription="Delete"
                 android:padding="4dp"
                 app:layout_constraintEnd_toEndOf="parent"

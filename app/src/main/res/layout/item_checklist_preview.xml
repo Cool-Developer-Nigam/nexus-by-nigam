@@ -21,7 +21,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Buy milk"
-        android:textColor="@android:color/black"
+        android:textColor="@color/DarkBrown"
         android:textSize="14sp" />
 
 </LinearLayout>

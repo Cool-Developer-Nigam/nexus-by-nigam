@@ -18,6 +18,7 @@
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
+                android:layout_marginHorizontal="16dp"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@drawable/toolbar_bg"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
@@ -76,7 +77,7 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardBackgroundColor="@color/semi_transparent_light"
+                    app:cardBackgroundColor="@color/audio_bg"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
                     app:strokeWidth="0dp">
@@ -142,7 +143,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="00:00"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/DarkBrown"
                             android:textSize="48sp"
                             android:textStyle="bold"
                             android:fontFamily="sans-serif-medium"
@@ -240,7 +241,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="@color/semi_transparent_light"
+                    app:cardBackgroundColor="@color/audio_bg"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
                     app:strokeWidth="0dp">
@@ -249,8 +250,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Title"
+                        android:textColor="@color/DarkBrown"
                         app:boxBackgroundMode="none"
-                        app:hintTextColor="?attr/colorPrimary">
+                        app:hintTextColor="@color/grey">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etTitle"
@@ -258,8 +260,9 @@
                             android:layout_height="wrap_content"
                             android:inputType="text"
                             android:textSize="24sp"
+                            android:backgroundTint="@color/semi_transparent_light"
                             android:textStyle="bold"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/DarkBrown"
                             android:padding="20dp"
                             android:background="@android:color/transparent" />
 
@@ -272,7 +275,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:cardBackgroundColor="@color/semi_transparent_light"
+                    app:cardBackgroundColor="@color/audio_bg"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
                     app:strokeWidth="0dp">
@@ -289,7 +292,7 @@
                             android:text="Transcription"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            android:textColor="@android:color/black"
+                            android:textColor="@color/DarkBrown"
                             android:layout_marginBottom="12dp"
                             android:alpha="0.7" />
 
@@ -298,7 +301,7 @@
                             android:layout_height="wrap_content"
                             android:hint="Auto-generated from speech"
                             app:boxBackgroundMode="none"
-                            app:hintTextColor="?attr/colorPrimary">
+                            app:hintTextColor="@color/grey">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/etTranscription"
@@ -308,7 +311,7 @@
                                 android:gravity="top|start"
                                 android:inputType="textMultiLine|textCapSentences"
                                 android:textSize="14sp"
-                                android:textColor="@android:color/black"
+                                android:textColor="@color/DarkBrown"
                                 android:background="@android:color/transparent" />
 
                         </com.google.android.material.textfield.TextInputLayout>

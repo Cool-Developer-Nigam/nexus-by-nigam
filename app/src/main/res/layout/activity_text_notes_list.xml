@@ -8,22 +8,17 @@
         android:background="@drawable/costum_background"
         android:fitsSystemWindows="true">
 
-        <!-- AppBarLayout to properly position the toolbar -->
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
-            android:layout_width="match_parent"
+
+        <include
+            android:id="@+id/toolbar_layout"
+            layout="@layout/toolbar_journal_list"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:elevation="16dp">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <include
-                android:id="@+id/toolbar_layout"
-                layout="@layout/toolbar_audio_notes_list"
-                android:layout_marginHorizontal="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
-        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -35,7 +30,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Progress Bar -->
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
@@ -45,7 +39,6 @@
                     android:indeterminateTint="#C84E7E"
                     android:visibility="gone" />
 
-                <!-- Empty State -->
                 <LinearLayout
                     android:id="@+id/emptyStateLayout"
                     android:layout_width="match_parent"
@@ -60,14 +53,14 @@
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:alpha="0.3"
-                        android:src="@drawable/ic_mic"
+                        android:src="@drawable/ic_note"
                         app:tint="@color/black" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="No audio notes yet"
+                        android:text="No notes yet"
                         android:textColor="@color/grey"
                         android:textSize="18sp" />
 
@@ -75,13 +68,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Tap + to record your first note"
+                        android:text="Tap + to create your first note"
                         android:textColor="@color/grey"
                         android:textSize="14sp" />
 
                 </LinearLayout>
 
-                <!-- Pinned Section -->
                 <LinearLayout
                     android:id="@+id/pinnedSection"
                     android:layout_width="match_parent"
@@ -109,7 +101,6 @@
 
                 </LinearLayout>
 
-                <!-- Others Section -->
                 <LinearLayout
                     android:id="@+id/othersSection"
                     android:layout_width="match_parent"
@@ -130,7 +121,7 @@
                         android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/audioNotesRecyclerView"
+                        android:id="@+id/textNotesRecyclerView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
@@ -142,15 +133,14 @@
 
         </androidx.core.widget.NestedScrollView>
 
-        <!-- Floating Action Button -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddAudio"
+            android:id="@+id/fabAddNote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_margin="19dp"
-            android:contentDescription="Record audio note"
-            android:src="@drawable/ic_mic"
+            android:layout_margin="16dp"
+            android:contentDescription="Add new note"
+            android:src="@drawable/add"
             android:backgroundTint="#C84E7E"
             app:tint="@android:color/white" />
 
