@@ -3,18 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/noteContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/costum_background"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@drawable/costum_background">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@drawable/toolbar_bg"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                 <ImageButton
@@ -52,161 +56,270 @@
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <LinearLayout
-                android:id="@+id/noteContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:background="@android:color/white">
-
-                <!-- Title Input -->
-                <EditText
-                    android:id="@+id/etTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:hint="Title"
-                    android:inputType="text"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:paddingBottom="8dp" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#E0E0E0"
-                    android:layout_marginBottom="16dp" />
-
-                <!-- Formatting Toolbar -->
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <ImageButton
-                            android:id="@+id/btnBold"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/formatting_button_normal"
-                            android:contentDescription="Bold"
-                            android:src="@drawable/ic_format_bold"
-                            android:scaleType="centerInside"
-                            app:tint="@color/black" />
-
-                        <ImageButton
-                            android:id="@+id/btnItalic"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/formatting_button_normal"
-                            android:contentDescription="Italic"
-                            android:src="@drawable/ic_format_italic"
-                            android:scaleType="centerInside"
-                            app:tint="@color/black" />
-
-                        <ImageButton
-                            android:id="@+id/btnUnderline"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/formatting_button_normal"
-                            android:contentDescription="Underline"
-                            android:src="@drawable/ic_format_underline"
-                            android:scaleType="centerInside"
-                            app:tint="@color/black" />
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="32dp"
-                            android:layout_margin="8dp"
-                            android:background="#E0E0E0" />
-
-                        <ImageButton
-                            android:id="@+id/btnTextColor"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/formatting_button_normal"
-                            android:contentDescription="Text Color"
-                            android:src="@drawable/ic_format_color_text"
-                            android:scaleType="centerInside" />
-
-                        <ImageButton
-                            android:id="@+id/btnBackgroundColor"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_margin="4dp"
-                            android:background="@drawable/formatting_button_normal"
-                            android:contentDescription="Background Color"
-                            android:src="@drawable/ic_format_color_fill"
-                            android:scaleType="centerInside"
-                            app:tint="@color/black" />
-
-                    </LinearLayout>
-
-                </HorizontalScrollView>
-
-                <!-- Content Input -->
-                <EditText
-                    android:id="@+id/etContent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="300dp"
-                    android:background="@android:color/transparent"
-                    android:gravity="top|start"
-                    android:hint="Start typing..."
-                    android:inputType="textMultiLine|textCapSentences"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-        </androidx.core.widget.NestedScrollView>
-
-        <!-- Bottom Action Bar -->
+        <!-- Main Content Area -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="@android:color/white"
-            android:elevation="8dp"
-            android:orientation="horizontal"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <ImageButton
-                android:id="@+id/btnDelete"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Delete"
-                android:src="@drawable/ic_delete"
-                app:tint="@android:color/darker_gray" />
+            <!-- Scrollable Note Content -->
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSave"
-                android:layout_width="wrap_content"
+                    <!-- Title Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Title"
+                        app:boxBackgroundMode="none"
+                        app:hintTextColor="@color/grey">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text"
+                            android:textSize="24sp"
+                            android:textColor="@color/DarkBrown"
+                            android:padding="20dp"
+                            android:background="#4DFFFFFF" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Transcription Card -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="Start typing..."
+                        app:boxBackgroundMode="none"
+                        app:hintTextColor="@color/grey">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="300dp"
+                            android:gravity="top|start"
+                            android:inputType="textMultiLine|textCapSentences"
+                            android:textSize="14sp"
+                            android:textColor="@color/DarkBrown"
+                            android:padding="16dp"
+                            android:background="#4DFFFFFF" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+            <!-- Title Formatting Toolbar -->
+            <HorizontalScrollView
+                android:id="@+id/titleFormattingToolbar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save"
-                android:textAllCaps="false"
-                app:cornerRadius="24dp" />
+                android:background="@color/lightCream"
+                android:elevation="8dp"
+                android:scrollbars="none"
+                android:visibility="gone"
+                android:paddingVertical="8dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="8dp">
+
+                    <ImageButton
+                        android:id="@+id/btnTitleBold"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Bold"
+                        android:src="@drawable/ic_format_bold"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/btnTitleItalic"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Italic"
+                        android:src="@drawable/ic_format_italic"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/btnTitleUnderline"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Underline"
+                        android:src="@drawable/ic_format_underline"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="8dp"
+                        android:background="#E0E0E0" />
+
+                    <ImageButton
+                        android:id="@+id/btnTitleTextColor"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Text Color"
+                        android:src="@drawable/ic_format_color_text"
+                        android:scaleType="centerInside" />
+
+                    <ImageButton
+                        android:id="@+id/btnTitleBackgroundColor"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Background Color"
+                        android:src="@drawable/ic_format_color_fill"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <!-- Content Formatting Toolbar -->
+            <HorizontalScrollView
+                android:id="@+id/contentFormattingToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/lightCream"
+                android:elevation="8dp"
+                android:scrollbars="none"
+                android:visibility="gone"
+                android:paddingVertical="8dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="8dp">
+
+                    <ImageButton
+                        android:id="@+id/btnContentBold"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Bold"
+                        android:src="@drawable/ic_format_bold"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/btnContentItalic"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Italic"
+                        android:src="@drawable/ic_format_italic"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/btnContentUnderline"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Underline"
+                        android:src="@drawable/ic_format_underline"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="8dp"
+                        android:background="#E0E0E0" />
+
+                    <ImageButton
+                        android:id="@+id/btnContentTextColor"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Text Color"
+                        android:src="@drawable/ic_format_color_text"
+                        android:scaleType="centerInside" />
+
+                    <ImageButton
+                        android:id="@+id/btnContentBackgroundColor"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/formatting_button_normal"
+                        android:contentDescription="Background Color"
+                        android:src="@drawable/ic_format_color_fill"
+                        android:scaleType="centerInside"
+                        app:tint="@color/black" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <!-- Bottom Action Bar -->
+            <LinearLayout
+                android:id="@+id/bottomActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/lightCream"
+                android:elevation="8dp"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageButton
+                    android:id="@+id/btnDelete"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Delete"
+                    android:src="@drawable/ic_delete"
+                    app:tint="@color/pinkish" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save"
+                    android:backgroundTint="@color/pinkish"
+                    android:textAllCaps="false"
+                    app:cornerRadius="24dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

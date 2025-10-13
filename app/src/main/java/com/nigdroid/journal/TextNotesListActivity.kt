@@ -60,6 +60,7 @@ class TextNotesListActivity : AppCompatActivity() {
         binding.toolbarLayout.signout.setOnClickListener {
             showDeleteConfirmationDialog()
         }
+
     }
 
     private fun showDeleteConfirmationDialog() {
