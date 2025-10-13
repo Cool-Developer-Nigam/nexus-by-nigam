@@ -8,22 +8,14 @@
         android:background="@drawable/costum_background"
         android:fitsSystemWindows="true">
 
-        <!-- AppBarLayout to properly position the toolbar -->
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
+        <include
+            android:id="@+id/toolbar_layout"
+            layout="@layout/toolbar_journal_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:elevation="16dp">
-
-            <include
-                android:id="@+id/toolbar_layout"
-                layout="@layout/toolbar_audio_notes_list"
-                android:layout_marginHorizontal="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.appbar.AppBarLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

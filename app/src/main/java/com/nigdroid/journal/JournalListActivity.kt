@@ -68,6 +68,9 @@ class JournalListActivity : AppCompatActivity() {
         binding.toolbarLayout.signout.setOnClickListener {
             showDeleteConfirmationDialog()
         }
+        binding.toolbarLayout.backBtn.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun showDeleteConfirmationDialog() {

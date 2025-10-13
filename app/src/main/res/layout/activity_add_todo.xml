@@ -11,7 +11,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
+            android:backgroundTint="@color/semi_trans"
             android:elevation="0dp"
             app:elevation="0dp">
 
@@ -25,9 +25,9 @@
 
                 <ImageButton
                     android:id="@+id/btnBack"
-                    android:layout_width="40dp"
+                    android:layout_width="35dp"
                     android:layout_height="40dp"
-                    android:background="@drawable/ic_arrow_back"
+                    android:background="@drawable/back_logo"
                     android:backgroundTint="@android:color/white"
                     android:contentDescription="Back"
                     android:scaleType="centerInside" />

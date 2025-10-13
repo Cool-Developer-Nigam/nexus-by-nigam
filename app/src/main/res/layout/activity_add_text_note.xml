@@ -12,7 +12,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/costum_background">
+            android:backgroundTint="@color/semi_trans">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -23,13 +23,12 @@
 
                 <ImageButton
                     android:id="@+id/btnBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:layout_width="35dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/back_logo"
+                    android:backgroundTint="@android:color/white"
                     android:contentDescription="Back"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_arrow_back"
-                    app:tint="@android:color/white" />
+                    android:scaleType="centerInside" />
 
                 <TextView
                     android:layout_width="wrap_content"

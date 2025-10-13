@@ -33,6 +33,7 @@ class SignUpActivity : AppCompatActivity() {
             if(binding.etUsername.text!=null && binding.etEmail.text!=null && binding.etPassword.text!=null){
                 createUser()
                 username = binding.etUsername.text.toString()
+
                 val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
                 val editor = sharedPref.edit()
                 editor.putString("username", username)

@@ -9,12 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.nigdroid.journal.databinding.ActivityTodoListBinding
+import com.nigdroid.journal.databinding.DialogConfirmSignoutBinding
 
 class TodoListActivity : AppCompatActivity() {
 
@@ -54,6 +56,8 @@ class TodoListActivity : AppCompatActivity() {
         }
     }
 
+
+
     private fun setupCustomToolbar() {
         toolbar = binding.toolbarLayout.toolbar
         setSupportActionBar(toolbar)
@@ -62,12 +66,33 @@ class TodoListActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         binding.toolbarLayout.signout.setOnClickListener {
+            showDeleteConfirmationDialog()
+        }
+        binding.toolbarLayout.backBtn.setOnClickListener {
+            onBackPressed()
+        }
+    }
+    private fun showDeleteConfirmationDialog() {
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
+
+        // Use data binding
+        val dialogBinding = DialogConfirmSignoutBinding.inflate(layoutInflater)
+
+        dialogBinding.btnDelete.setOnClickListener {
             firebaseAuth.signOut()
             startActivity(Intent(this, LoginActivity::class.java))
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
             finish()
         }
 
+        dialogBinding.btnCancel.setOnClickListener {
+            Toast.makeText(this, "Signout Cancelled", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
 
