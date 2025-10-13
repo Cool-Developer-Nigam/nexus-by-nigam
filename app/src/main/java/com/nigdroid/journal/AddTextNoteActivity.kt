@@ -9,15 +9,18 @@ import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.nigdroid.journal.databinding.ActivityAddTextNoteBinding
+import com.nigdroid.journal.databinding.DialogConfirmDeleteBinding
 
 class AddTextNoteActivity : AppCompatActivity() {
 
@@ -482,14 +485,23 @@ class AddTextNoteActivity : AppCompatActivity() {
     }
 
     private fun showDeleteConfirmationDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Delete Note")
-            .setMessage("Are you sure you want to delete this note?")
-            .setPositiveButton("Delete") { _, _ ->
-                deleteNote()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
+
+        // Use data binding
+        val dialogBinding = DialogConfirmDeleteBinding.inflate(LayoutInflater.from(this))
+
+        dialogBinding.btnDelete.setOnClickListener {
+            deleteNote()
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     private fun deleteNote() {

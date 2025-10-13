@@ -1,295 +1,297 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#F2EDF9">
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_height="match_parent"
+        android:background="#F2EDF9">
 
-        <!-- Header Section with Profile -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hello"
-                    android:textColor="#DF3F7E"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cristin Alba"
-                    android:textColor="#1F2937"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:scaleType="centerCrop"
-                android:src="@drawable/profile_img"
-                app:shapeAppearanceOverlay="@style/CircleImageView" />
-        </RelativeLayout>
-        <!-- Search Bar -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:backgroundTint="#fff"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp">
-
-            <EditText
-                android:id="@+id/edt_txt_srch"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="@drawable/white_bg"
-                android:drawableStart="@drawable/search_icon"
-                android:ems="10"
-                android:hint="Search For..."
-                android:inputType="text"
-                android:padding="8dp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/grey" />
-
-
-        </androidx.cardview.widget.CardView>
-
-        <!-- Upgrade Banner -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/gradient_background"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="24dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Discover More Features \nTap to Explore"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginStart="16dp"
-                    app:shapeAppearance="@style/RoundedImageStyle"
-                    android:src="@drawable/app_logo" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Category Icons Grid -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:orientation="horizontal"
-            android:weightSum="4">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <!-- Cloud Icon -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <!-- Header Section with Profile -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginBottom="20dp">
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/JournalCard"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:backgroundTint="@color/white"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_journal"
-                        app:tint="#EC4899" />
-                </androidx.cardview.widget.CardView>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hello"
+                        android:textColor="#DF3F7E"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/username"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="User"
+                        android:textColor="#1F2937"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/profileImage"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile_image"
+                    app:shapeAppearanceOverlay="@style/CircleImageView" />
+            </RelativeLayout>
+
+            <!-- Rest of your layout remains the same -->
+            <!-- Search Bar, Upgrade Banner, Category Icons, etc. -->
+
+            <!-- Search Bar -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:backgroundTint="#fff"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+
+                <EditText
+                    android:id="@+id/edt_txt_srch"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/white_bg"
+                    android:drawableStart="@drawable/search_icon"
+                    android:ems="10"
+                    android:hint="Search For..."
+                    android:inputType="text"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/grey" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Upgrade Banner -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gradient_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Discover More Features \nTap to Explore"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginStart="16dp"
+                        app:shapeAppearance="@style/RoundedImageStyle"
+                        android:src="@drawable/app_logo" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Category Icons Grid -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <!-- Journal Icon -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/JournalCard"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:backgroundTint="@color/white"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_journal"
+                            app:tint="#EC4899" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Journals"
+                        android:textColor="#1F2937"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Todo Icon -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/TodoCard"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:backgroundTint="@color/white"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_list"
+                            app:tint="#10B981" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="List"
+                        android:textColor="#1F2937"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Audio Icon -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/audioCard"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:cardCornerRadius="12dp"
+                        android:backgroundTint="@color/white"
+                        app:cardElevation="2dp">
+
+                        <ImageView
+                            android:layout_width="31dp"
+                            android:layout_height="33dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_audio"
+                            app:tint="#F97316" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Audio"
+                        android:textColor="#1F2937"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Text Icon -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/textCard"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        app:cardCornerRadius="12dp"
+                        android:backgroundTint="@color/white"
+                        app:cardElevation="2dp">
+
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_text"
+                            app:tint="#6366F1" />
+                    </androidx.cardview.widget.CardView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Text"
+                        android:textColor="#1F2937"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Journals"
+                    android:layout_alignParentStart="true"
+                    android:text="Favourite Article"
                     android:textColor="#1F2937"
-                    android:textSize="14sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Browser Icon -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/TodoCard"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:backgroundTint="@color/white"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_list"
-                        app:tint="#10B981" />
-                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="List"
-                    android:textColor="#1F2937"
+                    android:layout_alignParentEnd="true"
+                    android:text="See All"
+                    android:textColor="#EC4899"
                     android:textSize="14sp"
                     android:textStyle="bold" />
-            </LinearLayout>
+            </RelativeLayout>
 
-            <!-- Network Icon -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <!-- RecyclerView with Staggered Grid -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/articlesRecyclerView"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/audioCard"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="12dp"
-                    android:backgroundTint="@color/white"
-                    app:cardElevation="2dp">
-
-                    <ImageView
-                        android:layout_width="31dp"
-                        android:layout_height="33dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_audio"
-                        app:tint="#F97316" />
-                </androidx.cardview.widget.CardView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Audio"
-                    android:textColor="#1F2937"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Router Icon -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/textCard"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    app:cardCornerRadius="12dp"
-                    android:backgroundTint="@color/white"
-                    app:cardElevation="2dp">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_text"
-                        app:tint="#6366F1" />
-                </androidx.cardview.widget.CardView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Text"
-                    android:textColor="#1F2937"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:nestedScrollingEnabled="false" />
         </LinearLayout>
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:text="Favourite Article"
-                android:textColor="#1F2937"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:text="See All"
-                android:textColor="#EC4899"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-
-        <!-- RecyclerView with Staggered Grid -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/articlesRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false" />
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
 </layout>

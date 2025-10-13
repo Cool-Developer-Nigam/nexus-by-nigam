@@ -2,23 +2,31 @@ package com.nigdroid.journal
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.nigdroid.journal.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.lifecycleOwner = this
+
+        firebaseAuth = FirebaseAuth.getInstance()
 
         // Setup toolbar
         setSupportActionBar(binding.toolbar)
@@ -37,6 +45,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Setup navigation view
         binding.navView.setNavigationItemSelectedListener(this)
+
+        // Load user profile in nav header
+        loadNavHeaderProfile()
 
         // Load default fragment
         if (savedInstanceState == null) {
@@ -67,6 +78,48 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun loadNavHeaderProfile() {
+        val headerView = binding.navView.getHeaderView(0)
+        val profileImage = headerView.findViewById<ImageView>(R.id.nav_header_profile_image)
+        val profileName = headerView.findViewById<TextView>(R.id.nav_header_profile_name)
+        val profileEmail = headerView.findViewById<TextView>(R.id.nav_header_profile_email)
+
+        val currentUser = firebaseAuth.currentUser
+
+        if (currentUser != null) {
+            // Set name
+            val displayName = currentUser.displayName
+            val email = currentUser.email
+
+            val userName = when {
+                !displayName.isNullOrEmpty() -> displayName
+                !email.isNullOrEmpty() -> email.substringBefore("@")
+                else -> "User"
+            }
+
+            profileName.text = userName
+            profileEmail.text = email ?: "No email"
+
+            // Load profile photo
+            val photoUrl = currentUser.photoUrl
+            if (photoUrl != null) {
+                Glide.with(this)
+                    .load(photoUrl)
+                    .placeholder(R.drawable.ic_profile)
+                    .error(R.drawable.ic_profile)
+                    .circleCrop()
+                    .into(profileImage)
+            } else {
+                profileImage.setImageResource(R.drawable.ic_profile)
+            }
+        } else {
+            // Guest user
+            profileName.text = "Guest"
+            profileEmail.text = "Not logged in"
+            profileImage.setImageResource(R.drawable.ic_profile)
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_home -> {
@@ -87,7 +140,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_logout -> {
                 // Handle logout
-                Toast.makeText(this, "Logout", Toast.LENGTH_SHORT).show()
+                firebaseAuth.signOut()
+                Toast.makeText(this, "Logged out", Toast.LENGTH_SHORT).show()
+                // Navigate to login
+                finish()
             }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -106,5 +162,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh profile when activity resumes
+        loadNavHeaderProfile()
     }
 }
