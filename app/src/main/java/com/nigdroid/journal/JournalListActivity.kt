@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -30,14 +31,16 @@ class JournalListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityJournalListBinding
     private lateinit var toolbar: Toolbar
 
-    // Firebase references
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var user: FirebaseUser
     private var db = FirebaseFirestore.getInstance()
     private var collectionReference: CollectionReference = db.collection("Journal")
 
-    private lateinit var journalList: MutableList<Journal>
-    private lateinit var adapter: JournalRecyclerAdapter
+    private val pinnedJournals = mutableListOf<Journal>()
+    private val unpinnedJournals = mutableListOf<Journal>()
+
+    private lateinit var pinnedAdapter: JournalRecyclerAdapter
+    private lateinit var unpinnedAdapter: JournalRecyclerAdapter
     private var listenerRegistration: ListenerRegistration? = null
 
     companion object {
@@ -53,27 +56,19 @@ class JournalListActivity : AppCompatActivity() {
 
         setupCustomToolbar()
 
-        // Firebase authentication
         firebaseAuth = Firebase.auth
         user = firebaseAuth.currentUser!!
 
-        // RecyclerView
-        binding.recyclerView.setHasFixedSize(true)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        setupRecyclerViews()
 
         binding.floatingActionButton.setOnClickListener {
             startActivity(Intent(this, AddJournalActivity::class.java))
         }
-
-        // Post arrayList
-        journalList = arrayListOf<Journal>()
     }
 
     private fun setupCustomToolbar() {
         toolbar = binding.toolbarLayout.toolbar
         setSupportActionBar(toolbar)
-
-        // Hide default title
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
         binding.toolbarLayout.signout.setOnClickListener {
@@ -84,10 +79,22 @@ class JournalListActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupRecyclerViews() {
+        // Pinned journals - check if pinnedRecyclerView exists
+        binding.pinnedRecyclerView?.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        pinnedAdapter = JournalRecyclerAdapter(this, pinnedJournals)
+        binding.pinnedRecyclerView?.adapter = pinnedAdapter
+
+        // Unpinned journals
+        binding.recyclerView.setHasFixedSize(true)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        unpinnedAdapter = JournalRecyclerAdapter(this, unpinnedJournals)
+        binding.recyclerView.adapter = unpinnedAdapter
+    }
+
     private fun showDeleteConfirmationDialog() {
         val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
-
-        // Use data binding
         val dialogBinding = DialogConfirmSignoutBinding.inflate(layoutInflater)
 
         dialogBinding.btnDelete.setOnClickListener {
@@ -114,25 +121,18 @@ class JournalListActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        // Remove real-time listener when activity stops
         listenerRegistration?.remove()
     }
 
-    /**
-     * Loads journals with offline-first strategy
-     * 1. First tries to load from cache for instant display
-     * 2. Then fetches from server and sets up real-time listener
-     */
     private fun loadJournalsWithOfflineSupport() {
-        // Show progress bar, hide everything else
         binding.progressBar.visibility = View.VISIBLE
         binding.NoPostTv.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
+        binding.pinnedSection?.visibility = View.GONE
 
-        // Clear the list before fetching to avoid duplicates
-        journalList.clear()
+        pinnedJournals.clear()
+        unpinnedJournals.clear()
 
-        // Try cache first for instant load
         loadFromCache()
     }
 
@@ -145,46 +145,31 @@ class JournalListActivity : AppCompatActivity() {
                 Log.d(TAG, "Loaded ${querySnapshot.size()} journals from cache")
 
                 if (!querySnapshot.isEmpty) {
-                    displayJournals(querySnapshot.documents.mapNotNull { document ->
+                    processJournals(querySnapshot.documents.mapNotNull { document ->
                         try {
-                            Journal(
-                                document.data?.get("title").toString(),
-                                document.data?.get("thoughts").toString(),
-                                document.data?.get("imageUrl").toString(),
-                                document.data?.get("userId").toString(),
-                                document.data?.get("timeAdded").toString(),
-                                document.data?.get("username").toString()
-                            )
+                            document.toObject(Journal::class.java)
                         } catch (e: Exception) {
                             Log.e(TAG, "Error parsing journal from cache", e)
                             null
                         }
                     })
 
-                    // Save username to shared preferences
                     saveUsername(querySnapshot.documents[0].data?.get("username").toString())
                 }
 
-                // Now fetch from server to update
                 setupRealtimeListener()
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "Cache load failed, loading from server", e)
-                // Cache failed or empty, load from server
                 setupRealtimeListener()
             }
     }
 
-    /**
-     * Sets up real-time listener for automatic updates
-     * This will keep data in sync when online
-     */
     private fun setupRealtimeListener() {
         listenerRegistration = collectionReference
             .whereEqualTo("userId", user.uid)
             .orderBy("timeAdded", Query.Direction.DESCENDING)
             .addSnapshotListener { querySnapshot, error ->
-                // Hide progress bar
                 binding.progressBar.visibility = View.GONE
 
                 if (error != null) {
@@ -201,33 +186,24 @@ class JournalListActivity : AppCompatActivity() {
                         Log.d(TAG, "Data loaded from server")
                     }
 
-                    // Save username to shared preferences
                     saveUsername(querySnapshot.documents[0].data?.get("username").toString())
 
-                    // Clear and rebuild list
-                    val newJournals = querySnapshot.documents.mapNotNull { document ->
+                    val journals = querySnapshot.documents.mapNotNull { document ->
                         try {
-                            Journal(
-                                document.data?.get("title").toString(),
-                                document.data?.get("thoughts").toString(),
-                                document.data?.get("imageUrl").toString(),
-                                document.data?.get("userId").toString(),
-                                document.data?.get("timeAdded").toString(),
-                                document.data?.get("username").toString()
-                            )
+                            document.toObject(Journal::class.java)
                         } catch (e: Exception) {
                             Log.e(TAG, "Error parsing journal", e)
                             null
                         }
                     }
 
-                    displayJournals(newJournals)
-
+                    processJournals(journals)
                 } else {
-                    // No journals found
-                    journalList.clear()
+                    pinnedJournals.clear()
+                    unpinnedJournals.clear()
                     binding.NoPostTv.visibility = View.VISIBLE
                     binding.recyclerView.visibility = View.GONE
+                    binding.pinnedSection?.visibility = View.GONE
 
                     if (querySnapshot?.metadata?.isFromCache == true) {
                         Log.d(TAG, "No cached journals found")
@@ -238,21 +214,52 @@ class JournalListActivity : AppCompatActivity() {
             }
     }
 
-    private fun displayJournals(journals: List<Journal>) {
-        journalList.clear()
-        journalList.addAll(journals)
+    private fun processJournals(journals: List<Journal>) {
+        pinnedJournals.clear()
+        unpinnedJournals.clear()
 
-        // Set up adapter if not already set
-        if (!::adapter.isInitialized) {
-            adapter = JournalRecyclerAdapter(this, journalList)
-            binding.recyclerView.adapter = adapter
-        } else {
-            adapter.notifyDataSetChanged()
+        for (journal in journals) {
+            if (journal.isPinned) {
+                pinnedJournals.add(journal)
+            } else {
+                unpinnedJournals.add(journal)
+            }
         }
 
-        binding.recyclerView.visibility = View.VISIBLE
-        binding.NoPostTv.visibility = View.GONE
-        binding.progressBar.visibility = View.GONE
+        updateUI()
+    }
+
+    private fun updateUI() {
+        // Pinned section
+        if (pinnedJournals.isEmpty()) {
+            binding.pinnedSection?.visibility = View.GONE
+        } else {
+            binding.pinnedSection?.visibility = View.VISIBLE
+            pinnedAdapter.notifyDataSetChanged()
+        }
+
+        // Unpinned section
+        if (unpinnedJournals.isEmpty() && pinnedJournals.isEmpty()) {
+            binding.NoPostTv.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
+            binding.othersSection?.visibility = View.GONE
+        } else if (unpinnedJournals.isEmpty()) {
+            binding.recyclerView.visibility = View.GONE
+            binding.othersSection?.visibility = View.GONE
+            binding.NoPostTv.visibility = View.GONE
+        } else {
+            binding.recyclerView.visibility = View.VISIBLE
+            binding.othersSection?.visibility = View.VISIBLE
+            binding.NoPostTv.visibility = View.GONE
+
+            if (pinnedJournals.isEmpty()) {
+                binding.othersSectionTitle?.visibility = View.GONE
+            } else {
+                binding.othersSectionTitle?.visibility = View.VISIBLE
+            }
+
+            unpinnedAdapter.notifyDataSetChanged()
+        }
     }
 
     private fun saveUsername(username: String) {
@@ -302,42 +309,18 @@ class JournalListActivity : AppCompatActivity() {
             }
         }
 
-        // Show "No Posts" message on error if list is empty
-        if (journalList.isEmpty()) {
+        if (pinnedJournals.isEmpty() && unpinnedJournals.isEmpty()) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
+            binding.pinnedSection?.visibility = View.GONE
         }
     }
 
-    /**
-     * Called from adapter when a journal is deleted
-     */
     fun onJournalDeleted() {
-        if (journalList.isEmpty()) {
+        if (pinnedJournals.isEmpty() && unpinnedJournals.isEmpty()) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
+            binding.pinnedSection?.visibility = View.GONE
         }
-    }
-
-    /**
-     * Manual refresh method (can be called from pull-to-refresh)
-     */
-    private fun refreshJournals() {
-        collectionReference
-            .whereEqualTo("userId", user.uid)
-            .orderBy("timeAdded", Query.Direction.DESCENDING)
-            .get(Source.SERVER)
-            .addOnSuccessListener { querySnapshot ->
-                Log.d(TAG, "Manual refresh completed")
-                // Real-time listener will handle the update
-            }
-            .addOnFailureListener { exception ->
-                Log.e(TAG, "Manual refresh failed", exception)
-                Toast.makeText(
-                    this,
-                    "Failed to refresh: ${exception.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
     }
 }

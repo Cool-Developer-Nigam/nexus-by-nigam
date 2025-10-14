@@ -1,19 +1,9 @@
 package com.nigdroid.journal
 
-import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.Editable
-import android.text.Spannable
-import android.text.TextWatcher
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
-import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -21,6 +11,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.nigdroid.journal.databinding.ActivityAddTextNoteBinding
 import com.nigdroid.journal.databinding.DialogConfirmDeleteBinding
+import com.nigdroid.journal.utils.TextFormattingHelper
+import com.nigdroid.journal.utils.BackgroundColorHelper
 
 class AddTextNoteActivity : AppCompatActivity() {
 
@@ -32,21 +24,10 @@ class AddTextNoteActivity : AppCompatActivity() {
     private var isPinned = false
     private var isEditMode = false
 
-    private var sharedBackgroundColor = "#FFFFFF"
-
-    // Title formatting states
-    private var titleTextColor = "#000000"
-    private var isTitleBold = false
-    private var isTitleItalic = false
-    private var isTitleUnderline = false
-
-    // Content formatting states
-    private var contentTextColor = "#000000"
-    private var isContentBold = false
-    private var isContentItalic = false
-    private var isContentUnderline = false
-
-    private var isApplyingFormatting = false
+    // Formatting helpers
+    private lateinit var titleFormattingHelper: TextFormattingHelper
+    private lateinit var contentFormattingHelper: TextFormattingHelper
+    private lateinit var backgroundColorHelper: BackgroundColorHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +40,8 @@ class AddTextNoteActivity : AppCompatActivity() {
 
         setupToolbar()
         setupFormatting()
-        setupClickListeners()
         setupFocusListeners()
+        setupClickListeners()
 
         if (isEditMode) {
             loadNoteData()
@@ -89,6 +70,37 @@ class AddTextNoteActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFormatting() {
+        // Title formatting helper
+        titleFormattingHelper = TextFormattingHelper(
+            editText = binding.etTitle,
+            boldButton = binding.btnTitleBold,
+            italicButton = binding.btnTitleItalic,
+            underlineButton = binding.btnTitleUnderline,
+            textColorButton = binding.btnTitleTextColor
+        )
+
+        // Content formatting helper
+        contentFormattingHelper = TextFormattingHelper(
+            editText = binding.etContent,
+            boldButton = binding.btnContentBold,
+            italicButton = binding.btnContentItalic,
+            underlineButton = binding.btnContentUnderline,
+            textColorButton = binding.btnContentTextColor
+        )
+
+        // Background color helper
+        backgroundColorHelper = BackgroundColorHelper(
+            targetView = binding.noteContainer,
+            colorButton = binding.btnTitleBackgroundColor
+        )
+
+        // Also link content background button
+        binding.btnContentBackgroundColor.setOnClickListener {
+            backgroundColorHelper.showColorPicker()
+        }
+    }
+
     private fun setupFocusListeners() {
         binding.etTitle.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -105,16 +117,12 @@ class AddTextNoteActivity : AppCompatActivity() {
                 hideContentFormattingToolbar()
             }
         }
-
-        // Set up text watchers
-        setupTextWatcher(binding.etTitle, true)
-        setupTextWatcher(binding.etContent, false)
     }
 
     private fun showTitleFormattingToolbar() {
         binding.titleFormattingToolbar.visibility = View.VISIBLE
         binding.contentFormattingToolbar.visibility = View.GONE
-        updateTitleFormattingButtons()
+        titleFormattingHelper.updateButtonStates()
     }
 
     private fun hideTitleFormattingToolbar() {
@@ -124,267 +132,11 @@ class AddTextNoteActivity : AppCompatActivity() {
     private fun showContentFormattingToolbar() {
         binding.contentFormattingToolbar.visibility = View.VISIBLE
         binding.titleFormattingToolbar.visibility = View.GONE
-        updateContentFormattingButtons()
+        contentFormattingHelper.updateButtonStates()
     }
 
     private fun hideContentFormattingToolbar() {
         binding.contentFormattingToolbar.visibility = View.GONE
-    }
-
-    private fun updateTitleFormattingButtons() {
-        updateFormattingButtonState(binding.btnTitleBold, isTitleBold)
-        updateFormattingButtonState(binding.btnTitleItalic, isTitleItalic)
-        updateFormattingButtonState(binding.btnTitleUnderline, isTitleUnderline)
-        binding.btnTitleTextColor.setColorFilter(Color.parseColor(titleTextColor))
-    }
-
-    private fun updateContentFormattingButtons() {
-        updateFormattingButtonState(binding.btnContentBold, isContentBold)
-        updateFormattingButtonState(binding.btnContentItalic, isContentItalic)
-        updateFormattingButtonState(binding.btnContentUnderline, isContentUnderline)
-        binding.btnContentTextColor.setColorFilter(Color.parseColor(contentTextColor))
-    }
-
-    private fun setupFormatting() {
-        // Title formatting buttons
-        binding.btnTitleBold.setOnClickListener {
-            isTitleBold = !isTitleBold
-            updateFormattingButtonState(binding.btnTitleBold, isTitleBold)
-            applyFormattingToSelection(binding.etTitle, true)
-        }
-
-        binding.btnTitleItalic.setOnClickListener {
-            isTitleItalic = !isTitleItalic
-            updateFormattingButtonState(binding.btnTitleItalic, isTitleItalic)
-            applyFormattingToSelection(binding.etTitle, true)
-        }
-
-        binding.btnTitleUnderline.setOnClickListener {
-            isTitleUnderline = !isTitleUnderline
-            updateFormattingButtonState(binding.btnTitleUnderline, isTitleUnderline)
-            applyFormattingToSelection(binding.etTitle, true)
-        }
-
-        binding.btnTitleTextColor.setOnClickListener {
-            showColorPicker(true, true)
-        }
-
-        binding.btnTitleBackgroundColor.setOnClickListener {
-            showColorPicker(false, true)
-        }
-
-        // Content formatting buttons
-        binding.btnContentBold.setOnClickListener {
-            isContentBold = !isContentBold
-            updateFormattingButtonState(binding.btnContentBold, isContentBold)
-            applyFormattingToSelection(binding.etContent, false)
-        }
-
-        binding.btnContentItalic.setOnClickListener {
-            isContentItalic = !isContentItalic
-            updateFormattingButtonState(binding.btnContentItalic, isContentItalic)
-            applyFormattingToSelection(binding.etContent, false)
-        }
-
-        binding.btnContentUnderline.setOnClickListener {
-            isContentUnderline = !isContentUnderline
-            updateFormattingButtonState(binding.btnContentUnderline, isContentUnderline)
-            applyFormattingToSelection(binding.etContent, false)
-        }
-
-        binding.btnContentTextColor.setOnClickListener {
-            showColorPicker(true, false)
-        }
-
-        binding.btnContentBackgroundColor.setOnClickListener {
-            showColorPicker(false, false)
-        }
-    }
-
-    private fun updateFormattingButtonState(button: View, isActive: Boolean) {
-        if (isActive) {
-            button.setBackgroundResource(R.drawable.formatting_button_active)
-        } else {
-            button.setBackgroundResource(R.drawable.formatting_button_normal)
-        }
-    }
-
-    private fun setupTextWatcher(editText: EditText, isTitle: Boolean) {
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (count > 0 && !isApplyingFormatting && editText.hasFocus()) {
-                    applyFormattingToNewText(editText, start, start + count, isTitle)
-                }
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        })
-    }
-
-    private fun applyFormattingToNewText(editText: EditText, start: Int, end: Int, isTitle: Boolean) {
-        if (start >= end) return
-
-        isApplyingFormatting = true
-        val spannable = editText.text ?: return
-
-        val isBold = if (isTitle) isTitleBold else isContentBold
-        val isItalic = if (isTitle) isTitleItalic else isContentItalic
-        val isUnderline = if (isTitle) isTitleUnderline else isContentUnderline
-        val textColor = if (isTitle) titleTextColor else contentTextColor
-
-        var style = Typeface.NORMAL
-        if (isBold && isItalic) {
-            style = Typeface.BOLD_ITALIC
-        } else if (isBold) {
-            style = Typeface.BOLD
-        } else if (isItalic) {
-            style = Typeface.ITALIC
-        }
-
-        if (style != Typeface.NORMAL) {
-            spannable.setSpan(
-                StyleSpan(style),
-                start,
-                end,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-
-        if (isUnderline) {
-            spannable.setSpan(
-                UnderlineSpan(),
-                start,
-                end,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-
-        if (textColor != "#000000") {
-            spannable.setSpan(
-                ForegroundColorSpan(Color.parseColor(textColor)),
-                start,
-                end,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-        }
-
-        isApplyingFormatting = false
-    }
-
-    private fun applyFormattingToSelection(editText: EditText, isTitle: Boolean) {
-        val start = editText.selectionStart
-        val end = editText.selectionEnd
-
-        val isBold = if (isTitle) isTitleBold else isContentBold
-        val isItalic = if (isTitle) isTitleItalic else isContentItalic
-        val isUnderline = if (isTitle) isTitleUnderline else isContentUnderline
-        val textColor = if (isTitle) titleTextColor else contentTextColor
-
-        if (start >= 0 && end > start) {
-            val spannable = editText.text ?: return
-
-            val styleSpans = spannable.getSpans(start, end, StyleSpan::class.java)
-            for (span in styleSpans) {
-                spannable.removeSpan(span)
-            }
-
-            val underlineSpans = spannable.getSpans(start, end, UnderlineSpan::class.java)
-            for (span in underlineSpans) {
-                spannable.removeSpan(span)
-            }
-
-            var style = Typeface.NORMAL
-            if (isBold && isItalic) {
-                style = Typeface.BOLD_ITALIC
-            } else if (isBold) {
-                style = Typeface.BOLD
-            } else if (isItalic) {
-                style = Typeface.ITALIC
-            }
-
-            if (style != Typeface.NORMAL) {
-                spannable.setSpan(
-                    StyleSpan(style),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-
-            if (isUnderline) {
-                spannable.setSpan(
-                    UnderlineSpan(),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-
-            if (textColor != "#000000") {
-                val colorSpans = spannable.getSpans(start, end, ForegroundColorSpan::class.java)
-                for (span in colorSpans) {
-                    spannable.removeSpan(span)
-                }
-
-                spannable.setSpan(
-                    ForegroundColorSpan(Color.parseColor(textColor)),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-            }
-
-            editText.setSelection(end)
-        }
-    }
-
-    private fun showColorPicker(isTextColor: Boolean, isForTitle: Boolean) {
-        val colors = arrayOf(
-            "#000000" to "Black",
-            "#FF0000" to "Red",
-            "#00FF00" to "Green",
-            "#0000FF" to "Blue",
-            "#FFFF00" to "Yellow",
-            "#FF00FF" to "Magenta",
-            "#00FFFF" to "Cyan",
-            "#FFA500" to "Orange",
-            "#800080" to "Purple",
-            "#FFC0CB" to "Pink",
-            "#A52A2A" to "Brown",
-            "#808080" to "Gray",
-            "#FFFFFF" to "White"
-        )
-
-        val colorNames = colors.map { it.second }.toTypedArray()
-
-        val title = if (isTextColor) {
-            if (isForTitle) "Select Title Text Color" else "Select Content Text Color"
-        } else {
-            "Select Background Color"
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setItems(colorNames) { _, which ->
-                val selectedColor = colors[which].first
-                if (isTextColor) {
-                    if (isForTitle) {
-                        titleTextColor = selectedColor
-                        binding.btnTitleTextColor.setColorFilter(Color.parseColor(selectedColor))
-                        applyFormattingToSelection(binding.etTitle, true)
-                    } else {
-                        contentTextColor = selectedColor
-                        binding.btnContentTextColor.setColorFilter(Color.parseColor(selectedColor))
-                        applyFormattingToSelection(binding.etContent, false)
-                    }
-                } else {
-                    sharedBackgroundColor = selectedColor
-                    binding.noteContainer.setBackgroundColor(Color.parseColor(selectedColor))
-                }
-            }
-            .show()
     }
 
     private fun setupClickListeners() {
@@ -408,15 +160,21 @@ class AddTextNoteActivity : AppCompatActivity() {
                     if (document.exists()) {
                         val note = document.toObject(TextNote::class.java)
                         note?.let {
-                            binding.etTitle.setText(android.text.Html.fromHtml(it.title, android.text.Html.FROM_HTML_MODE_COMPACT))
-                            binding.etContent.setText(android.text.Html.fromHtml(it.content, android.text.Html.FROM_HTML_MODE_COMPACT))
+                            binding.etTitle.setText(
+                                android.text.Html.fromHtml(
+                                    it.title,
+                                    android.text.Html.FROM_HTML_MODE_COMPACT
+                                )
+                            )
+                            binding.etContent.setText(
+                                android.text.Html.fromHtml(
+                                    it.content,
+                                    android.text.Html.FROM_HTML_MODE_COMPACT
+                                )
+                            )
 
-                            titleTextColor = it.textColor
-                            contentTextColor = it.textColor
-                            sharedBackgroundColor = it.backgroundColor
+                            backgroundColorHelper.setBackgroundColor(it.backgroundColor)
                             isPinned = it.isPinned
-
-                            binding.noteContainer.setBackgroundColor(Color.parseColor(sharedBackgroundColor))
                             updatePinIcon()
                         }
                     }
@@ -428,8 +186,14 @@ class AddTextNoteActivity : AppCompatActivity() {
     }
 
     private fun saveNote() {
-        val title = android.text.Html.toHtml(binding.etTitle.text as android.text.Spanned, android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE)
-        val content = android.text.Html.toHtml(binding.etContent.text as android.text.Spanned, android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE)
+        val title = android.text.Html.toHtml(
+            binding.etTitle.text as android.text.Spanned,
+            android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
+        )
+        val content = android.text.Html.toHtml(
+            binding.etContent.text as android.text.Spanned,
+            android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
+        )
 
         if (title.trim().isEmpty() && content.trim().isEmpty()) {
             Toast.makeText(this, "Please add a title or content", Toast.LENGTH_SHORT).show()
@@ -448,8 +212,8 @@ class AddTextNoteActivity : AppCompatActivity() {
             id = noteId ?: "",
             title = title,
             content = content,
-            textColor = contentTextColor,
-            backgroundColor = sharedBackgroundColor,
+            textColor = contentFormattingHelper.textColor,
+            backgroundColor = backgroundColorHelper.backgroundColor,
             userId = user.uid,
             username = username,
             timeAdded = if (isEditMode) intent.getLongExtra("TIME_ADDED", currentTime) else currentTime,
@@ -486,8 +250,6 @@ class AddTextNoteActivity : AppCompatActivity() {
 
     private fun showDeleteConfirmationDialog() {
         val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
-
-        // Use data binding
         val dialogBinding = DialogConfirmDeleteBinding.inflate(LayoutInflater.from(this))
 
         dialogBinding.btnDelete.setOnClickListener {

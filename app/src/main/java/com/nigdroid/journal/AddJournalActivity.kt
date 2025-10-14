@@ -24,6 +24,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.nigdroid.journal.databinding.ActivityAddJournalBinding
 import com.nigdroid.journal.databinding.DialogConfirmImageBinding
+import com.nigdroid.journal.utils.TextFormattingHelper
+import com.nigdroid.journal.utils.BackgroundColorHelper
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -31,22 +33,25 @@ import android.util.Log
 
 class AddJournalActivity : AppCompatActivity() {
     lateinit var binding: ActivityAddJournalBinding
+    lateinit var toolbarBinding: com.nigdroid.journal.databinding.ToolbarAddJournalBinding
 
     private lateinit var toolbar: Toolbar
-    // Credential
     var currentUserId: String = ""
     var currentUserName: String = ""
 
-    // Firebase firestore
     var db: FirebaseFirestore = FirebaseFirestore.getInstance()
     lateinit var storageReference: StorageReference
     var collectionReference: CollectionReference = db.collection("Journal")
 
     var imageUri: Uri? = null
-
-    // Firebase authentication
     lateinit var auth: FirebaseAuth
     lateinit var user: FirebaseUser
+
+    private var titleFormattingHelper: TextFormattingHelper? = null
+    private var thoughtsFormattingHelper: TextFormattingHelper? = null
+    private var backgroundColorHelper: BackgroundColorHelper? = null
+
+    private var isPinned = false
 
     companion object {
         private const val TAG = "AddJournalActivity"
@@ -58,9 +63,8 @@ class AddJournalActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_journal)
 
         setupCustomToolbar()
-
-        // Setup thoughts EditText scrolling behavior
         setupThoughtsEditTextScrolling()
+        setupFormatting()
 
         storageReference = FirebaseStorage.getInstance().reference
         auth = Firebase.auth
@@ -80,16 +84,11 @@ class AddJournalActivity : AppCompatActivity() {
             }
 
             postCameraButton.setOnClickListener {
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "image/*"
-                startActivityForResult(intent, 1)
+                pickImage()
             }
 
-            // Also allow clicking on the displayed image to change it
             displayImage.setOnClickListener {
-                val intent = Intent(Intent.ACTION_GET_CONTENT)
-                intent.type = "image/*"
-                startActivityForResult(intent, 1)
+                pickImage()
             }
 
             PostSaveJournalButton.setOnClickListener {
@@ -101,31 +100,89 @@ class AddJournalActivity : AppCompatActivity() {
     private fun setupCustomToolbar() {
         toolbar = binding.toolbarLayout.toolbar
         setSupportActionBar(toolbar)
-
-        // Hide default title
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.toolbarLayout.save.setOnClickListener {
-            saveJournal()
+        binding.toolbarLayout.apply {
+            save.setOnClickListener {
+                saveJournal()
+            }
+
+            backBtn.setOnClickListener {
+                startActivity(Intent(this@AddJournalActivity, JournalListActivity::class.java))
+                finish()
+            }
+
+            btnPin.setOnClickListener {
+                isPinned = !isPinned
+                updatePinIcon()
+            }
         }
-        binding.toolbarLayout.backBtn.setOnClickListener {
-            startActivity(Intent(this, JournalListActivity::class.java))
-            finish()
+
+        updatePinIcon()
+    }
+
+    private fun updatePinIcon() {
+        binding.toolbarLayout.btnPin.setImageResource(
+            if (isPinned) R.drawable.ic_pin else R.drawable.ic_pin_outline
+        )
+    }
+
+    private fun pickImage() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        startActivityForResult(intent, 1)
+    }
+
+    private fun setupFormatting() {
+        binding.titleFormattingToolbar?.let { toolbar ->
+            titleFormattingHelper = TextFormattingHelper(
+                editText = binding.etPostTitle,
+                boldButton = toolbar.findViewById(R.id.btnTitleBold),
+                italicButton = toolbar.findViewById(R.id.btnTitleItalic),
+                underlineButton = toolbar.findViewById(R.id.btnTitleUnderline),
+                textColorButton = toolbar.findViewById(R.id.btnTitleTextColor)
+            )
+        }
+
+        binding.thoughtsFormattingToolbar?.let { toolbar ->
+            thoughtsFormattingHelper = TextFormattingHelper(
+                editText = binding.etThoughts,
+                boldButton = toolbar.findViewById(R.id.btnThoughtsBold),
+                italicButton = toolbar.findViewById(R.id.btnThoughtsItalic),
+                underlineButton = toolbar.findViewById(R.id.btnThoughtsUnderline),
+                textColorButton = toolbar.findViewById(R.id.btnThoughtsTextColor)
+            )
+        }
+
+        binding.journalContainer?.let { container ->
+            binding.btnBackgroundColor?.let { button ->
+                backgroundColorHelper = BackgroundColorHelper(
+                    targetView = container,
+                    colorButton = button
+                )
+            }
+        }
+
+        binding.etPostTitle.setOnFocusChangeListener { _, hasFocus ->
+            binding.titleFormattingToolbar?.visibility = if (hasFocus) View.VISIBLE else View.GONE
+            binding.thoughtsFormattingToolbar?.visibility = View.GONE
+        }
+
+        binding.etThoughts.setOnFocusChangeListener { _, hasFocus ->
+            binding.thoughtsFormattingToolbar?.visibility = if (hasFocus) View.VISIBLE else View.GONE
+            binding.titleFormattingToolbar?.visibility = View.GONE
         }
     }
 
     private fun setupThoughtsEditTextScrolling() {
         binding.etThoughts.addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
             override fun afterTextChanged(s: android.text.Editable?) {
                 scrollToCursorPosition()
             }
         })
 
-        // Allow EditText to scroll independently
         binding.etThoughts.setOnTouchListener { v, event ->
             handleEditTextTouch(v, event)
         }
@@ -151,16 +208,30 @@ class AddJournalActivity : AppCompatActivity() {
     }
 
     private fun saveJournal() {
-        val title: String = binding.etPostTitle.text.toString().trim()
-        val thoughts: String = binding.etThoughts.text.toString().trim()
+        val title = if (titleFormattingHelper != null) {
+            android.text.Html.toHtml(
+                binding.etPostTitle.text as android.text.Spanned,
+                android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
+            )
+        } else {
+            binding.etPostTitle.text.toString().trim()
+        }
 
-        // Validate inputs
-        if (TextUtils.isEmpty(title)) {
+        val thoughts = if (thoughtsFormattingHelper != null) {
+            android.text.Html.toHtml(
+                binding.etThoughts.text as android.text.Spanned,
+                android.text.Html.TO_HTML_PARAGRAPH_LINES_CONSECUTIVE
+            )
+        } else {
+            binding.etThoughts.text.toString().trim()
+        }
+
+        if (TextUtils.isEmpty(title.trim())) {
             binding.etPostTitle.error = "Title is required"
             return
         }
 
-        if (TextUtils.isEmpty(thoughts)) {
+        if (TextUtils.isEmpty(thoughts.trim())) {
             binding.etThoughts.error = "Thoughts are required"
             return
         }
@@ -171,8 +242,6 @@ class AddJournalActivity : AppCompatActivity() {
         }
 
         binding.progressBar.visibility = View.VISIBLE
-
-        // Upload image first
         uploadImageAndSaveJournal(title, thoughts)
     }
 
@@ -195,7 +264,6 @@ class AddJournalActivity : AppCompatActivity() {
 
     private fun handleImageUploadError(exception: Exception) {
         binding.progressBar.visibility = View.INVISIBLE
-
         when (exception) {
             is FirebaseFirestoreException -> {
                 when (exception.code) {
@@ -230,22 +298,22 @@ class AddJournalActivity : AppCompatActivity() {
         val timestamp: String = sdf.format(date)
 
         val journal = Journal(
-            title,
-            thoughts,
-            imageUrl,
-            currentUserId,
-            timestamp,
-            currentUserName
+            title = title,
+            thoughts = thoughts,
+            imageUrl = imageUrl,
+            userId = currentUserId,
+            timeAdded = timestamp,
+            username = currentUserName,
+            textColor = thoughtsFormattingHelper?.textColor ?: "#000000",
+            backgroundColor = backgroundColorHelper?.backgroundColor ?: "#FFFFFF",
+            isPinned = isPinned
         )
 
-        // This will be queued offline and synced when online
         collectionReference.add(journal)
             .addOnSuccessListener {
                 binding.progressBar.visibility = View.INVISIBLE
-
                 Log.d(TAG, "Journal saved successfully")
                 Toast.makeText(this, "Journal saved successfully", Toast.LENGTH_SHORT).show()
-
                 startActivity(Intent(this, JournalListActivity::class.java))
                 finish()
             }
@@ -256,7 +324,6 @@ class AddJournalActivity : AppCompatActivity() {
 
     private fun handleSaveError(exception: Exception) {
         binding.progressBar.visibility = View.INVISIBLE
-
         when (exception) {
             is FirebaseFirestoreException -> {
                 when (exception.code) {
@@ -267,7 +334,6 @@ class AddJournalActivity : AppCompatActivity() {
                             "You're offline. Changes will sync when online.",
                             Toast.LENGTH_LONG
                         ).show()
-                        // Still finish activity as save is queued
                         startActivity(Intent(this, JournalListActivity::class.java))
                         finish()
                     }
@@ -313,25 +379,19 @@ class AddJournalActivity : AppCompatActivity() {
 
     private fun showImageConfirmationDialog(selectedUri: Uri) {
         val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
-
         val dialogBinding = DialogConfirmImageBinding.inflate(layoutInflater)
 
         dialogBinding.btnConfirmYes.setOnClickListener {
             imageUri = selectedUri
-
             binding.displayImage.setImageURI(imageUri)
             binding.displayImage.visibility = View.VISIBLE
             binding.postCameraButton.visibility = View.GONE
-
             dialog.dismiss()
         }
 
         dialogBinding.btnConfirmNo.setOnClickListener {
             dialog.dismiss()
-            // Reopen gallery
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
-            startActivityForResult(intent, 1)
+            pickImage()
         }
 
         dialog.setContentView(dialogBinding.root)
@@ -342,9 +402,5 @@ class AddJournalActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         user = auth.currentUser!!
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 }

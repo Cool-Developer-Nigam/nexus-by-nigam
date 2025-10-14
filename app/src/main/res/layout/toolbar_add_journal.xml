@@ -1,48 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:elevation="4dp"
-        android:background="@android:color/transparent">
+        android:backgroundTint="@color/semi_trans">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/toolbar_bg"
-            android:layout_marginHorizontal="16dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            app:contentInsetStart="0dp"
-            app:contentInsetEnd="0dp"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            android:backgroundTint="@color/semi_trans">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <LinearLayout
-                    android:id="@+id/back_btn"
+                    android:id="@+id/backBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="3dp"
                     android:background="@drawable/edt_txt_bg"
                     android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    android:padding="3dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginStart="12dp"
                         android:src="@drawable/back_logo"
+                        android:contentDescription="Back"
                         app:tint="@color/black" />
 
                     <TextView
@@ -55,41 +45,45 @@
                         android:textSize="20sp" />
                 </LinearLayout>
 
-                <!-- Sign Out Button -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
                 <LinearLayout
-                    android:id="@+id/save"
+                    android:id="@+id/actionButtonsContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:orientation="horizontal"
-                    android:padding="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/edt_txt_bg"
+                    android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/icons_save"
-                        android:contentDescription="@string/sign_out" />
-
-                    <TextView
+                    <ImageButton
+                        android:id="@+id/btnPin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="0dp"
-                        android:text="save"
-                        android:layout_gravity="center_vertical"
-                        android:textStyle="bold"
-                        android:textColor="@color/cream"
-                        android:textSize="16sp" />
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Pin"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_pin_outline"
+                        app:tint="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/save"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Save"
+                        android:padding="12dp"
+                        android:src="@drawable/icons_save"
+                        />
 
                 </LinearLayout>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
+
 </layout>

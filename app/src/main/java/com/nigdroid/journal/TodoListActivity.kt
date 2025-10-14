@@ -67,6 +67,7 @@ class TodoListActivity : AppCompatActivity() {
 
         binding.toolbarLayout.signout.setOnClickListener {
             showDeleteConfirmationDialog()
+
         }
         binding.toolbarLayout.backBtn.setOnClickListener {
             onBackPressed()

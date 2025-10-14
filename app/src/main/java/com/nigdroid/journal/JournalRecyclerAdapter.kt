@@ -1,6 +1,9 @@
 package com.nigdroid.journal
 
 import android.content.Context
+import android.graphics.Color
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -53,7 +56,28 @@ class JournalRecyclerAdapter(
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val journal = journalList[position]
-        holder.bind(journal)
+
+        // Handle HTML in title
+        val titleText = if (journal.title.contains("<")) {
+            Html.fromHtml(journal.title, Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            journal.title
+        }
+
+        // Handle HTML in thoughts/content
+        val thoughtsText = if (journal.thoughts.contains("<")) {
+            Html.fromHtml(journal.thoughts, Html.FROM_HTML_MODE_COMPACT)
+        } else {
+            journal.thoughts
+        }
+
+        // Create a modified journal object with clean text
+        val cleanJournal = journal.copy(
+            title = if (titleText is Spanned) titleText.trim().toString() else titleText.toString(),
+            thoughts = if (thoughtsText is Spanned) thoughtsText.trim().toString() else thoughtsText.toString()
+        )
+
+        holder.bind(cleanJournal)
 
         // Set up delete button click listener
         holder.binding.deleteBtn.setOnClickListener {
@@ -263,5 +287,27 @@ class JournalRecyclerAdapter(
     fun isUsingOfflineCache(): Boolean {
         // This can be checked via metadata when querying
         return false // Placeholder - check in actual query results
+    }
+
+    /**
+     * Extension function to trim Spanned text
+     */
+    private fun Spanned.trim(): CharSequence {
+        var start = 0
+        var end = length
+
+        while (start < end && Character.isWhitespace(this[start])) {
+            start++
+        }
+
+        while (end > start && Character.isWhitespace(this[end - 1])) {
+            end--
+        }
+
+        return if (start > 0 || end < length) {
+            subSequence(start, end)
+        } else {
+            this
+        }
     }
 }

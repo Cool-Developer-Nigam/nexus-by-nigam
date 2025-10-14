@@ -47,6 +47,7 @@
         <activity
             android:name=".EditJournalActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.Transparent" />
         <activity
             android:name=".Show_Journal"
@@ -54,7 +55,7 @@
         <activity
             android:name=".AddJournalActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".JournalListActivity"
             android:exported="false" />
