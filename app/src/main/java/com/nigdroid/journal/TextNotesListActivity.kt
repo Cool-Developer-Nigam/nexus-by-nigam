@@ -161,7 +161,7 @@ class TextNotesListActivity : AppCompatActivity() {
             binding.pinnedSection.visibility = View.GONE
         } else {
             binding.pinnedSection.visibility = View.VISIBLE
-            pinnedAdapter.updateList(pinnedNotes)
+            pinnedAdapter.notifyDataSetChanged()
         }
 
         // Unpinned section
@@ -181,7 +181,7 @@ class TextNotesListActivity : AppCompatActivity() {
                 binding.othersSectionTitle.visibility = View.VISIBLE
             }
 
-            unpinnedAdapter.updateList(unpinnedNotes)
+            unpinnedAdapter.notifyDataSetChanged()
         }
     }
 }

@@ -170,7 +170,7 @@ class TodoListActivity : AppCompatActivity() {
             binding.pinnedSection.visibility = View.GONE
         } else {
             binding.pinnedSection.visibility = View.VISIBLE
-            pinnedAdapter.updateList(pinnedTodos)
+            pinnedAdapter.notifyDataSetChanged()
         }
 
         // Unpinned section
@@ -191,7 +191,7 @@ class TodoListActivity : AppCompatActivity() {
                 binding.othersSectionTitle.visibility = View.VISIBLE
             }
 
-            unpinnedAdapter.updateList(unpinnedTodos)
+            unpinnedAdapter.notifyDataSetChanged()
         }
     }
 }

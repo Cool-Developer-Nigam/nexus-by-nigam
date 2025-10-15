@@ -641,8 +641,12 @@ class UnifiedNotesAdapter(
     // ==================== Public Methods ====================
 
     fun updateList(newList: List<UnifiedNoteItem>) {
-        notesList.clear()
+        if (notesList.size > 0) {
+            val oldSize = notesList.size
+            notesList.clear()
+            notifyItemRangeRemoved(0, oldSize)
+        }
         notesList.addAll(newList)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(0, newList.size)
     }
 }

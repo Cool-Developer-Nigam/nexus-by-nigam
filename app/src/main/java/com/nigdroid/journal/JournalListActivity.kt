@@ -86,6 +86,7 @@ class JournalListActivity : AppCompatActivity() {
         pinnedAdapter = UnifiedNotesAdapter(this, pinnedNotes)
         binding.pinnedRecyclerView?.adapter = pinnedAdapter
 
+
         // Unpinned journals - Linear layout
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -247,7 +248,7 @@ class JournalListActivity : AppCompatActivity() {
             binding.pinnedSection?.visibility = View.GONE
         } else {
             binding.pinnedSection?.visibility = View.VISIBLE
-            pinnedAdapter.updateList(pinnedNotes)
+            pinnedAdapter.notifyDataSetChanged()  // ← Use this instead
         }
 
         // Unpinned section
@@ -270,7 +271,7 @@ class JournalListActivity : AppCompatActivity() {
                 binding.othersSectionTitle?.visibility = View.VISIBLE
             }
 
-            unpinnedAdapter.updateList(unpinnedNotes)
+            unpinnedAdapter.notifyDataSetChanged()  // ← Use this instead
         }
     }
 
