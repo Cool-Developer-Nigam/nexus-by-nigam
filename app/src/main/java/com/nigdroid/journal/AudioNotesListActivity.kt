@@ -26,11 +26,11 @@ class AudioNotesListActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private lateinit var collectionReference: CollectionReference
 
-    private val pinnedNotes = mutableListOf<AudioNote>()
-    private val unpinnedNotes = mutableListOf<AudioNote>()
+    private val pinnedNotes = mutableListOf<UnifiedNoteItem>()
+    private val unpinnedNotes = mutableListOf<UnifiedNoteItem>()
 
-    private lateinit var pinnedAdapter: AudioNotesRecyclerAdapter
-    private lateinit var unpinnedAdapter: AudioNotesRecyclerAdapter
+    private lateinit var pinnedAdapter: UnifiedNotesAdapter
+    private lateinit var unpinnedAdapter: UnifiedNotesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +61,6 @@ class AudioNotesListActivity : AppCompatActivity() {
 
         binding.toolbarLayout.signout.setOnClickListener {
             showDeleteConfirmationDialog()
-
         }
         binding.toolbarLayout.backBtn.setOnClickListener {
             onBackPressed()
@@ -95,23 +94,26 @@ class AudioNotesListActivity : AppCompatActivity() {
         // Pinned notes
         binding.pinnedRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        pinnedAdapter = AudioNotesRecyclerAdapter(this, pinnedNotes) { note ->
-            openAudioDetail(note)
-        }
+        pinnedAdapter = UnifiedNotesAdapter(this, pinnedNotes)
         binding.pinnedRecyclerView.adapter = pinnedAdapter
 
         // Unpinned notes
         binding.audioNotesRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        unpinnedAdapter = AudioNotesRecyclerAdapter(this, unpinnedNotes) { note ->
-            openAudioDetail(note)
-        }
+        unpinnedAdapter = UnifiedNotesAdapter(this, unpinnedNotes)
         binding.audioNotesRecyclerView.adapter = unpinnedAdapter
     }
 
     override fun onStart() {
         super.onStart()
         loadAudioNotes()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Release media player resources
+        pinnedAdapter.releasePlayer()
+        unpinnedAdapter.releasePlayer()
     }
 
     private fun loadAudioNotes() {
@@ -139,54 +141,51 @@ class AudioNotesListActivity : AppCompatActivity() {
                             id = document.id
                         )
 
+                        val noteItem = UnifiedNoteItem.AudioNoteItem(note)
+
                         if (note.isPinned) {
-                            pinnedNotes.add(note)
+                            pinnedNotes.add(noteItem)
                         } else {
-                            unpinnedNotes.add(note)
+                            unpinnedNotes.add(noteItem)
                         }
                     }
 
-                    // Update visibility
-                    if (pinnedNotes.isEmpty()) {
-                        binding.pinnedSection.visibility = View.GONE
-                    } else {
-                        binding.pinnedSection.visibility = View.VISIBLE
-                        pinnedAdapter.notifyDataSetChanged()
-                    }
-
-                    if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
-                        binding.emptyStateLayout.visibility = View.VISIBLE
-                        binding.othersSection.visibility = View.GONE
-                    } else if (unpinnedNotes.isEmpty()) {
-                        binding.othersSection.visibility = View.GONE
-                        binding.emptyStateLayout.visibility = View.GONE
-                    } else {
-                        binding.othersSection.visibility = View.VISIBLE
-                        binding.emptyStateLayout.visibility = View.GONE
-
-                        if (pinnedNotes.isEmpty()) {
-                            binding.othersSectionTitle.visibility = View.GONE
-                        } else {
-                            binding.othersSectionTitle.visibility = View.VISIBLE
-                        }
-
-                        unpinnedAdapter.notifyDataSetChanged()
-                    }
-
+                    updateUI()
                 } else {
-                    binding.emptyStateLayout.visibility = View.VISIBLE
-                    binding.pinnedSection.visibility = View.GONE
-                    binding.othersSection.visibility = View.GONE
+                    pinnedNotes.clear()
+                    unpinnedNotes.clear()
+                    updateUI()
                 }
             }
     }
 
-    private fun openAudioDetail(note: AudioNote) {
-        val intent = Intent(this, AddAudioNoteActivity::class.java).apply {
-            putExtra("AUDIO_NOTE_ID", note.id)
-            putExtra("AUDIO_TITLE", note.title)
-            putExtra("IS_PINNED", note.isPinned)
+    private fun updateUI() {
+        // Pinned section
+        if (pinnedNotes.isEmpty()) {
+            binding.pinnedSection.visibility = View.GONE
+        } else {
+            binding.pinnedSection.visibility = View.VISIBLE
+            pinnedAdapter.updateList(pinnedNotes)
         }
-        startActivity(intent)
+
+        // Unpinned section
+        if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
+            binding.emptyStateLayout.visibility = View.VISIBLE
+            binding.othersSection.visibility = View.GONE
+        } else if (unpinnedNotes.isEmpty()) {
+            binding.othersSection.visibility = View.GONE
+            binding.emptyStateLayout.visibility = View.GONE
+        } else {
+            binding.othersSection.visibility = View.VISIBLE
+            binding.emptyStateLayout.visibility = View.GONE
+
+            if (pinnedNotes.isEmpty()) {
+                binding.othersSectionTitle.visibility = View.GONE
+            } else {
+                binding.othersSectionTitle.visibility = View.VISIBLE
+            }
+
+            unpinnedAdapter.updateList(unpinnedNotes)
+        }
     }
 }

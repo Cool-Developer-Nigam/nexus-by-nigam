@@ -36,11 +36,11 @@ class JournalListActivity : AppCompatActivity() {
     private var db = FirebaseFirestore.getInstance()
     private var collectionReference: CollectionReference = db.collection("Journal")
 
-    private val pinnedJournals = mutableListOf<Journal>()
-    private val unpinnedJournals = mutableListOf<Journal>()
+    private val pinnedNotes = mutableListOf<UnifiedNoteItem>()
+    private val unpinnedNotes = mutableListOf<UnifiedNoteItem>()
 
-    private lateinit var pinnedAdapter: JournalRecyclerAdapter
-    private lateinit var unpinnedAdapter: JournalRecyclerAdapter
+    private lateinit var pinnedAdapter: UnifiedNotesAdapter
+    private lateinit var unpinnedAdapter: UnifiedNotesAdapter
     private var listenerRegistration: ListenerRegistration? = null
 
     companion object {
@@ -80,16 +80,16 @@ class JournalListActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerViews() {
-        // Pinned journals - check if pinnedRecyclerView exists
+        // Pinned journals - StaggeredGrid for better visual layout
         binding.pinnedRecyclerView?.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        pinnedAdapter = JournalRecyclerAdapter(this, pinnedJournals)
+        pinnedAdapter = UnifiedNotesAdapter(this, pinnedNotes)
         binding.pinnedRecyclerView?.adapter = pinnedAdapter
 
-        // Unpinned journals
+        // Unpinned journals - Linear layout
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        unpinnedAdapter = JournalRecyclerAdapter(this, unpinnedJournals)
+        unpinnedAdapter = UnifiedNotesAdapter(this, unpinnedNotes)
         binding.recyclerView.adapter = unpinnedAdapter
     }
 
@@ -122,6 +122,9 @@ class JournalListActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         listenerRegistration?.remove()
+        // Release media player resources
+        pinnedAdapter.releasePlayer()
+        unpinnedAdapter.releasePlayer()
     }
 
     private fun loadJournalsWithOfflineSupport() {
@@ -129,9 +132,10 @@ class JournalListActivity : AppCompatActivity() {
         binding.NoPostTv.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
         binding.pinnedSection?.visibility = View.GONE
+        binding.othersSection?.visibility = View.GONE
 
-        pinnedJournals.clear()
-        unpinnedJournals.clear()
+        pinnedNotes.clear()
+        unpinnedNotes.clear()
 
         loadFromCache()
     }
@@ -145,16 +149,21 @@ class JournalListActivity : AppCompatActivity() {
                 Log.d(TAG, "Loaded ${querySnapshot.size()} journals from cache")
 
                 if (!querySnapshot.isEmpty) {
-                    processJournals(querySnapshot.documents.mapNotNull { document ->
+                    val journals = querySnapshot.documents.mapNotNull { document ->
                         try {
-                            document.toObject(Journal::class.java)
+                            document.toObject(Journal::class.java) to document.id
                         } catch (e: Exception) {
                             Log.e(TAG, "Error parsing journal from cache", e)
                             null
                         }
-                    })
+                    }
 
-                    saveUsername(querySnapshot.documents[0].data?.get("username").toString())
+                    processJournals(journals as List<Pair<Journal, String>>)
+
+                    // Save username from first document if available
+                    querySnapshot.documents.firstOrNull()?.data?.get("username")?.toString()?.let {
+                        saveUsername(it)
+                    }
                 }
 
                 setupRealtimeListener()
@@ -186,24 +195,25 @@ class JournalListActivity : AppCompatActivity() {
                         Log.d(TAG, "Data loaded from server")
                     }
 
-                    saveUsername(querySnapshot.documents[0].data?.get("username").toString())
+                    // Save username from first document if available
+                    querySnapshot.documents.firstOrNull()?.data?.get("username")?.toString()?.let {
+                        saveUsername(it)
+                    }
 
                     val journals = querySnapshot.documents.mapNotNull { document ->
                         try {
-                            document.toObject(Journal::class.java)
+                            document.toObject(Journal::class.java) to document.id
                         } catch (e: Exception) {
                             Log.e(TAG, "Error parsing journal", e)
                             null
                         }
                     }
 
-                    processJournals(journals)
+                    processJournals(journals as List<Pair<Journal, String>>)
                 } else {
-                    pinnedJournals.clear()
-                    unpinnedJournals.clear()
-                    binding.NoPostTv.visibility = View.VISIBLE
-                    binding.recyclerView.visibility = View.GONE
-                    binding.pinnedSection?.visibility = View.GONE
+                    pinnedNotes.clear()
+                    unpinnedNotes.clear()
+                    updateUI()
 
                     if (querySnapshot?.metadata?.isFromCache == true) {
                         Log.d(TAG, "No cached journals found")
@@ -214,15 +224,17 @@ class JournalListActivity : AppCompatActivity() {
             }
     }
 
-    private fun processJournals(journals: List<Journal>) {
-        pinnedJournals.clear()
-        unpinnedJournals.clear()
+    private fun processJournals(journals: List<Pair<Journal, String>>) {
+        pinnedNotes.clear()
+        unpinnedNotes.clear()
 
-        for (journal in journals) {
+        for ((journal, documentId) in journals) {
+            val journalItem = UnifiedNoteItem.JournalItem(journal = journal, id = documentId)
+
             if (journal.isPinned) {
-                pinnedJournals.add(journal)
+                pinnedNotes.add(journalItem)
             } else {
-                unpinnedJournals.add(journal)
+                unpinnedNotes.add(journalItem)
             }
         }
 
@@ -231,19 +243,19 @@ class JournalListActivity : AppCompatActivity() {
 
     private fun updateUI() {
         // Pinned section
-        if (pinnedJournals.isEmpty()) {
+        if (pinnedNotes.isEmpty()) {
             binding.pinnedSection?.visibility = View.GONE
         } else {
             binding.pinnedSection?.visibility = View.VISIBLE
-            pinnedAdapter.notifyDataSetChanged()
+            pinnedAdapter.updateList(pinnedNotes)
         }
 
         // Unpinned section
-        if (unpinnedJournals.isEmpty() && pinnedJournals.isEmpty()) {
+        if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
             binding.othersSection?.visibility = View.GONE
-        } else if (unpinnedJournals.isEmpty()) {
+        } else if (unpinnedNotes.isEmpty()) {
             binding.recyclerView.visibility = View.GONE
             binding.othersSection?.visibility = View.GONE
             binding.NoPostTv.visibility = View.GONE
@@ -252,20 +264,22 @@ class JournalListActivity : AppCompatActivity() {
             binding.othersSection?.visibility = View.VISIBLE
             binding.NoPostTv.visibility = View.GONE
 
-            if (pinnedJournals.isEmpty()) {
+            if (pinnedNotes.isEmpty()) {
                 binding.othersSectionTitle?.visibility = View.GONE
             } else {
                 binding.othersSectionTitle?.visibility = View.VISIBLE
             }
 
-            unpinnedAdapter.notifyDataSetChanged()
+            unpinnedAdapter.updateList(unpinnedNotes)
         }
     }
 
     private fun saveUsername(username: String) {
-        val sharedPref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        sharedPref.edit {
-            putString(KEY_USERNAME, username)
+        if (username.isNotEmpty() && username != "null") {
+            val sharedPref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            sharedPref.edit {
+                putString(KEY_USERNAME, username)
+            }
         }
     }
 
@@ -309,18 +323,20 @@ class JournalListActivity : AppCompatActivity() {
             }
         }
 
-        if (pinnedJournals.isEmpty() && unpinnedJournals.isEmpty()) {
+        if (pinnedNotes.isEmpty() && unpinnedNotes.isEmpty()) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
             binding.pinnedSection?.visibility = View.GONE
+            binding.othersSection?.visibility = View.GONE
         }
     }
 
     fun onJournalDeleted() {
-        if (pinnedJournals.isEmpty() && unpinnedJournals.isEmpty()) {
+        if (pinnedNotes.isEmpty() && unpinnedNotes.isEmpty()) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
             binding.pinnedSection?.visibility = View.GONE
+            binding.othersSection?.visibility = View.GONE
         }
     }
 }

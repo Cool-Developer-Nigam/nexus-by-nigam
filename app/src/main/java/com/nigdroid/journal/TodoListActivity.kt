@@ -28,11 +28,11 @@ class TodoListActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var collectionReference: CollectionReference
 
-    private val pinnedTodos = mutableListOf<TodoItem>()
-    private val unpinnedTodos = mutableListOf<TodoItem>()
+    private val pinnedTodos = mutableListOf<UnifiedNoteItem>()
+    private val unpinnedTodos = mutableListOf<UnifiedNoteItem>()
 
-    private lateinit var pinnedAdapter: TodoRecyclerAdapter
-    private lateinit var unpinnedAdapter: TodoRecyclerAdapter
+    private lateinit var pinnedAdapter: UnifiedNotesAdapter
+    private lateinit var unpinnedAdapter: UnifiedNotesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,8 +56,6 @@ class TodoListActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun setupCustomToolbar() {
         toolbar = binding.toolbarLayout.toolbar
         setSupportActionBar(toolbar)
@@ -67,12 +65,13 @@ class TodoListActivity : AppCompatActivity() {
 
         binding.toolbarLayout.signout.setOnClickListener {
             showDeleteConfirmationDialog()
-
         }
+
         binding.toolbarLayout.backBtn.setOnClickListener {
             onBackPressed()
         }
     }
+
     private fun showDeleteConfirmationDialog() {
         val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
 
@@ -96,28 +95,30 @@ class TodoListActivity : AppCompatActivity() {
         dialog.show()
     }
 
-
     private fun setupRecyclerViews() {
         // Pinned todos
         binding.pinnedRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        pinnedAdapter = TodoRecyclerAdapter(this, pinnedTodos) { todo ->
-            openTodoDetail(todo)
-        }
+        pinnedAdapter = UnifiedNotesAdapter(this, pinnedTodos)
         binding.pinnedRecyclerView.adapter = pinnedAdapter
 
         // Unpinned todos
         binding.todosRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        unpinnedAdapter = TodoRecyclerAdapter(this, unpinnedTodos) { todo ->
-            openTodoDetail(todo)
-        }
+        unpinnedAdapter = UnifiedNotesAdapter(this, unpinnedTodos)
         binding.todosRecyclerView.adapter = unpinnedAdapter
     }
 
     override fun onStart() {
         super.onStart()
         loadTodos()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Release media player resources
+        pinnedAdapter.releasePlayer()
+        unpinnedAdapter.releasePlayer()
     }
 
     private fun loadTodos() {
@@ -145,55 +146,52 @@ class TodoListActivity : AppCompatActivity() {
                             id = document.id
                         )
 
+                        val todoItem = UnifiedNoteItem.TodoItemWrapper(todo)
+
                         if (todo.isPinned) {
-                            pinnedTodos.add(todo)
+                            pinnedTodos.add(todoItem)
                         } else {
-                            unpinnedTodos.add(todo)
+                            unpinnedTodos.add(todoItem)
                         }
                     }
 
-                    // Update visibility
-                    if (pinnedTodos.isEmpty()) {
-                        binding.pinnedSection.visibility = View.GONE
-                    } else {
-                        binding.pinnedSection.visibility = View.VISIBLE
-                        pinnedAdapter.notifyDataSetChanged()
-                    }
-
-                    if (unpinnedTodos.isEmpty() && pinnedTodos.isEmpty()) {
-                        binding.emptyStateLayout.visibility = View.VISIBLE
-                        binding.othersSection.visibility = View.GONE
-                    } else if (unpinnedTodos.isEmpty()) {
-                        binding.othersSection.visibility = View.GONE
-                        binding.emptyStateLayout.visibility = View.GONE
-                    } else {
-                        binding.othersSection.visibility = View.VISIBLE
-                        binding.emptyStateLayout.visibility = View.GONE
-
-                        // Hide "OTHERS" label if no pinned items
-                        if (pinnedTodos.isEmpty()) {
-                            binding.othersSectionTitle.visibility = View.GONE
-                        } else {
-                            binding.othersSectionTitle.visibility = View.VISIBLE
-                        }
-
-                        unpinnedAdapter.notifyDataSetChanged()
-                    }
-
+                    updateUI()
                 } else {
-                    binding.emptyStateLayout.visibility = View.VISIBLE
-                    binding.pinnedSection.visibility = View.GONE
-                    binding.othersSection.visibility = View.GONE
+                    pinnedTodos.clear()
+                    unpinnedTodos.clear()
+                    updateUI()
                 }
             }
     }
 
-    private fun openTodoDetail(todo: TodoItem) {
-        val intent = Intent(this, AddTodoActivity::class.java).apply {
-            putExtra("TODO_ID", todo.id)
-            putExtra("TODO_TITLE", todo.title)
-            putExtra("IS_PINNED", todo.isPinned)
+    private fun updateUI() {
+        // Pinned section
+        if (pinnedTodos.isEmpty()) {
+            binding.pinnedSection.visibility = View.GONE
+        } else {
+            binding.pinnedSection.visibility = View.VISIBLE
+            pinnedAdapter.updateList(pinnedTodos)
         }
-        startActivity(intent)
+
+        // Unpinned section
+        if (unpinnedTodos.isEmpty() && pinnedTodos.isEmpty()) {
+            binding.emptyStateLayout.visibility = View.VISIBLE
+            binding.othersSection.visibility = View.GONE
+        } else if (unpinnedTodos.isEmpty()) {
+            binding.othersSection.visibility = View.GONE
+            binding.emptyStateLayout.visibility = View.GONE
+        } else {
+            binding.othersSection.visibility = View.VISIBLE
+            binding.emptyStateLayout.visibility = View.GONE
+
+            // Hide "OTHERS" label if no pinned items
+            if (pinnedTodos.isEmpty()) {
+                binding.othersSectionTitle.visibility = View.GONE
+            } else {
+                binding.othersSectionTitle.visibility = View.VISIBLE
+            }
+
+            unpinnedAdapter.updateList(unpinnedTodos)
+        }
     }
 }

@@ -27,11 +27,11 @@ class TextNotesListActivity : AppCompatActivity() {
 
     private lateinit var toolbar: Toolbar
 
-    private val pinnedNotes = mutableListOf<TextNote>()
-    private val unpinnedNotes = mutableListOf<TextNote>()
+    private val pinnedNotes = mutableListOf<UnifiedNoteItem>()
+    private val unpinnedNotes = mutableListOf<UnifiedNoteItem>()
 
-    private lateinit var pinnedAdapter: TextNotesRecyclerAdapter
-    private lateinit var unpinnedAdapter: TextNotesRecyclerAdapter
+    private lateinit var pinnedAdapter: UnifiedNotesAdapter
+    private lateinit var unpinnedAdapter: UnifiedNotesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +63,6 @@ class TextNotesListActivity : AppCompatActivity() {
         binding.toolbarLayout.backBtn.setOnClickListener {
             onBackPressed()
         }
-
     }
 
     private fun showDeleteConfirmationDialog() {
@@ -92,22 +91,25 @@ class TextNotesListActivity : AppCompatActivity() {
     private fun setupRecyclerViews() {
         binding.pinnedRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        pinnedAdapter = TextNotesRecyclerAdapter(this, pinnedNotes) { note ->
-            openNoteDetail(note)
-        }
+        pinnedAdapter = UnifiedNotesAdapter(this, pinnedNotes)
         binding.pinnedRecyclerView.adapter = pinnedAdapter
 
         binding.textNotesRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        unpinnedAdapter = TextNotesRecyclerAdapter(this, unpinnedNotes) { note ->
-            openNoteDetail(note)
-        }
+        unpinnedAdapter = UnifiedNotesAdapter(this, unpinnedNotes)
         binding.textNotesRecyclerView.adapter = unpinnedAdapter
     }
 
     override fun onStart() {
         super.onStart()
         loadTextNotes()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Release media player resources
+        pinnedAdapter.releasePlayer()
+        unpinnedAdapter.releasePlayer()
     }
 
     private fun loadTextNotes() {
@@ -135,53 +137,51 @@ class TextNotesListActivity : AppCompatActivity() {
                             id = document.id
                         )
 
+                        val noteItem = UnifiedNoteItem.TextNoteItem(note)
+
                         if (note.isPinned) {
-                            pinnedNotes.add(note)
+                            pinnedNotes.add(noteItem)
                         } else {
-                            unpinnedNotes.add(note)
+                            unpinnedNotes.add(noteItem)
                         }
                     }
 
-                    if (pinnedNotes.isEmpty()) {
-                        binding.pinnedSection.visibility = View.GONE
-                    } else {
-                        binding.pinnedSection.visibility = View.VISIBLE
-                        pinnedAdapter.notifyDataSetChanged()
-                    }
-
-                    if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
-                        binding.emptyStateLayout.visibility = View.VISIBLE
-                        binding.othersSection.visibility = View.GONE
-                    } else if (unpinnedNotes.isEmpty()) {
-                        binding.othersSection.visibility = View.GONE
-                        binding.emptyStateLayout.visibility = View.GONE
-                    } else {
-                        binding.othersSection.visibility = View.VISIBLE
-                        binding.emptyStateLayout.visibility = View.GONE
-
-                        if (pinnedNotes.isEmpty()) {
-                            binding.othersSectionTitle.visibility = View.GONE
-                        } else {
-                            binding.othersSectionTitle.visibility = View.VISIBLE
-                        }
-
-                        unpinnedAdapter.notifyDataSetChanged()
-                    }
-
+                    updateUI()
                 } else {
-                    binding.emptyStateLayout.visibility = View.VISIBLE
-                    binding.pinnedSection.visibility = View.GONE
-                    binding.othersSection.visibility = View.GONE
+                    pinnedNotes.clear()
+                    unpinnedNotes.clear()
+                    updateUI()
                 }
             }
     }
 
-    private fun openNoteDetail(note: TextNote) {
-        val intent = Intent(this, AddTextNoteActivity::class.java).apply {
-            putExtra("NOTE_ID", note.id)
-            putExtra("NOTE_TITLE", note.title)
-            putExtra("IS_PINNED", note.isPinned)
+    private fun updateUI() {
+        // Pinned section
+        if (pinnedNotes.isEmpty()) {
+            binding.pinnedSection.visibility = View.GONE
+        } else {
+            binding.pinnedSection.visibility = View.VISIBLE
+            pinnedAdapter.updateList(pinnedNotes)
         }
-        startActivity(intent)
+
+        // Unpinned section
+        if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
+            binding.emptyStateLayout.visibility = View.VISIBLE
+            binding.othersSection.visibility = View.GONE
+        } else if (unpinnedNotes.isEmpty()) {
+            binding.othersSection.visibility = View.GONE
+            binding.emptyStateLayout.visibility = View.GONE
+        } else {
+            binding.othersSection.visibility = View.VISIBLE
+            binding.emptyStateLayout.visibility = View.GONE
+
+            if (pinnedNotes.isEmpty()) {
+                binding.othersSectionTitle.visibility = View.GONE
+            } else {
+                binding.othersSectionTitle.visibility = View.VISIBLE
+            }
+
+            unpinnedAdapter.updateList(unpinnedNotes)
+        }
     }
 }
