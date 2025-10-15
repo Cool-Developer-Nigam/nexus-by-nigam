@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F2EDF9">
+        android:background="#F2EDF9"
+        android:orientation="vertical">
 
+        <!-- Header Section (ScrollView for profile, search, banner, category cards) -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -81,40 +84,6 @@
                         android:textColor="@color/black"
                         android:textColorHint="@color/grey" />
 
-                </androidx.cardview.widget.CardView>
-
-                <!-- Upgrade Banner -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/gradient_background"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="24dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Discover More Features \nTap to Explore"
-                            android:textColor="#FFFFFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:layout_marginStart="16dp"
-                            android:src="@drawable/app_logo"
-                            app:shapeAppearance="@style/RoundedImageStyle" />
-                    </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
                 <!-- Category Icons Grid -->
@@ -315,21 +284,27 @@
                         app:tint="#EC4899" />
                 </RelativeLayout>
 
-                <!-- RecyclerView -->
+                <!-- RecyclerView for All Notes (OUTSIDE ScrollView, takes remaining space) -->
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/articlesRecyclerView"
+                    android:id="@+id/AllNotesRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false" />
+                    android:layout_weight="1"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="16dp"
+                    android:clipToPadding="false" />
             </LinearLayout>
         </ScrollView>
 
-        <!-- Progress Bar -->
+
+
+        <!-- Progress Bar (Overlay) -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:visibility="gone" />
-    </RelativeLayout>
+
+    </LinearLayout>
 </layout>
