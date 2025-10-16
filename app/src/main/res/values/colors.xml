@@ -26,6 +26,8 @@
     <color name="todo_color">#66BB6A</color>
     <color name="audio_color">#EF5350</color>
 
+    <color name="purple_500">#341482</color>
+    <color name="purple_200">#BB1E1E1E</color>
 
 
 </resources>

@@ -14,23 +14,21 @@ class CurvedBottomNavigationView @JvmOverloads constructor(
 
     private val path = Path()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#6B7FED")
+        color = Color.parseColor("#000000") // Darker semi-transparent black (70% opacity)
         style = Paint.Style.FILL
     }
 
-    private val firstCurveStartPoint = Point()
-    private val firstCurveEndPoint = Point()
-    private val firstCurveControlPoint1 = Point()
-    private val firstCurveControlPoint2 = Point()
-
-    private val secondCurveStartPoint = Point()
-    private val secondCurveEndPoint = Point()
-    private val secondCurveControlPoint1 = Point()
-    private val secondCurveControlPoint2 = Point()
+    private val blurPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#60FFFFFF") // Stronger white overlay for more blur effect
+        style = Paint.Style.FILL
+        maskFilter = BlurMaskFilter(50f, BlurMaskFilter.Blur.NORMAL) // Increased blur radius
+    }
 
     private var navigationBarWidth = 0
     private var navigationBarHeight = 0
-    private val cornerRadius = 80f // Increased corner radius
+    private val cornerRadius = 80f // Reduced for smaller nav bar
+    private val fabMargin = 10 // Space between FAB and curve
+    private val widthReductionFactor = 0.85f // Reduce width to 85% of screen
 
     init {
         setBackgroundColor(Color.TRANSPARENT)
@@ -41,76 +39,86 @@ class CurvedBottomNavigationView @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         navigationBarWidth = width
         navigationBarHeight = height
-
-        // Calculate curve points
-        val curveStartX = (width * 0.25f).toInt() // Start after home icon
-        val curveEndX = (width * 0.75f).toInt() // End before chatbot icon
-        val centerX = width / 2
-        val curveDepth = 145 // Increased depth for deeper curve
-
-        // First curve (left side going up)
-        firstCurveStartPoint.set(curveStartX, 0)
-        firstCurveEndPoint.set(centerX, curveDepth)
-        firstCurveControlPoint1.set(curveStartX + 50, 5) // Slight dip
-        firstCurveControlPoint2.set(centerX - 100, curveDepth)
-
-        // Second curve (right side going down)
-        secondCurveStartPoint.set(centerX, curveDepth)
-        secondCurveEndPoint.set(curveEndX, 0)
-        secondCurveControlPoint1.set(centerX + 100, curveDepth)
-        secondCurveControlPoint2.set(curveEndX - 50, 5) // Slight dip
     }
 
     override fun onDraw(canvas: Canvas) {
         path.reset()
 
-        // Start from bottom left corner (inside the curve)
-        path.moveTo(cornerRadius, navigationBarHeight.toFloat())
+        val centerX = navigationBarWidth / 2f
+        val fabRadius = 42f // Half of FAB size (84dp / 2)
+        val curveRadius = fabRadius + fabMargin
 
-        // Bottom-left corner curve
-        path.quadTo(0f, navigationBarHeight.toFloat(), 0f, (navigationBarHeight - cornerRadius))
+        // Calculate curve points
+        val curveStartX = centerX - curveRadius - 60
+        val curveEndX = centerX + curveRadius + 60
 
-        // Left side straight line
-        path.lineTo(0f, cornerRadius)
+        // Start from top-left corner
+        path.moveTo(0f, cornerRadius)
 
-        // Top-left corner
+        // Top-left rounded corner
         path.quadTo(0f, 0f, cornerRadius, 0f)
 
-        // Straight line to curve start
-        path.lineTo(firstCurveStartPoint.x.toFloat(), firstCurveStartPoint.y.toFloat())
+        // Top line to left curve start
+        path.lineTo(curveStartX, 0f)
 
-        // First elliptical curve (going up and inward) - DEEPER
-        path.cubicTo(
-            firstCurveControlPoint1.x.toFloat(), firstCurveControlPoint1.y.toFloat(),
-            firstCurveControlPoint2.x.toFloat(), firstCurveControlPoint2.y.toFloat(),
-            firstCurveEndPoint.x.toFloat(), firstCurveEndPoint.y.toFloat()
+        // Left curve going up
+        path.quadTo(
+            centerX - curveRadius - 20, 0f,
+            centerX - curveRadius, -curveRadius + 15
         )
 
-        // Second elliptical curve (going down and outward) - DEEPER
-        path.cubicTo(
-            secondCurveControlPoint1.x.toFloat(), secondCurveControlPoint1.y.toFloat(),
-            secondCurveControlPoint2.x.toFloat(), secondCurveControlPoint2.y.toFloat(),
-            secondCurveEndPoint.x.toFloat(), secondCurveEndPoint.y.toFloat()
+        // Arc around the FAB (semi-circle cutout)
+        path.arcTo(
+            RectF(
+                centerX - curveRadius,
+                -curveRadius - 5,
+                centerX + curveRadius,
+                curveRadius + 25
+            ),
+            180f,
+            180f,
+            false
         )
 
-        // Straight line to right corner
-        path.lineTo((navigationBarWidth - cornerRadius), 0f)
+        // Right curve going down
+        path.quadTo(
+            centerX + curveRadius + 20, 0f,
+            curveEndX, 0f
+        )
 
-        // Top-right corner
-        path.quadTo(navigationBarWidth.toFloat(), 0f, navigationBarWidth.toFloat(), cornerRadius)
+        // Top line to top-right corner
+        path.lineTo(navigationBarWidth - cornerRadius, 0f)
 
-        // Right side straight line
-        path.lineTo(navigationBarWidth.toFloat(), (navigationBarHeight - cornerRadius))
+        // Top-right rounded corner
+        path.quadTo(
+            navigationBarWidth.toFloat(), 0f,
+            navigationBarWidth.toFloat(), cornerRadius
+        )
 
-        // Bottom-right corner curve
-        path.quadTo(navigationBarWidth.toFloat(), navigationBarHeight.toFloat(), (navigationBarWidth - cornerRadius), navigationBarHeight.toFloat())
+        // Right side
+        path.lineTo(navigationBarWidth.toFloat(), navigationBarHeight - cornerRadius)
 
-        // Bottom line back to start
+        // Bottom-right rounded corner
+        path.quadTo(
+            navigationBarWidth.toFloat(), navigationBarHeight.toFloat(),
+            navigationBarWidth - cornerRadius, navigationBarHeight.toFloat()
+        )
+
+        // Bottom line
         path.lineTo(cornerRadius, navigationBarHeight.toFloat())
+
+        // Bottom-left rounded corner
+        path.quadTo(
+            0f, navigationBarHeight.toFloat(),
+            0f, navigationBarHeight - cornerRadius
+        )
 
         // Close path
         path.close()
 
+        // Draw blur effect first
+        canvas.drawPath(path, blurPaint)
+        // Draw main background on top
         canvas.drawPath(path, paint)
 
         super.onDraw(canvas)

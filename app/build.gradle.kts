@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -17,6 +20,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val keystoreFile = project.rootProject.file("local.properties")
+        val properties = Properties()
+        properties.load(FileInputStream(keystoreFile))
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"${properties["GEMINI_API_KEY"]}\"")
     }
 
     buildTypes {
@@ -40,6 +49,7 @@ android {
 
     buildFeatures {
         dataBinding = true
+        buildConfig = true
     }
 
     packaging {
@@ -91,8 +101,9 @@ dependencies {
         exclude(group = "io.grpc", module = "grpc-context")
     }
 
-    // OkHttp for API calls (standalone version)
+    // OkHttp for API calls
     implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 
     // Gson for JSON parsing
     implementation(libs.gson)
@@ -100,4 +111,11 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+
+    // Gemini AI SDK
+    implementation(libs.generativeai)
+
+    // Retrofit for REST API calls
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }

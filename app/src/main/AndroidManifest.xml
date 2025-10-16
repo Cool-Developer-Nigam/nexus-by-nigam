@@ -39,7 +39,8 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            tools:ignore="Exported"/>
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false"

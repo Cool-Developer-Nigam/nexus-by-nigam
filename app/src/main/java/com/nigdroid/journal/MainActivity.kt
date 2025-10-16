@@ -11,6 +11,7 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.nigdroid.journal.databinding.ActivityMainBinding
@@ -55,7 +56,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         // Bottom Navigation item selection
+        // Bottom Navigation item selection with animation
         binding.bottomNav.setOnItemSelectedListener { item ->
+            // Animate elevation and show label
+            animateBottomNavSelection(item.itemId)
+
             when (item.itemId) {
                 R.id.nav_home -> {
                     loadFragment(HomeFragment())
@@ -73,6 +78,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.fabAdd.setOnClickListener {
             AddOptionsDialog().show(supportFragmentManager, "AddOptionsDialog")
         }
+    }
+    private fun animateBottomNavSelection(selectedItemId: Int) {
+        // Increase elevation with animation
+        binding.bottomNav.animate()
+            .translationZ(24f)
+            .setDuration(200)
+            .withEndAction {
+                // Show label temporarily
+                binding.bottomNav.labelVisibilityMode =
+                    NavigationBarView.LABEL_VISIBILITY_SELECTED
+
+                // Reset elevation after a moment
+                binding.bottomNav.postDelayed({
+                    binding.bottomNav.animate()
+                        .translationZ(8f)
+                        .setDuration(200)
+                        .start()
+                }, 300)
+            }
+            .start()
     }
 
     private fun loadNavHeaderProfile() {
