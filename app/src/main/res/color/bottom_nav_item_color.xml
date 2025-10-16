@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Selected state - glowing purple -->
-    <item android:color="@color/purple_500" android:state_checked="true" />
-    <!-- Normal state - light gray -->
-    <item android:color="#80FFFFFF" />
-</selector>
