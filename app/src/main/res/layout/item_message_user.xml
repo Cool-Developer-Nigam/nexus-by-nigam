@@ -20,6 +20,7 @@
             android:background="@drawable/bg_message_user"
             android:elevation="2dp"
             android:padding="12dp"
+            android:textStyle="italic"
             android:text="@{message.text}"
             android:textColor="@android:color/white"
             android:textSize="16sp" />

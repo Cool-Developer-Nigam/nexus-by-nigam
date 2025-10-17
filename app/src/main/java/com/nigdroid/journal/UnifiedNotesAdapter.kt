@@ -223,8 +223,13 @@ class UnifiedNotesAdapter(
                 textNoteContent.setTextColor(Color.BLACK)
             }
 
-            // Pin icon
-            pinIcon.visibility = if (note.isPinned) View.VISIBLE else View.GONE
+            // Pin icon - FIX: Set the correct drawable based on pinned state
+            if (note.isPinned) {
+                pinIcon.visibility = View.VISIBLE
+                pinIcon.setImageResource(R.drawable.ic_pin) // Filled pin icon
+            } else {
+                pinIcon.visibility = View.GONE
+            }
 
             // Timestamp
             val relativeTime = DateUtils.getRelativeTimeSpanString(
@@ -240,11 +245,14 @@ class UnifiedNotesAdapter(
                     putExtra("NOTE_ID", note.id)
                     putExtra("NOTE_TITLE", note.title)
                     putExtra("IS_PINNED", note.isPinned)
+                    putExtra("TIME_ADDED", note.timeAdded)
                 }
                 context.startActivity(intent)
             }
         }
     }
+
+
 
     private fun bindTodo(holder: TodoViewHolder, item: UnifiedNoteItem.TodoItemWrapper) {
         val todo = item.todoItem
@@ -252,9 +260,13 @@ class UnifiedNotesAdapter(
         // Set title
         holder.todoTitle.text = todo.title.ifEmpty { "Untitled" }
 
-        // Show/hide pin icon
-        holder.pinIcon.visibility = if (todo.isPinned) View.VISIBLE else View.GONE
-
+// Show/hide pin icon with correct drawable
+        if (todo.isPinned) {
+            holder.pinIcon.visibility = View.VISIBLE
+            holder.pinIcon.setImageResource(R.drawable.ic_pin) // Filled pin icon
+        } else {
+            holder.pinIcon.visibility = View.GONE
+        }
         // Clear previous checklist items
         holder.checklistContainer.removeAllViews()
 
@@ -314,8 +326,14 @@ class UnifiedNotesAdapter(
         val note = item.audioNote
 
         holder.noteTitle.text = note.title.ifEmpty { "Untitled" }
-        holder.pinIcon.visibility = if (note.isPinned) View.VISIBLE else View.GONE
 
+        // Show/hide pin icon with correct drawable
+        if (note.isPinned) {
+            holder.pinIcon.visibility = View.VISIBLE
+            holder.pinIcon.setImageResource(R.drawable.ic_pin) // Filled pin icon
+        } else {
+            holder.pinIcon.visibility = View.GONE
+        }
         // Format duration
         val minutes = (note.audioDuration / 1000) / 60
         val seconds = (note.audioDuration / 1000) % 60

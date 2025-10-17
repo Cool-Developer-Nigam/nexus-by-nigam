@@ -2,42 +2,35 @@ package com.nigdroid.journal
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.nigdroid.journal.databinding.FragmentChatbotBinding
+import com.nigdroid.journal.databinding.ActivityGeminiBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class ChatbotFragment : Fragment() {
+class GeminiActivity : AppCompatActivity() {
 
-    private var _binding: FragmentChatbotBinding? = null
-    private val binding get() = _binding!!
-
+    private lateinit var binding: ActivityGeminiBinding
     private val messages = mutableListOf<Message>()
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var geminiHelper: GeminiHelper
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentChatbotBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding = ActivityGeminiBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Debug API key
-        Log.d("ChatbotFragment", "API Key from constants: ${ApiConstants.GEMINI_API_KEY.take(10)}...")
-        Log.d("ChatbotFragment", "API Key length: ${ApiConstants.GEMINI_API_KEY.length}")
-        Log.d("ChatbotFragment", "API Key starts with AIza: ${ApiConstants.GEMINI_API_KEY.startsWith("AIza")}")
+binding.btnBack.setOnClickListener {
+            finish()
+        }
+
 
         // Initialize Gemini
         geminiHelper = GeminiHelper()
@@ -56,7 +49,7 @@ class ChatbotFragment : Fragment() {
         chatAdapter = ChatAdapter(messages)
         binding.recyclerViewMessages.apply {
             adapter = chatAdapter
-            layoutManager = LinearLayoutManager(context).apply {
+            layoutManager = LinearLayoutManager(this@GeminiActivity).apply {
                 stackFromEnd = true
             }
         }
@@ -97,12 +90,8 @@ class ChatbotFragment : Fragment() {
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                Log.d("ChatbotFragment", "Getting bot response for: $userMessage")
-
                 // Call Gemini API
                 val response = geminiHelper.sendMessage(userMessage)
-
-                Log.d("ChatbotFragment", "Got response: $response")
 
                 // Add bot response
                 addMessage(Message(
@@ -111,7 +100,7 @@ class ChatbotFragment : Fragment() {
                 ))
 
             } catch (e: Exception) {
-                Log.e("ChatbotFragment", "Error in getBotResponse", e)
+                Log.e("GeminiActivity", "Error in getBotResponse", e)
                 addMessage(Message(
                     text = "Sorry, I encountered an error: ${e.message}",
                     isFromUser = false
@@ -122,10 +111,5 @@ class ChatbotFragment : Fragment() {
                 binding.buttonSend.isEnabled = true
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

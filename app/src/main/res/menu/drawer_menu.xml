@@ -10,41 +10,33 @@
             android:icon="@drawable/ic_lightbulb"
             android:title="All Notes" />
         <item
+            android:id="@+id/nav_gemini"
+            android:icon="@drawable/ic_chatbot"
+            android:title="AI Chatbot" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_profile"
+            android:title="Profile" />
+        <item
             android:id="@+id/nav_reminders"
             android:icon="@drawable/ic_notifications"
             android:title="Reminders" />
-        <item
-            android:id="@+id/nav_archive"
-            android:icon="@drawable/ic_archive"
-            android:title="Archive" />
+
         <item
             android:id="@+id/nav_trash"
-            android:icon="@drawable/ic_delete"
+            android:icon="@drawable/ic_delete_filled"
             android:title="Trash" />
+
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info"
+            android:title="About Us" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout" />
+
     </group>
-
-    <!-- Settings Section -->
-    <item android:title="">
-        <menu>
-            <item
-                android:id="@+id/nav_settings"
-                android:icon="@drawable/ic_settings"
-                android:title="Settings" />
-            <item
-                android:id="@+id/nav_about"
-                android:icon="@drawable/ic_info"
-                android:title="About Us" />
-        </menu>
-    </item>
-
-    <!-- Logout Section -->
-    <item android:title="">
-        <menu>
-            <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_logout"
-                android:title="Logout" />
-        </menu>
-    </item>
 
 </menu>

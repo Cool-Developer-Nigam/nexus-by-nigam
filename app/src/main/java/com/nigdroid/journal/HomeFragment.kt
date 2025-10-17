@@ -9,7 +9,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,7 +28,9 @@ class HomeFragment : Fragment() {
     private val allNotes = mutableListOf<UnifiedNoteItem>()
     private val filteredNotes = mutableListOf<UnifiedNoteItem>()
     private var isStaggeredLayout = true
-    private var sortAscending = false
+    private var sortAscending = false // Default: descending (newest first)
+    private var showOnlyPinned = true // Default: show only pinned notes
+    private var isExpanded = false // Track if "See all" is expanded
 
     private val TAG = "HomeFragment"
 
@@ -47,9 +48,23 @@ class HomeFragment : Fragment() {
         setupRecyclerView()
         loadUserProfile()
         setupNavigation()
-        loadAllNotes()
+
+        setupSortButton()
         setupLayoutToggle()
+        setupSeeAllToggle()
         setupSearchFunctionality()
+
+        // Load pinned notes by default
+        loadPinnedNotes()
+
+        binding.profileImage.setOnClickListener {
+            startActivity(Intent(requireContext(), ProfileActivity::class.java))
+        }
+
+        binding.chatbot.setOnClickListener {
+            startActivity(Intent(requireContext(), GeminiActivity::class.java))
+
+        }
 
         return binding.root
     }
@@ -64,49 +79,94 @@ class HomeFragment : Fragment() {
         binding.AllNotesRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         isStaggeredLayout = true
+        binding.btnLayoutToggle.setImageResource(R.drawable.ic_grid_view)
     }
 
     private fun setLinearLayout() {
         binding.AllNotesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         isStaggeredLayout = false
+        binding.btnLayoutToggle.setImageResource(R.drawable.ic_list_view)
     }
 
     private fun setupLayoutToggle() {
         binding.btnLayoutToggle.setOnClickListener {
-            showLayoutMenu(it)
+            if (isStaggeredLayout) {
+                setLinearLayout()
+            } else {
+                setStaggeredLayout()
+            }
         }
     }
 
-    private fun showLayoutMenu(view: View) {
-        val popup = PopupMenu(requireContext(), view)
-        popup.menuInflater.inflate(R.menu.layout_menu, popup.menu)
+    private fun setupSortButton() {
+        // Set initial icon to descending (default)
+        updateSortIcon()
 
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.menu_staggered -> {
-                    setStaggeredLayout()
-                    adapter.notifyDataSetChanged()
-                    true
-                }
-                R.id.menu_linear -> {
-                    setLinearLayout()
-                    adapter.notifyDataSetChanged()
-                    true
-                }
-                R.id.menu_sort_newest -> {
-                    sortAscending = false
-                    sortAndUpdateNotes()
-                    true
-                }
-                R.id.menu_sort_oldest -> {
-                    sortAscending = true
-                    sortAndUpdateNotes()
-                    true
-                }
-                else -> false
-            }
+        binding.btnSort.setOnClickListener {
+            // Toggle sort order
+            sortAscending = !sortAscending
+            updateSortIcon()
+            sortAndUpdateNotes()
         }
-        popup.show()
+    }
+
+    private fun updateSortIcon() {
+        if (sortAscending) {
+            binding.btnSort.setImageResource(R.drawable.ic_sort_ascending)
+        } else {
+            binding.btnSort.setImageResource(R.drawable.ic_sort_descending)
+        }
+    }
+
+    private fun setupSeeAllToggle() {
+        val seeAllContainer = binding.root.findViewById<View>(R.id.seeAllContainer)
+
+        seeAllContainer?.setOnClickListener {
+            toggleNotesView()
+        }
+
+        binding.tvSeeAll.setOnClickListener {
+            toggleNotesView()
+        }
+
+        binding.ivSeeAllArrow.setOnClickListener {
+            toggleNotesView()
+        }
+
+        updateSeeAllUI()
+    }
+
+    private fun toggleNotesView() {
+        if (showOnlyPinned) {
+            isExpanded = true
+            showOnlyPinned = false
+            loadAllNotes()
+        } else {
+            isExpanded = false
+            showOnlyPinned = true
+            loadPinnedNotes()
+        }
+
+        animateArrow()
+        updateSeeAllUI()
+    }
+
+    private fun animateArrow() {
+        val rotation = if (isExpanded) 180f else 0f
+        binding.ivSeeAllArrow.animate()
+            .rotation(rotation)
+            .setDuration(200)
+            .start()
+    }
+
+    private fun updateSeeAllUI() {
+        if (showOnlyPinned) {
+            binding.tvSeeAll.text = "See all"
+            binding.ivSeeAllArrow.rotation = 0f
+        } else {
+            binding.tvSeeAll.text = "Show less"
+            binding.ivSeeAllArrow.rotation = 180f
+        }
     }
 
     private fun setupSearchFunctionality() {
@@ -125,10 +185,8 @@ class HomeFragment : Fragment() {
         filteredNotes.clear()
 
         if (query.isEmpty()) {
-            // If search is empty, show all sorted notes
             filteredNotes.addAll(allNotes)
         } else {
-            // Filter notes based on search query (case-insensitive)
             val lowerQuery = query.lowercase()
 
             for (note in allNotes) {
@@ -159,6 +217,7 @@ class HomeFragment : Fragment() {
         }
 
         adapter.notifyDataSetChanged()
+        updateEmptyState()
     }
 
     private fun loadAllNotes() {
@@ -178,7 +237,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Load Journals
         db.collection("Journal")
             .whereEqualTo("userId", currentUserId)
             .get()
@@ -194,7 +252,6 @@ class HomeFragment : Fragment() {
                 checkIfAllLoaded()
             }
 
-        // Load Text Notes
         db.collection("TextNotes")
             .whereEqualTo("userId", currentUserId)
             .get()
@@ -210,7 +267,6 @@ class HomeFragment : Fragment() {
                 checkIfAllLoaded()
             }
 
-        // Load Todos
         db.collection("TodoItems")
             .whereEqualTo("userId", currentUserId)
             .get()
@@ -226,7 +282,6 @@ class HomeFragment : Fragment() {
                 checkIfAllLoaded()
             }
 
-        // Load Audio Notes
         db.collection("AudioNotes")
             .whereEqualTo("userId", currentUserId)
             .get()
@@ -239,6 +294,88 @@ class HomeFragment : Fragment() {
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error loading audio notes", e)
+                checkIfAllLoaded()
+            }
+    }
+
+    private fun loadPinnedNotes() {
+        val currentUserId = firebaseAuth.currentUser?.uid ?: return
+
+        binding.progressBar.visibility = View.VISIBLE
+        allNotes.clear()
+
+        var loadedCollections = 0
+        val totalCollections = 4
+
+        fun checkIfAllLoaded() {
+            loadedCollections++
+            if (loadedCollections == totalCollections) {
+                binding.progressBar.visibility = View.GONE
+                sortAndUpdatePinnedNotes()
+            }
+        }
+
+        db.collection("Journal")
+            .whereEqualTo("userId", currentUserId)
+            .whereEqualTo("isPinned", true)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val journal = doc.toObject(Journal::class.java)
+                    allNotes.add(UnifiedNoteItem.JournalItem(journal = journal, id = doc.id))
+                }
+                checkIfAllLoaded()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error loading pinned journals", e)
+                checkIfAllLoaded()
+            }
+
+        db.collection("TextNotes")
+            .whereEqualTo("userId", currentUserId)
+            .whereEqualTo("isPinned", true)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val textNote = doc.toObject(TextNote::class.java).copy(id = doc.id)
+                    allNotes.add(UnifiedNoteItem.TextNoteItem(textNote))
+                }
+                checkIfAllLoaded()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error loading pinned text notes", e)
+                checkIfAllLoaded()
+            }
+
+        db.collection("TodoItems")
+            .whereEqualTo("userId", currentUserId)
+            .whereEqualTo("isPinned", true)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val todoItem = doc.toObject(TodoItem::class.java).copy(id = doc.id)
+                    allNotes.add(UnifiedNoteItem.TodoItemWrapper(todoItem))
+                }
+                checkIfAllLoaded()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error loading pinned todos", e)
+                checkIfAllLoaded()
+            }
+
+        db.collection("AudioNotes")
+            .whereEqualTo("userId", currentUserId)
+            .whereEqualTo("isPinned", true)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (doc in documents) {
+                    val audioNote = doc.toObject(AudioNote::class.java).copy(id = doc.id)
+                    allNotes.add(UnifiedNoteItem.AudioNoteItem(audioNote))
+                }
+                checkIfAllLoaded()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error loading pinned audio notes", e)
                 checkIfAllLoaded()
             }
     }
@@ -259,8 +396,39 @@ class HomeFragment : Fragment() {
         allNotes.clear()
         allNotes.addAll(sortedNotes)
 
-        // Update filtered notes with new sorted data
         filterNotes(binding.edtTxtSrch.text.toString())
+    }
+
+    private fun sortAndUpdatePinnedNotes() {
+        val sortedNotes = if (sortAscending) {
+            allNotes.sortedBy { it.timeAdded }
+        } else {
+            allNotes.sortedByDescending { it.timeAdded }
+        }
+
+        allNotes.clear()
+        allNotes.addAll(sortedNotes)
+
+        filterNotes(binding.edtTxtSrch.text.toString())
+    }
+
+    private fun updateEmptyState() {
+        val emptyLayout = binding.root.findViewById<View>(R.id.emptyStateLayout)
+
+        if (filteredNotes.isEmpty()) {
+            emptyLayout?.visibility = View.VISIBLE
+            binding.AllNotesRecyclerView.visibility = View.GONE
+
+            val emptyMessage = binding.root.findViewById<android.widget.TextView>(R.id.emptyStateMessage)
+            emptyMessage?.text = if (showOnlyPinned) {
+                "No pinned notes yet\nPin your important notes to see them here"
+            } else {
+                "No notes yet\nStart creating your first note"
+            }
+        } else {
+            emptyLayout?.visibility = View.GONE
+            binding.AllNotesRecyclerView.visibility = View.VISIBLE
+        }
     }
 
     private fun loadUserProfile() {
@@ -329,7 +497,12 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         loadUserProfile()
-        loadAllNotes()
+
+        if (showOnlyPinned) {
+            loadPinnedNotes()
+        } else {
+            loadAllNotes()
+        }
     }
 
     override fun onPause() {

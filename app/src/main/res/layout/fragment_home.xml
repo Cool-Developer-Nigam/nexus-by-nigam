@@ -4,16 +4,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F2EDF9"
-        android:orientation="vertical">
+        android:background="#E6DDF3">
 
-        <!-- Header Section (ScrollView for profile, search, banner, category cards) -->
-        <ScrollView
+        <!-- Header Section with NestedScrollView -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/headerScrollView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -71,18 +73,43 @@
                     app:cardCornerRadius="12dp"
                     app:cardElevation="2dp">
 
-                    <EditText
-                        android:id="@+id/edt_txt_srch"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:background="@drawable/white_bg"
-                        android:drawableStart="@drawable/search_icon"
-                        android:ems="10"
-                        android:hint="Search For..."
-                        android:inputType="text"
-                        android:padding="8dp"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/grey" />
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="2dp">
+
+                        <EditText
+                            android:id="@+id/edt_txt_srch"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="0.5"
+                            android:background="@null"
+                            android:drawableStart="@drawable/search_icon"
+                            android:drawablePadding="8dp"
+                            android:hint="Search For..."
+                            android:inputType="text"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="8dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/grey" />
+
+                        <ImageView
+                            android:id="@+id/chatbot"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="4dp"
+                            android:layout_marginEnd="4dp"
+                            android:src="@drawable/ic_chatbot"
+                            android:contentDescription="Chatbot"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless"/>
+
+                    </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
 
@@ -258,53 +285,141 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Header with Toggle Button -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="16dp"
+                    android:paddingHorizontal="16dp">
 
                     <TextView
+                        android:id="@+id/tvFavouritesTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:text="All Notes"
-                        android:textColor="#1F2937"
+                        android:layout_centerVertical="true"
+                        android:text="Favourites"
+                        android:textColor="#EC4899"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/btnLayoutToggle"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                    <LinearLayout
+                        android:id="@+id/seeAllContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
                         android:layout_alignParentEnd="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp"
-                        android:src="@drawable/ic_menu"
-                        app:tint="#EC4899" />
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground">
+
+                        <!-- Grid/List Toggle Button -->
+                        <ImageView
+                            android:id="@+id/btnLayoutToggle"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="4dp"
+                            android:src="@drawable/ic_grid_view"
+                            android:contentDescription="Toggle layout"
+                            app:tint="#EC4899"
+                            android:layout_marginEnd="8dp" />
+
+                        <!-- Sort Button -->
+                        <ImageView
+                            android:id="@+id/btnSort"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="4dp"
+                            android:src="@drawable/ic_sort"
+                            android:contentDescription="Sort options"
+                            app:tint="#EC4899"
+                            android:layout_marginEnd="16dp" />
+
+                        <!-- See All Text -->
+                        <TextView
+                            android:id="@+id/tvSeeAll"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="See all"
+                            android:textStyle="italic"
+                            android:textColor="#1976D2"
+                            android:textSize="14sp"
+                            android:layout_marginEnd="4dp" />
+
+                        <!-- Dropdown Arrow -->
+                        <ImageView
+                            android:id="@+id/ivSeeAllArrow"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:src="@drawable/ic_arrow_drop_down"
+                            android:contentDescription="Expand"
+                            app:tint="#1976D2" />
+
+                    </LinearLayout>
+
                 </RelativeLayout>
 
-                <!-- RecyclerView for All Notes (OUTSIDE ScrollView, takes remaining space) -->
+                <!-- RecyclerView for All Notes -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/AllNotesRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:nestedScrollingEnabled="false"
                     android:paddingBottom="16dp"
                     android:clipToPadding="false" />
+
+                <LinearLayout
+                    android:id="@+id/emptyStateLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="32dp"
+                    android:visibility="gone"
+                    android:layout_marginTop="48dp">
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:alpha="0.3"
+                        android:src="@drawable/ic_pin"
+                        app:tint="@color/grey" />
+
+                    <TextView
+                        android:id="@+id/emptyStateMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center"
+                        android:text="No favourite notes yet\nAdd your important notes to favourites to see them here"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp"
+                        android:lineSpacingExtra="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Tap the favourite icon on any note"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp"
+                        android:alpha="0.7" />
+
+                </LinearLayout>
             </LinearLayout>
-        </ScrollView>
-
-
+        </androidx.core.widget.NestedScrollView>
 
         <!-- Progress Bar (Overlay) -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:visibility="gone" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </layout>

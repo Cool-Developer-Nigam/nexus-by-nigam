@@ -55,8 +55,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:background="@drawable/edt_txt_bg"
-                    android:layout_marginEnd="16dp"
-                    >
+                    android:layout_marginEnd="16dp">
+
                     <ImageButton
                         android:id="@+id/btnPin"
                         android:layout_width="wrap_content"
@@ -91,8 +91,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
-
-
 
                     <!-- Title Input -->
                     <com.google.android.material.textfield.TextInputLayout

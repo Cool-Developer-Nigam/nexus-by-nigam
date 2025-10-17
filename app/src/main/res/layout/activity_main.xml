@@ -7,48 +7,49 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#E6DDF3"
         tools:openDrawer="start">
 
         <!-- Main Content -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/nav_header_bg">
+
+            >
 
             <!-- Toolbar -->
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@android:color/transparent"
-                android:layout_marginTop="16dp"
                 android:elevation="0dp"
+                android:background="@color/purple_700"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIcon="@drawable/ic_menu"
+                app:navigationIconTint="@color/white"
                 app:title="My Journal"
-                app:titleTextColor="@android:color/white" />
+                app:titleTextColor="@color/white" />
 
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/bottom_nav"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-            <!-- Bottom Navigation -->
-            <!-- Bottom Navigation -->
-            <com.nigdroid.journal.CurvedBottomNavigationView
+            <!-- Bottom Navigation with Animation (Lower z-order) -->
+            <com.nigdroid.journal.AnimatedBottomNavigationView
                 android:id="@+id/bottom_nav"
                 android:layout_width="0dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginBottom="20dp"
-                android:elevation="8dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="44dp"
+                android:layout_marginEnd="44dp"
+                android:layout_marginBottom="24dp"
+                android:elevation="4dp"
                 app:itemIconTint="@color/bottom_nav_item_color"
                 app:itemTextColor="@color/bottom_nav_item_color"
                 app:labelVisibilityMode="unlabeled"
@@ -57,39 +58,39 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:menu="@menu/bottom_nav_menu" />
 
-            <!-- Diamond-shaped FAB container -->
-            <FrameLayout
-                android:id="@+id/fab_container"
-                android:layout_width="84dp"
-                android:layout_height="84dp"
-                android:layout_marginBottom="48dp"
-                android:background="@drawable/diamond_fab_background"
+            <!-- Animated FAB Menu Overlay - FULL SCREEN (No bottom margin) -->
+            <com.nigdroid.journal.AnimatedFabMenuView
+                android:id="@+id/fab_menu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
                 android:elevation="16dp"
-                android:rotation="45"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <!-- FAB inside -->
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_add"
-                    android:layout_width="84dp"
-                    android:layout_height="84dp"
-                    android:layout_gravity="center"
-                    android:rotation="-45"
-                    android:clickable="true"
-                    android:contentDescription="Add"
-                    android:focusable="true"
-                    android:src="@drawable/add"
-                    app:backgroundTint="@color/purple_500"
-                    app:borderWidth="0dp"
-                    app:elevation="0dp"
-                    app:fabCustomSize="84dp"
-                    app:fabSize="auto"
-                    app:maxImageSize="50dp"
-                    app:rippleColor="#4DFFFFFF"
-                    app:tint="@android:color/white" />
-            </FrameLayout>
+            <!-- Smaller FAB with rotation (Highest z-order) -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="60dp"
+                android:clickable="true"
+                android:contentDescription="Add"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.CircleFAB"
+                android:focusable="true"
+                android:src="@drawable/add"
+                app:backgroundTint="@color/purple_500"
+                app:borderWidth="0dp"
+                app:elevation="20dp"
+                app:fabSize="normal"
+                app:maxImageSize="28dp"
+                app:rippleColor="#4DFFFFFF"
+                app:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -99,7 +100,9 @@
             android:layout_width="280dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:fitsSystemWindows="true"
+            android:background="@drawable/nav_drawer_bg"
+            android:elevation="16dp"
+            style="@style/GlassyNavigationView"
             app:headerLayout="@layout/nav_header"
             app:menu="@menu/drawer_menu" />
 

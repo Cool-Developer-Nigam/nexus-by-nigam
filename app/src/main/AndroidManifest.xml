@@ -18,9 +18,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Journal">
         <activity
+            android:name=".AllActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GeminiActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden"
+            tools:ignore="Exported" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddTextNoteActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".TextNotesListActivity"
             android:exported="false"
@@ -40,7 +50,7 @@
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="adjustPan|stateHidden"
-            tools:ignore="Exported"/>
+            tools:ignore="Exported" />
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false"
@@ -48,15 +58,15 @@
         <activity
             android:name=".EditJournalActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/Theme.Transparent"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Show_Journal"
             android:exported="false" />
         <activity
             android:name=".AddJournalActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".JournalListActivity"
             android:exported="false" />

@@ -19,15 +19,75 @@
     <color name="blue">#5997D5</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="grey">#706F6F</color>
-    <color name="pinkish">#B3C84E7E</color>
+    <color name="pinkish">#B3D53673</color>
 
     <color name="journal_color">#FFA726</color>
     <color name="text_note_color">#42A5F5</color>
     <color name="todo_color">#66BB6A</color>
     <color name="audio_color">#EF5350</color>
 
-    <color name="purple_500">#341482</color>
+
     <color name="purple_200">#BB1E1E1E</color>
 
+    <color name="purple_500">#A855F7</color>
+    <color name="purple_700">#7C3AED</color>
 
+    <!-- Bottom nav item colors -->
+    <color name="bottom_nav_item_color">#FFFFFF</color>
+
+    <!-- Menu option colors with glassmorphism -->
+    <color name="menu_journal_primary">#FF69B4</color>
+    <color name="menu_journal_secondary">#FF1493</color>
+
+    <color name="menu_text_primary">#5C9DFF</color>
+    <color name="menu_text_secondary">#2563EB</color>
+
+    <color name="menu_todo_primary">#66D9A4</color>
+    <color name="menu_todo_secondary">#10B981</color>
+
+    <color name="menu_audio_primary">#FF6B9D</color>
+    <color name="menu_audio_secondary">#EC4899</color>
+
+    <!-- Background colors -->
+    <color name="background_overlay">#80000000</color>
+    <color name="glass_overlay">#40FFFFFF</color>
+
+    <!-- Navigation bar glass effect -->
+    <color name="nav_bar_background">#B3000000</color>
+    <color name="nav_bar_blur">#60FFFFFF</color>
+
+    <!-- Primary Colors -->
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC6</color>
+
+    <!-- Basic Colors -->
+
+    <color name="gray">#757575</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="lighter_gray">#F5F5F5</color>
+
+    <!-- Status Colors -->
+    <color name="red">#FF5252</color>
+    <color name="green">#4CAF50</color>
+
+    <color name="yellow">#FFC107</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">@color/black</color>
+    <color name="text_secondary">@color/gray</color>
+    <color name="text_hint">#BDBDBD</color>
+
+    <!-- Transparent -->
+
+    <color name="semi_transparent_black">#80000000</color>
+
+    <color name="nav_purple_primary">#6B4CE6</color>
+    <color name="nav_purple_secondary">#9D5CE6</color>
+    <color name="nav_pink">#E65C9D</color>
+    <color name="nav_background">#F8F9FF</color>
+    <color name="nav_item_text">#2D2D2D</color>
+    <color name="nav_item_text_selected">#6B4CE6</color>
+    <color name="nav_item_icon">#5A5A5A</color>
+    <color name="nav_item_icon_selected">#6B4CE6</color>
 </resources>

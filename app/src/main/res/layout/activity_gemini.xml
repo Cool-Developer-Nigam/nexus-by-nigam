@@ -7,7 +7,55 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white">
+        android:background="#E4D8F6"
+        android:fitsSystemWindows="true">
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/semi_trans"
+            android:elevation="0dp"
+            app:elevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.5">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_marginHorizontal="16dp"
+                android:background="@drawable/toolbar_bg"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="35dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/ic_back_arrow"
+                    android:backgroundTint="@android:color/white"
+                    android:contentDescription="Back"
+                    android:scaleType="centerInside" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:letterSpacing="0.01"
+                    android:text="Ai Chatbot"
+                    android:textColor="@android:color/white"
+                    android:textSize="22sp" />
+
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
 
         <!-- Chat Messages RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
@@ -18,7 +66,7 @@
             android:padding="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/divider"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar"
             tools:listitem="@layout/item_message_user" />
 
         <!-- Divider -->
@@ -34,7 +82,7 @@
             android:id="@+id/inputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:layout_marginBottom="20dp"
             android:elevation="4dp"
             android:orientation="horizontal"
             android:padding="8dp"
@@ -47,11 +95,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/bg_message_input"
+                android:background="@drawable/edt_txt_bg"
                 android:hint="Type a message..."
                 android:maxLines="4"
                 android:minHeight="48dp"
                 android:padding="12dp"
+                android:textColorHint="@color/grey"
                 android:textColor="@android:color/black"
                 android:textSize="16sp" />
 
@@ -64,7 +113,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Send message"
                 android:src="@android:drawable/ic_menu_send"
-                app:tint="#6200EE" />
+                app:tint="#3C058A" />
 
         </LinearLayout>
 

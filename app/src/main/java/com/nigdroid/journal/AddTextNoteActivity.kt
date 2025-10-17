@@ -208,20 +208,21 @@ class AddTextNoteActivity : AppCompatActivity() {
 
         val currentTime = System.currentTimeMillis()
 
-        val textNote = TextNote(
-            id = noteId ?: "",
-            title = title,
-            content = content,
-            textColor = contentFormattingHelper.textColor,
-            backgroundColor = backgroundColorHelper.backgroundColor,
-            userId = user.uid,
-            username = username,
-            timeAdded = if (isEditMode) intent.getLongExtra("TIME_ADDED", currentTime) else currentTime,
-            timeModified = currentTime,
-            isPinned = isPinned
-        )
-
         if (isEditMode && noteId != null) {
+            // UPDATE EXISTING NOTE
+            val textNote = TextNote(
+                id = noteId!!,
+                title = title,
+                content = content,
+                textColor = contentFormattingHelper.textColor,
+                backgroundColor = backgroundColorHelper.backgroundColor,
+                userId = user.uid,
+                username = username,
+                timeAdded = intent.getLongExtra("TIME_ADDED", currentTime),
+                timeModified = currentTime,
+                isPinned = isPinned
+            )
+
             db.collection("TextNotes").document(noteId!!)
                 .set(textNote)
                 .addOnSuccessListener {
@@ -234,12 +235,36 @@ class AddTextNoteActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         } else {
+            // CREATE NEW NOTE
+            // First create the note object without ID
+            val textNote = TextNote(
+                id = "", // Will be updated after document creation
+                title = title,
+                content = content,
+                textColor = contentFormattingHelper.textColor,
+                backgroundColor = backgroundColorHelper.backgroundColor,
+                userId = user.uid,
+                username = username,
+                timeAdded = currentTime,
+                timeModified = currentTime,
+                isPinned = isPinned
+            )
+
             db.collection("TextNotes")
                 .add(textNote)
-                .addOnSuccessListener {
-                    binding.progressBar.visibility = View.GONE
-                    Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
-                    finish()
+                .addOnSuccessListener { documentReference ->
+                    // Update the document with its own ID
+                    val generatedId = documentReference.id
+                    documentReference.update("id", generatedId)
+                        .addOnSuccessListener {
+                            binding.progressBar.visibility = View.GONE
+                            Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                        .addOnFailureListener { e ->
+                            binding.progressBar.visibility = View.GONE
+                            Toast.makeText(this, "Error updating ID: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
                 }
                 .addOnFailureListener { e ->
                     binding.progressBar.visibility = View.GONE
