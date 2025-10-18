@@ -113,15 +113,7 @@ class EditJournalActivity : AppCompatActivity() {
             )
         }
 
-        // Background color
-        binding.editCard?.let { card ->
-            binding.btnBackgroundColor?.let { button ->
-                backgroundColorHelper = BackgroundColorHelper(
-                    targetView = card,
-                    colorButton = button
-                )
-            }
-        }
+
 
         // Focus listeners
         binding.editTitleEt.setOnFocusChangeListener { _, hasFocus ->

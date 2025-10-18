@@ -9,7 +9,7 @@
             type="com.nigdroid.journal.Journal" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -17,103 +17,120 @@
         android:fitsSystemWindows="true"
         tools:context=".Show_Journal">
 
-        <!-- Custom Toolbar -->
-        <include
-            android:id="@+id/toolbar_layout"
-            layout="@layout/toolbar_show_journal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ScrollView
+        <!-- Toolbar -->
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar_layout">
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/semi_trans">
 
-            <LinearLayout
+            <include
+                android:id="@+id/toolbar_layout"
+                layout="@layout/toolbar_show_journal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Main Content -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/tvUsername"
-                        android:layout_width="wrap_content"
-                        android:background="@drawable/edt_txt_bg"
+                    <!-- User Info -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="5dp"
-                        android:textColor="@android:color/black"
-                        android:textSize="20sp"
-                        android:textStyle="italic" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingBottom="16dp">
+
+                        <TextView
+                            android:id="@+id/tvUsername"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textColor="@color/DarkBrown"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            tools:text="Hello John" />
+
+                        <TextView
+                            android:id="@+id/timestamp_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{journal.timeAdded.toString()}"
+                            android:textColor="@color/grey"
+                            android:textSize="12sp"
+                            android:textStyle="italic"
+                            tools:text="2 days ago" />
+
+                    </LinearLayout>
+
+                    <!-- Image for Journal -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardJournalImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        android:layout_marginBottom="16dp">
+
+                        <ImageView
+                            android:id="@+id/imgJournal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:maxHeight="400dp"
+                            android:contentDescription="Journal Image"
+                            android:scaleType="centerCrop"
+                            app:imageUrl="@{journal.imageUrl}"
+                            tools:src="@tools:sample/backgrounds/scenic" />
+
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Title -->
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:htmlText="@{journal.title}"
+                        android:textColor="@color/DarkBrown"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="16dp"
+                        tools:text="Journal Title" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/grey"
+                        android:alpha="0.3"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Description/Thoughts -->
+                    <TextView
+                        android:id="@+id/tvDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:htmlText="@{journal.thoughts}"
+                        android:textColor="@color/DarkBrown"
+                        android:textSize="16sp"
+                        android:lineSpacingExtra="4dp"
+                        tools:text="Journal thoughts and content go here..." />
 
                 </LinearLayout>
 
-                <!-- Image for Journal -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="4dp"
-                    android:layout_marginBottom="16dp">
 
-                    <ImageView
-                        android:id="@+id/imgJournal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Journal Image"
-                        android:scaleType="fitXY"
-                        app:imageUrl="@{journal.imageUrl}"
-                        tools:src="@tools:sample/backgrounds/scenic" />
 
-                </androidx.cardview.widget.CardView>
+        </androidx.core.widget.NestedScrollView>
 
-                <TextView
-                    android:id="@+id/tvTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{journal.title}"
-                    android:textColor="@android:color/black"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="12dp" />
-
-                <!-- Description -->
-                <TextView
-                    android:id="@+id/tvDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{journal.thoughts}"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:lineSpacingExtra="4dp"
-                    android:layout_marginBottom="12dp" />
-
-                <!-- Date Created -->
-                <TextView
-                    android:id="@+id/timestamp_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{journal.timeAdded.toString()}"
-                    android:textColor="@color/grey"
-                    android:textSize="14sp"
-                    android:textStyle="italic" />
-
-            </LinearLayout>
-        </ScrollView>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

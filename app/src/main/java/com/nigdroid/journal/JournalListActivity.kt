@@ -2,12 +2,13 @@ package com.nigdroid.journal
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,18 +30,17 @@ import com.nigdroid.journal.databinding.DialogConfirmSignoutBinding
 class JournalListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityJournalListBinding
-    private lateinit var toolbar: Toolbar
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var user: FirebaseUser
     private var db = FirebaseFirestore.getInstance()
     private var collectionReference: CollectionReference = db.collection("Journal")
 
-    private val pinnedNotes = mutableListOf<UnifiedNoteItem>()
-    private val unpinnedNotes = mutableListOf<UnifiedNoteItem>()
+    private val allJournals = mutableListOf<UnifiedNoteItem>()
+    private var isStaggeredLayout = true
+    private var sortAscending = false // Default: descending (newest first)
 
-    private lateinit var pinnedAdapter: UnifiedNotesAdapter
-    private lateinit var unpinnedAdapter: UnifiedNotesAdapter
+    private lateinit var adapter: UnifiedNotesAdapter
     private var listenerRegistration: ListenerRegistration? = null
 
     companion object {
@@ -54,65 +54,128 @@ class JournalListActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_journal_list)
 
-        setupCustomToolbar()
+        setupToolbar()
 
         firebaseAuth = Firebase.auth
         user = firebaseAuth.currentUser!!
 
-        setupRecyclerViews()
+        setupRecyclerView()
+        setupSearchFunctionality()
+        setupSortButton()
+        setupLayoutToggle()
 
         binding.floatingActionButton.setOnClickListener {
             startActivity(Intent(this, AddJournalActivity::class.java))
         }
     }
 
-    private fun setupCustomToolbar() {
-        toolbar = binding.toolbarLayout.toolbar
-        setSupportActionBar(toolbar)
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbarLayout.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.toolbarLayout.signout.setOnClickListener {
-            showDeleteConfirmationDialog()
-        }
-        binding.toolbarLayout.backBtn.setOnClickListener {
+        binding.toolbarLayout.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
     }
 
-    private fun setupRecyclerViews() {
-        // Pinned journals - StaggeredGrid for better visual layout
-        binding.pinnedRecyclerView?.layoutManager =
-            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        pinnedAdapter = UnifiedNotesAdapter(this, pinnedNotes)
-        binding.pinnedRecyclerView?.adapter = pinnedAdapter
-
-
-        // Unpinned journals - Linear layout
-        binding.recyclerView.setHasFixedSize(true)
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        unpinnedAdapter = UnifiedNotesAdapter(this, unpinnedNotes)
-        binding.recyclerView.adapter = unpinnedAdapter
+    private fun setupRecyclerView() {
+        adapter = UnifiedNotesAdapter(this, mutableListOf())
+        binding.recyclerView.adapter = adapter
+        setStaggeredLayout()
     }
 
-    private fun showDeleteConfirmationDialog() {
-        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
-        val dialogBinding = DialogConfirmSignoutBinding.inflate(layoutInflater)
+    private fun setStaggeredLayout() {
+        binding.recyclerView.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        isStaggeredLayout = true
+        binding.toolbarLayout.btnLayoutToggle.setImageResource(R.drawable.ic_grid_view)
+    }
 
-        dialogBinding.btnDelete.setOnClickListener {
-            firebaseAuth.signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
-            finish()
+    private fun setLinearLayout() {
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        isStaggeredLayout = false
+        binding.toolbarLayout.btnLayoutToggle.setImageResource(R.drawable.ic_list_view)
+    }
+
+    private fun setupLayoutToggle() {
+        binding.toolbarLayout.btnLayoutToggle.setOnClickListener {
+            if (isStaggeredLayout) {
+                setLinearLayout()
+            } else {
+                setStaggeredLayout()
+            }
+        }
+    }
+
+    private fun setupSortButton() {
+        updateSortIcon()
+
+        binding.toolbarLayout.btnSort.setOnClickListener {
+            sortAscending = !sortAscending
+            updateSortIcon()
+            applyCurrentFiltersAndSort()
+        }
+    }
+
+    private fun updateSortIcon() {
+        if (sortAscending) {
+            binding.toolbarLayout.btnSort.setImageResource(R.drawable.ic_sort_ascending)
+        } else {
+            binding.toolbarLayout.btnSort.setImageResource(R.drawable.ic_sort_descending)
+        }
+    }
+
+    private fun setupSearchFunctionality() {
+        binding.toolbarLayout.edtTxtSrch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                applyCurrentFiltersAndSort()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun applyCurrentFiltersAndSort() {
+        val query = binding.toolbarLayout.edtTxtSrch.text.toString()
+
+        // Filter journals based on search query
+        val filtered = if (query.isEmpty()) {
+            allJournals.toList()
+        } else {
+            val lowerQuery = query.lowercase()
+            allJournals.filter { note ->
+                when (note) {
+                    is UnifiedNoteItem.JournalItem -> {
+                        note.journal.title.lowercase().contains(lowerQuery) ||
+                                note.journal.thoughts.lowercase().contains(lowerQuery) ||
+                                note.journal.username.lowercase().contains(lowerQuery)
+                    }
+                    else -> false
+                }
+            }
         }
 
-        dialogBinding.btnCancel.setOnClickListener {
-            Toast.makeText(this, "Signout Cancelled", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
+        // Sort filtered journals (pinned first, then by time)
+        val sorted = if (sortAscending) {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenBy { it.timeAdded }
+            )
+        } else {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenByDescending { it.timeAdded }
+            )
         }
 
-        dialog.setContentView(dialogBinding.root)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.show()
+        Log.d(TAG, "Applying filters: query='$query', sortAscending=$sortAscending")
+        Log.d(TAG, "Filtered count: ${filtered.size}, Sorted count: ${sorted.size}")
+
+        // Update adapter with sorted list
+        adapter.updateListSimple(sorted)
+        updateEmptyState(sorted.isEmpty(), query)
     }
 
     override fun onStart() {
@@ -123,21 +186,15 @@ class JournalListActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         listenerRegistration?.remove()
-        // Release media player resources
-        pinnedAdapter.releasePlayer()
-        unpinnedAdapter.releasePlayer()
+        adapter.releasePlayer()
     }
 
     private fun loadJournalsWithOfflineSupport() {
         binding.progressBar.visibility = View.VISIBLE
         binding.NoPostTv.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
-        binding.pinnedSection?.visibility = View.GONE
-        binding.othersSection?.visibility = View.GONE
 
-        pinnedNotes.clear()
-        unpinnedNotes.clear()
-
+        allJournals.clear()
         loadFromCache()
     }
 
@@ -161,7 +218,6 @@ class JournalListActivity : AppCompatActivity() {
 
                     processJournals(journals as List<Pair<Journal, String>>)
 
-                    // Save username from first document if available
                     querySnapshot.documents.firstOrNull()?.data?.get("username")?.toString()?.let {
                         saveUsername(it)
                     }
@@ -196,7 +252,6 @@ class JournalListActivity : AppCompatActivity() {
                         Log.d(TAG, "Data loaded from server")
                     }
 
-                    // Save username from first document if available
                     querySnapshot.documents.firstOrNull()?.data?.get("username")?.toString()?.let {
                         saveUsername(it)
                     }
@@ -212,9 +267,8 @@ class JournalListActivity : AppCompatActivity() {
 
                     processJournals(journals as List<Pair<Journal, String>>)
                 } else {
-                    pinnedNotes.clear()
-                    unpinnedNotes.clear()
-                    updateUI()
+                    allJournals.clear()
+                    applyCurrentFiltersAndSort()
 
                     if (querySnapshot?.metadata?.isFromCache == true) {
                         Log.d(TAG, "No cached journals found")
@@ -226,52 +280,29 @@ class JournalListActivity : AppCompatActivity() {
     }
 
     private fun processJournals(journals: List<Pair<Journal, String>>) {
-        pinnedNotes.clear()
-        unpinnedNotes.clear()
+        allJournals.clear()
 
         for ((journal, documentId) in journals) {
             val journalItem = UnifiedNoteItem.JournalItem(journal = journal, id = documentId)
-
-            if (journal.isPinned) {
-                pinnedNotes.add(journalItem)
-            } else {
-                unpinnedNotes.add(journalItem)
-            }
+            allJournals.add(journalItem)
         }
 
-        updateUI()
+        applyCurrentFiltersAndSort()
     }
 
-    private fun updateUI() {
-        // Pinned section
-        if (pinnedNotes.isEmpty()) {
-            binding.pinnedSection?.visibility = View.GONE
-        } else {
-            binding.pinnedSection?.visibility = View.VISIBLE
-            pinnedAdapter.notifyDataSetChanged()  // ← Use this instead
-        }
-
-        // Unpinned section
-        if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
+    private fun updateEmptyState(isEmpty: Boolean, searchQuery: String) {
+        if (isEmpty) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
-            binding.othersSection?.visibility = View.GONE
-        } else if (unpinnedNotes.isEmpty()) {
-            binding.recyclerView.visibility = View.GONE
-            binding.othersSection?.visibility = View.GONE
-            binding.NoPostTv.visibility = View.GONE
-        } else {
-            binding.recyclerView.visibility = View.VISIBLE
-            binding.othersSection?.visibility = View.VISIBLE
-            binding.NoPostTv.visibility = View.GONE
 
-            if (pinnedNotes.isEmpty()) {
-                binding.othersSectionTitle?.visibility = View.GONE
+            binding.NoPostTv.text = if (searchQuery.isNotEmpty()) {
+                "No journals found for \"$searchQuery\""
             } else {
-                binding.othersSectionTitle?.visibility = View.VISIBLE
+                "No journals yet\nStart writing your first journal"
             }
-
-            unpinnedAdapter.notifyDataSetChanged()  // ← Use this instead
+        } else {
+            binding.NoPostTv.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
         }
     }
 
@@ -324,20 +355,16 @@ class JournalListActivity : AppCompatActivity() {
             }
         }
 
-        if (pinnedNotes.isEmpty() && unpinnedNotes.isEmpty()) {
+        if (allJournals.isEmpty()) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
-            binding.pinnedSection?.visibility = View.GONE
-            binding.othersSection?.visibility = View.GONE
         }
     }
 
     fun onJournalDeleted() {
-        if (pinnedNotes.isEmpty() && unpinnedNotes.isEmpty()) {
+        if (allJournals.isEmpty()) {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
-            binding.pinnedSection?.visibility = View.GONE
-            binding.othersSection?.visibility = View.GONE
         }
     }
 }

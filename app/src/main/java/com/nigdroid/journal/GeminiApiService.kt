@@ -1,5 +1,3 @@
-
-// API Service Interface
 package com.nigdroid.journal
 
 import com.google.gson.annotations.SerializedName

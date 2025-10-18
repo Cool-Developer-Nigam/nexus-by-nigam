@@ -1,98 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="journal"
+            type="com.nigdroid.journal.Journal" />
+    </data>
 
-<data>
-    <variable
-        name="journal"
-        type="com.nigdroid.journal.Journal" />
-</data>
-    <androidx.cardview.widget.CardView
-        android:id="@+id/Journal"
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:layout_margin="8dp"
         app:cardCornerRadius="12dp"
-        app:cardElevation="6dp"
-        android:shadowColor="#00000033"
-        android:backgroundTint="@color/cream"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
+        android:backgroundTint="@color/lightCream"
+        app:cardElevation="4dp"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp"
+            android:orientation="vertical">
 
-            >
+            <!-- Image Section - Responsive for both layouts -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/imageCardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp">
 
+                <ImageView
+                    android:id="@+id/imgJournal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:minHeight="120dp"
+                    android:maxHeight="300dp"
+                    android:contentDescription="Journal Image"
+                    android:scaleType="centerCrop"
+                    app:imageUrl="@{journal.imageUrl}"
+                    tools:src="@tools:sample/backgrounds/scenic" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Content Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <!-- Title -->
                 <TextView
-                    android:id="@+id/tvUsername"
-                    android:layout_width="0dp"
+                    android:id="@+id/tvTitle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@{journal.username}"
-                    android:textSize="20sp"
+                    app:htmlText="@{journal.title}"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black" />
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:layout_marginBottom="8dp"
+                    tools:text="Journal Title" />
 
-                <ImageView
-                    android:id="@+id/delete_btn"
-                    android:layout_width="42dp"
-                    android:layout_height="42dp"
-                    android:src="@drawable/remove"
+                <!-- Description Preview -->
+                <TextView
+                    android:id="@+id/tvDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:htmlText="@{journal.thoughts}"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp"
+                    android:maxLines="3"
+                    android:ellipsize="end"
+                    android:layout_marginBottom="8dp"
+                    tools:text="Journal thoughts preview..." />
 
-                  />
+                <!-- Bottom Row: Timestamp and Delete Button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- Timestamp -->
+                    <TextView
+                        android:id="@+id/timestamp_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:timeAgo="@{journal.timeAdded}"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp"
+                        android:textStyle="italic"
+                        tools:text="2 days ago" />
+
+                    <!-- Delete Button -->
+                    <ImageButton
+                        android:id="@+id/deleteBtn"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Delete"
+                        android:src="@drawable/ic_delete_forever"
+                        />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Image for Journal -->
-            <ImageView
-                android:id="@+id/imgJournal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                android:contentDescription="Journal Image"
-                app:imageUrl="@{journal.imageUrl}"
-                android:layout_marginBottom="8dp" />
-
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@{journal.title}"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-
-
-            <!-- Date Created -->
-            <TextView
-                android:id="@+id/timestamp_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{journal.timeAdded.toString()}"
-                android:textSize="12sp"
-                android:textColor="@android:color/darker_gray"
-                android:layout_marginTop="6dp" />
-
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
-
-
+    </com.google.android.material.card.MaterialCardView>
 </layout>

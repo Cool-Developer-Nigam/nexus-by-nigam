@@ -2,12 +2,15 @@ package com.nigdroid.journal
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
@@ -24,89 +27,143 @@ class TodoListActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var user: FirebaseUser
     private val db = FirebaseFirestore.getInstance()
-
-    private lateinit var toolbar: Toolbar
     private lateinit var collectionReference: CollectionReference
 
-    private val pinnedTodos = mutableListOf<UnifiedNoteItem>()
-    private val unpinnedTodos = mutableListOf<UnifiedNoteItem>()
+    private val allTodos = mutableListOf<UnifiedNoteItem>()
+    private var isStaggeredLayout = true
+    private var sortAscending = false
 
-    private lateinit var pinnedAdapter: UnifiedNotesAdapter
-    private lateinit var unpinnedAdapter: UnifiedNotesAdapter
+    private lateinit var adapter: UnifiedNotesAdapter
+
+    private val TAG = "TodoListActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_todo_list)
 
-        // Setup toolbar
-        setupCustomToolbar()
+        setupToolbar()
 
-        // Firebase auth
         firebaseAuth = FirebaseAuth.getInstance()
         user = firebaseAuth.currentUser!!
         collectionReference = db.collection("TodoItems")
 
-        // Setup RecyclerViews with staggered grid (2 columns like Google Keep)
-        setupRecyclerViews()
+        setupRecyclerView()
+        setupSearchFunctionality()
+        setupSortButton()
+        setupLayoutToggle()
 
-        // FAB click listener
         binding.fabAddTodo.setOnClickListener {
             startActivity(Intent(this, AddTodoActivity::class.java))
         }
     }
 
-    private fun setupCustomToolbar() {
-        toolbar = binding.toolbarLayout.toolbar
-        setSupportActionBar(toolbar)
-
-        // Hide default title
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbarLayout.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.toolbarLayout.signout.setOnClickListener {
-            showDeleteConfirmationDialog()
-        }
-
-        binding.toolbarLayout.backBtn.setOnClickListener {
+        binding.toolbarLayout.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
     }
 
-    private fun showDeleteConfirmationDialog() {
-        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
-
-        // Use data binding
-        val dialogBinding = DialogConfirmSignoutBinding.inflate(layoutInflater)
-
-        dialogBinding.btnDelete.setOnClickListener {
-            firebaseAuth.signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
-        dialogBinding.btnCancel.setOnClickListener {
-            Toast.makeText(this, "Signout Cancelled", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-        }
-
-        dialog.setContentView(dialogBinding.root)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.show()
+    private fun setupRecyclerView() {
+        adapter = UnifiedNotesAdapter(this, mutableListOf())
+        binding.todosRecyclerView.adapter = adapter
+        setStaggeredLayout()
     }
 
-    private fun setupRecyclerViews() {
-        // Pinned todos
-        binding.pinnedRecyclerView.layoutManager =
-            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        pinnedAdapter = UnifiedNotesAdapter(this, pinnedTodos)
-        binding.pinnedRecyclerView.adapter = pinnedAdapter
-
-        // Unpinned todos
+    private fun setStaggeredLayout() {
         binding.todosRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        unpinnedAdapter = UnifiedNotesAdapter(this, unpinnedTodos)
-        binding.todosRecyclerView.adapter = unpinnedAdapter
+        isStaggeredLayout = true
+        binding.toolbarLayout.btnLayoutToggle.setImageResource(R.drawable.ic_grid_view)
+    }
+
+    private fun setLinearLayout() {
+        binding.todosRecyclerView.layoutManager = LinearLayoutManager(this)
+        isStaggeredLayout = false
+        binding.toolbarLayout.btnLayoutToggle.setImageResource(R.drawable.ic_list_view)
+    }
+
+    private fun setupLayoutToggle() {
+        binding.toolbarLayout.btnLayoutToggle.setOnClickListener {
+            if (isStaggeredLayout) {
+                setLinearLayout()
+            } else {
+                setStaggeredLayout()
+            }
+        }
+    }
+
+    private fun setupSortButton() {
+        updateSortIcon()
+
+        binding.toolbarLayout.btnSort.setOnClickListener {
+            sortAscending = !sortAscending
+            updateSortIcon()
+            applyCurrentFiltersAndSort()
+        }
+    }
+
+    private fun updateSortIcon() {
+        if (sortAscending) {
+            binding.toolbarLayout.btnSort.setImageResource(R.drawable.ic_sort_ascending)
+        } else {
+            binding.toolbarLayout.btnSort.setImageResource(R.drawable.ic_sort_descending)
+        }
+    }
+
+    private fun setupSearchFunctionality() {
+        binding.toolbarLayout.edtTxtSrch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                applyCurrentFiltersAndSort()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun applyCurrentFiltersAndSort() {
+        val query = binding.toolbarLayout.edtTxtSrch.text.toString()
+
+        // Filter todos based on search query
+        val filtered = if (query.isEmpty()) {
+            allTodos.toList()
+        } else {
+            val lowerQuery = query.lowercase()
+            allTodos.filter { note ->
+                when (note) {
+                    is UnifiedNoteItem.TodoItemWrapper -> {
+                        note.todoItem.title.lowercase().contains(lowerQuery) ||
+                                note.todoItem.items.any { it.text.lowercase().contains(lowerQuery) }
+                    }
+                    else -> false
+                }
+            }
+        }
+
+        // Sort filtered todos (pinned first, then by time)
+        val sorted = if (sortAscending) {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenBy { it.timeAdded }
+            )
+        } else {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenByDescending { it.timeAdded }
+            )
+        }
+
+        Log.d(TAG, "Applying filters: query='$query', sortAscending=$sortAscending")
+        Log.d(TAG, "Filtered count: ${filtered.size}, Sorted count: ${sorted.size}")
+
+        // Update adapter with sorted list
+        adapter.updateListSimple(sorted)
+        updateEmptyState(sorted.isEmpty(), query)
     }
 
     override fun onStart() {
@@ -116,9 +173,7 @@ class TodoListActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        // Release media player resources
-        pinnedAdapter.releasePlayer()
-        unpinnedAdapter.releasePlayer()
+        adapter.releasePlayer()
     }
 
     private fun loadTodos() {
@@ -138,8 +193,7 @@ class TodoListActivity : AppCompatActivity() {
                 }
 
                 if (querySnapshot != null && !querySnapshot.isEmpty) {
-                    pinnedTodos.clear()
-                    unpinnedTodos.clear()
+                    allTodos.clear()
 
                     for (document in querySnapshot) {
                         val todo = document.toObject(TodoItem::class.java).copy(
@@ -147,51 +201,30 @@ class TodoListActivity : AppCompatActivity() {
                         )
 
                         val todoItem = UnifiedNoteItem.TodoItemWrapper(todo)
-
-                        if (todo.isPinned) {
-                            pinnedTodos.add(todoItem)
-                        } else {
-                            unpinnedTodos.add(todoItem)
-                        }
+                        allTodos.add(todoItem)
                     }
 
-                    updateUI()
+                    applyCurrentFiltersAndSort()
                 } else {
-                    pinnedTodos.clear()
-                    unpinnedTodos.clear()
-                    updateUI()
+                    allTodos.clear()
+                    applyCurrentFiltersAndSort()
                 }
             }
     }
 
-    private fun updateUI() {
-        // Pinned section
-        if (pinnedTodos.isEmpty()) {
-            binding.pinnedSection.visibility = View.GONE
-        } else {
-            binding.pinnedSection.visibility = View.VISIBLE
-            pinnedAdapter.notifyDataSetChanged()
-        }
-
-        // Unpinned section
-        if (unpinnedTodos.isEmpty() && pinnedTodos.isEmpty()) {
+    private fun updateEmptyState(isEmpty: Boolean, searchQuery: String) {
+        if (isEmpty) {
             binding.emptyStateLayout.visibility = View.VISIBLE
-            binding.othersSection.visibility = View.GONE
-        } else if (unpinnedTodos.isEmpty()) {
-            binding.othersSection.visibility = View.GONE
-            binding.emptyStateLayout.visibility = View.GONE
-        } else {
-            binding.othersSection.visibility = View.VISIBLE
-            binding.emptyStateLayout.visibility = View.GONE
+            binding.todosRecyclerView.visibility = View.GONE
 
-            // Hide "OTHERS" label if no pinned items
-            if (pinnedTodos.isEmpty()) {
-                binding.othersSectionTitle.visibility = View.GONE
+            binding.emptyStateMessage.text = if (searchQuery.isNotEmpty()) {
+                "No todos found for \"$searchQuery\""
             } else {
-                binding.othersSectionTitle.visibility = View.VISIBLE
+                "No todos yet\nStart creating your first todo"
             }
-
-            unpinnedAdapter.notifyDataSetChanged()
+        } else {
+            binding.emptyStateLayout.visibility = View.GONE
+            binding.todosRecyclerView.visibility = View.VISIBLE
         }
     }
 }

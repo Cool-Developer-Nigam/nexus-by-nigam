@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -11,85 +10,78 @@
         android:fitsSystemWindows="true"
         android:elevation="4dp">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@drawable/toolbar_bg"
-            android:layout_marginHorizontal="16dp"
-            android:paddingStart="8dp"
+            android:layout_marginHorizontal="10dp"
             android:paddingEnd="8dp"
+            android:elevation="4dp"
             app:contentInsetStart="0dp"
             app:contentInsetEnd="0dp"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/white"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- Toolbar content layout -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal"
+                android:paddingEnd="8dp">
 
-                <LinearLayout
-                    android:id="@+id/back_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="3dp"
+                <!-- Search EditText -->
+                <EditText
+                    android:id="@+id/edtTxtSrch"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
                     android:background="@drawable/edt_txt_bg"
-                    android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    android:drawableStart="@drawable/search_icon"
+                    android:drawablePadding="8dp"
+                    android:hint="Search notes..."
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/grey"
+                    android:textSize="14sp" />
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="12dp"
-                        android:src="@drawable/back_logo"
-                        app:tint="@color/black" />
+                <!-- Layout Toggle Button -->
+                <ImageButton
+                    android:id="@+id/btnLayoutToggle"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Toggle layout"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_grid_view"
+                    app:tint="@color/white" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginEnd="8dp"
-                        android:text="Back"
-                        android:textColor="@color/black"
-                        android:textSize="20sp" />
-                </LinearLayout>
+                <!-- Sort Button -->
+                <ImageButton
+                    android:id="@+id/btnSort"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Sort notes"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_sort_descending"
+                    app:tint="@color/white" />
 
                 <!-- Sign Out Button -->
-                <LinearLayout
-                    android:id="@+id/signout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:orientation="horizontal"
-                    android:padding="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
 
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:src="@drawable/signout"
-                        android:contentDescription="@string/sign_out" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:text="signout"
-                        android:layout_gravity="center_vertical"
-                        android:textStyle="bold"
-                        android:textColor="@color/cream"
-                        android:textSize="16sp" />
+            </LinearLayout>
 
-                </LinearLayout>
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
+
 </layout>

@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/costum_background"
         android:fitsSystemWindows="true">
-        
+
         <include
             android:id="@+id/toolbar_layout"
             layout="@layout/toolbar_journal_list"
@@ -54,77 +54,25 @@
                         app:tint="@color/black" />
 
                     <TextView
+                        android:id="@+id/emptyStateMessage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="No notes yet"
+                        android:gravity="center"
+                        android:text="No notes yet\nTap + to create your first note"
                         android:textColor="@color/grey"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Tap + to create your first note"
-                        android:textColor="@color/grey"
-                        android:textSize="14sp" />
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/pinnedSection"
+                <!-- Single RecyclerView for all text notes -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/textNotesRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="PINNED"
-                        android:textColor="@color/pinkish"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/pinnedRecyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:padding="8dp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/othersSection"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/othersSectionTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="OTHERS"
-                        android:textColor="@color/pinkish"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/textNotesRecyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:padding="8dp" />
-
-                </LinearLayout>
+                    android:nestedScrollingEnabled="false"
+                    android:padding="8dp"
+                    android:visibility="visible" />
 
             </LinearLayout>
 

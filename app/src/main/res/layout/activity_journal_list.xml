@@ -38,97 +38,29 @@
                     android:visibility="gone" />
 
                 <!-- Empty State -->
-                <LinearLayout
+                <TextView
                     android:id="@+id/NoPostTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="100dp"
                     android:gravity="center"
-                    android:orientation="vertical"
                     android:padding="32dp"
-                    android:visibility="gone">
+                    android:text="No journals yet\nTap + to create your first journal"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    android:visibility="gone"
+                    android:drawableTop="@drawable/ic_journal"
+                    android:drawableTint="@color/black"
+                    android:drawablePadding="16dp" />
 
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:alpha="0.3"
-                        android:src="@drawable/ic_journal"
-                        app:tint="@color/black" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="No journals yet"
-                        android:textColor="@color/grey"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Tap + to create your first journal"
-                        android:textColor="@color/grey"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <!-- Pinned Section -->
-                <LinearLayout
-                    android:id="@+id/pinnedSection"
+                <!-- Single RecyclerView for all journals -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="PINNED"
-                        android:textColor="@color/pinkish"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/pinnedRecyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:padding="8dp" />
-
-                </LinearLayout>
-
-                <!-- Others Section -->
-                <LinearLayout
-                    android:id="@+id/othersSection"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/othersSectionTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="OTHERS"
-                        android:textColor="@color/pinkish"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:padding="8dp" />
-
-                </LinearLayout>
+                    android:nestedScrollingEnabled="false"
+                    android:padding="8dp"
+                    android:visibility="visible" />
 
             </LinearLayout>
 

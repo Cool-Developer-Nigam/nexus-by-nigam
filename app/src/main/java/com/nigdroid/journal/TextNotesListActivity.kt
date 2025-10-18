@@ -2,11 +2,14 @@ package com.nigdroid.journal
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
@@ -25,79 +28,140 @@ class TextNotesListActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private lateinit var collectionReference: CollectionReference
 
-    private lateinit var toolbar: Toolbar
+    private val allTextNotes = mutableListOf<UnifiedNoteItem>()
+    private var isStaggeredLayout = true
+    private var sortAscending = false
 
-    private val pinnedNotes = mutableListOf<UnifiedNoteItem>()
-    private val unpinnedNotes = mutableListOf<UnifiedNoteItem>()
+    private lateinit var adapter: UnifiedNotesAdapter
 
-    private lateinit var pinnedAdapter: UnifiedNotesAdapter
-    private lateinit var unpinnedAdapter: UnifiedNotesAdapter
+    private val TAG = "TextNotesListActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_text_notes_list)
 
-        setupCustomToolbar()
+        setupToolbar()
 
         firebaseAuth = FirebaseAuth.getInstance()
         user = firebaseAuth.currentUser!!
         collectionReference = db.collection("TextNotes")
 
-        setupRecyclerViews()
+        setupRecyclerView()
+        setupSearchFunctionality()
+        setupSortButton()
+        setupLayoutToggle()
 
         binding.fabAddNote.setOnClickListener {
             startActivity(Intent(this, AddTextNoteActivity::class.java))
         }
     }
 
-    private fun setupCustomToolbar() {
-        toolbar = binding.toolbarLayout.toolbar
-        setSupportActionBar(toolbar)
-
-        // Hide default title
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbarLayout.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.toolbarLayout.signout.setOnClickListener {
-            showDeleteConfirmationDialog()
-        }
-        binding.toolbarLayout.backBtn.setOnClickListener {
+        binding.toolbarLayout.toolbar.setNavigationOnClickListener {
             onBackPressed()
         }
     }
 
-    private fun showDeleteConfirmationDialog() {
-        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
-
-        // Use data binding
-        val dialogBinding = DialogConfirmSignoutBinding.inflate(layoutInflater)
-
-        dialogBinding.btnDelete.setOnClickListener {
-            firebaseAuth.signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-
-        dialogBinding.btnCancel.setOnClickListener {
-            Toast.makeText(this, "Signout Cancelled", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-        }
-
-        dialog.setContentView(dialogBinding.root)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        dialog.show()
+    private fun setupRecyclerView() {
+        adapter = UnifiedNotesAdapter(this, mutableListOf())
+        binding.textNotesRecyclerView.adapter = adapter
+        setStaggeredLayout()
     }
 
-    private fun setupRecyclerViews() {
-        binding.pinnedRecyclerView.layoutManager =
-            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        pinnedAdapter = UnifiedNotesAdapter(this, pinnedNotes)
-        binding.pinnedRecyclerView.adapter = pinnedAdapter
-
+    private fun setStaggeredLayout() {
         binding.textNotesRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-        unpinnedAdapter = UnifiedNotesAdapter(this, unpinnedNotes)
-        binding.textNotesRecyclerView.adapter = unpinnedAdapter
+        isStaggeredLayout = true
+        binding.toolbarLayout.btnLayoutToggle.setImageResource(R.drawable.ic_grid_view)
+    }
+
+    private fun setLinearLayout() {
+        binding.textNotesRecyclerView.layoutManager = LinearLayoutManager(this)
+        isStaggeredLayout = false
+        binding.toolbarLayout.btnLayoutToggle.setImageResource(R.drawable.ic_list_view)
+    }
+
+    private fun setupLayoutToggle() {
+        binding.toolbarLayout.btnLayoutToggle.setOnClickListener {
+            if (isStaggeredLayout) {
+                setLinearLayout()
+            } else {
+                setStaggeredLayout()
+            }
+        }
+    }
+
+    private fun setupSortButton() {
+        updateSortIcon()
+
+        binding.toolbarLayout.btnSort.setOnClickListener {
+            sortAscending = !sortAscending
+            updateSortIcon()
+            applyCurrentFiltersAndSort()
+        }
+    }
+
+    private fun updateSortIcon() {
+        if (sortAscending) {
+            binding.toolbarLayout.btnSort.setImageResource(R.drawable.ic_sort_ascending)
+        } else {
+            binding.toolbarLayout.btnSort.setImageResource(R.drawable.ic_sort_descending)
+        }
+    }
+
+    private fun setupSearchFunctionality() {
+        binding.toolbarLayout.edtTxtSrch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                applyCurrentFiltersAndSort()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun applyCurrentFiltersAndSort() {
+        val query = binding.toolbarLayout.edtTxtSrch.text.toString()
+
+        // Filter text notes based on search query
+        val filtered = if (query.isEmpty()) {
+            allTextNotes.toList()
+        } else {
+            val lowerQuery = query.lowercase()
+            allTextNotes.filter { note ->
+                when (note) {
+                    is UnifiedNoteItem.TextNoteItem -> {
+                        note.textNote.title.lowercase().contains(lowerQuery) ||
+                                note.textNote.content.lowercase().contains(lowerQuery)
+                    }
+                    else -> false
+                }
+            }
+        }
+
+        // Sort filtered notes (pinned first, then by time)
+        val sorted = if (sortAscending) {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenBy { it.timeAdded }
+            )
+        } else {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenByDescending { it.timeAdded }
+            )
+        }
+
+        Log.d(TAG, "Applying filters: query='$query', sortAscending=$sortAscending")
+        Log.d(TAG, "Filtered count: ${filtered.size}, Sorted count: ${sorted.size}")
+
+        // Update adapter with sorted list
+        adapter.updateListSimple(sorted)
+        updateEmptyState(sorted.isEmpty(), query)
     }
 
     override fun onStart() {
@@ -107,9 +171,7 @@ class TextNotesListActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        // Release media player resources
-        pinnedAdapter.releasePlayer()
-        unpinnedAdapter.releasePlayer()
+        adapter.releasePlayer()
     }
 
     private fun loadTextNotes() {
@@ -129,8 +191,7 @@ class TextNotesListActivity : AppCompatActivity() {
                 }
 
                 if (querySnapshot != null && !querySnapshot.isEmpty) {
-                    pinnedNotes.clear()
-                    unpinnedNotes.clear()
+                    allTextNotes.clear()
 
                     for (document in querySnapshot) {
                         val note = document.toObject(TextNote::class.java).copy(
@@ -138,50 +199,30 @@ class TextNotesListActivity : AppCompatActivity() {
                         )
 
                         val noteItem = UnifiedNoteItem.TextNoteItem(note)
-
-                        if (note.isPinned) {
-                            pinnedNotes.add(noteItem)
-                        } else {
-                            unpinnedNotes.add(noteItem)
-                        }
+                        allTextNotes.add(noteItem)
                     }
 
-                    updateUI()
+                    applyCurrentFiltersAndSort()
                 } else {
-                    pinnedNotes.clear()
-                    unpinnedNotes.clear()
-                    updateUI()
+                    allTextNotes.clear()
+                    applyCurrentFiltersAndSort()
                 }
             }
     }
 
-    private fun updateUI() {
-        // Pinned section
-        if (pinnedNotes.isEmpty()) {
-            binding.pinnedSection.visibility = View.GONE
-        } else {
-            binding.pinnedSection.visibility = View.VISIBLE
-            pinnedAdapter.notifyDataSetChanged()
-        }
-
-        // Unpinned section
-        if (unpinnedNotes.isEmpty() && pinnedNotes.isEmpty()) {
+    private fun updateEmptyState(isEmpty: Boolean, searchQuery: String) {
+        if (isEmpty) {
             binding.emptyStateLayout.visibility = View.VISIBLE
-            binding.othersSection.visibility = View.GONE
-        } else if (unpinnedNotes.isEmpty()) {
-            binding.othersSection.visibility = View.GONE
-            binding.emptyStateLayout.visibility = View.GONE
-        } else {
-            binding.othersSection.visibility = View.VISIBLE
-            binding.emptyStateLayout.visibility = View.GONE
+            binding.textNotesRecyclerView.visibility = View.GONE
 
-            if (pinnedNotes.isEmpty()) {
-                binding.othersSectionTitle.visibility = View.GONE
+            binding.emptyStateMessage.text = if (searchQuery.isNotEmpty()) {
+                "No text notes found for \"$searchQuery\""
             } else {
-                binding.othersSectionTitle.visibility = View.VISIBLE
+                "No text notes yet\nStart creating your first note"
             }
-
-            unpinnedAdapter.notifyDataSetChanged()
+        } else {
+            binding.emptyStateLayout.visibility = View.GONE
+            binding.textNotesRecyclerView.visibility = View.VISIBLE
         }
     }
 }

@@ -44,7 +44,7 @@ class Show_Journal : AppCompatActivity() {
         val firstWord = username.split(" ")[0]
         binding.tvUsername.text = "Hello $firstWord"
 
-//        toolbar setup
+        // toolbar setup
         setupCustomToolbar()
     }
 
@@ -100,7 +100,6 @@ class Show_Journal : AppCompatActivity() {
             binding.journal = currentJournal
             binding.executePendingBindings()
         }
-
     }
 
     private fun showDeleteConfirmationDialog() {

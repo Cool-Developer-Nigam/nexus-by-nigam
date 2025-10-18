@@ -62,7 +62,6 @@
         <activity
             android:name=".EditJournalActivity"
             android:exported="false"
-            android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".Show_Journal"

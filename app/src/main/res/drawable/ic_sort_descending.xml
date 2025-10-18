@@ -3,7 +3,12 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+    <!-- Arrow pointing down (moved right) -->
     <path
-        android:fillColor="#FF000000"
-        android:pathData="M3,18h6v-2H3V18zM3,6v2h18V6H3zM3,13h12v-2H3V13zM19,16l4-4h-3V4h-2v8h-3L19,16z"/>
+        android:fillColor="#000000"
+        android:pathData="M17,19.17L20.41,15.76L21.83,17.17L16,23L10.17,17.17L11.59,15.76L15,19.17V1H17V19.17z"/>
+    <!-- Sort lines (longer to shorter from top to bottom) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M2,7h7v2H2z M2,13h5v2H2z M2,19h3v2H2z"/>
 </vector>
