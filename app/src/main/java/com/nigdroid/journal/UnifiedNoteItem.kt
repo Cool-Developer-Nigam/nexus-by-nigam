@@ -1,4 +1,5 @@
 package com.nigdroid.journal
+
 sealed class UnifiedNoteItem {
     abstract val id: String
     abstract val timeAdded: Long
@@ -9,7 +10,7 @@ sealed class UnifiedNoteItem {
         val journal: Journal,
         override val id: String
     ) : UnifiedNoteItem() {
-        override val timeAdded: Long = journal.timeAdded.toLongOrNull() ?: 0L
+        override val timeAdded: Long = journal.timeAdded.toLongOrNull() ?: System.currentTimeMillis()
         override val isPinned: Boolean = journal.isPinned
         override val userId: String = journal.userId
     }

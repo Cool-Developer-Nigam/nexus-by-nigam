@@ -9,409 +9,417 @@
         android:layout_height="match_parent"
         android:background="#E6DDF3">
 
-        <!-- Header Section with NestedScrollView -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/headerScrollView"
+        <!-- SwipeRefreshLayout wrapping the NestedScrollView -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:fillViewport="true">
+            android:layout_height="match_parent">
 
-            <LinearLayout
+            <!-- Header Section with NestedScrollView -->
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/headerScrollView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:fillViewport="true">
 
-                <!-- Header Section with Profile -->
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp">
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <!-- Header Section with Profile -->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:orientation="vertical">
+                        android:layout_marginBottom="20dp">
 
-                        <TextView
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Hello"
-                            android:textColor="#DF3F7E"
-                            android:textSize="14sp" />
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/username"
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hello"
+                                android:textColor="#DF3F7E"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/username"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="User"
+                                android:textColor="#1F2937"
+                                android:textSize="24sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/profileImage"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/profile_image"
+                            app:shapeAppearanceOverlay="@style/CircleImageView" />
+                    </RelativeLayout>
+
+                    <!-- Search Bar -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        android:backgroundTint="#fff"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="User"
-                            android:textColor="#1F2937"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="2dp">
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/profileImage"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/profile_image"
-                        app:shapeAppearanceOverlay="@style/CircleImageView" />
-                </RelativeLayout>
+                            <EditText
+                                android:id="@+id/edt_txt_srch"
+                                android:layout_width="0dp"
+                                android:layout_height="50dp"
+                                android:layout_weight="0.5"
+                                android:background="@null"
+                                android:drawableStart="@drawable/search_icon"
+                                android:drawablePadding="8dp"
+                                android:hint="Search For..."
+                                android:inputType="text"
+                                android:paddingStart="12dp"
+                                android:paddingEnd="8dp"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="8dp"
+                                android:textColor="@color/black"
+                                android:textColorHint="@color/grey" />
 
-                <!-- Search Bar -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:backgroundTint="#fff"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                            <ImageView
+                                android:id="@+id/chatbot"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginEnd="4dp"
+                                android:src="@drawable/ic_chatbot"
+                                android:contentDescription="Chatbot"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:background="?attr/selectableItemBackgroundBorderless"/>
 
+                        </LinearLayout>
+
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Category Icons Grid -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="2dp">
+                        android:weightSum="4">
 
-                        <EditText
-                            android:id="@+id/edt_txt_srch"
+                        <!-- Journal Icon -->
+                        <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="0.5"
-                            android:background="@null"
-                            android:drawableStart="@drawable/search_icon"
-                            android:drawablePadding="8dp"
-                            android:hint="Search For..."
-                            android:inputType="text"
-                            android:paddingStart="12dp"
-                            android:paddingEnd="8dp"
-                            android:paddingTop="8dp"
-                            android:paddingBottom="8dp"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/grey" />
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/chatbot"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="4dp"
-                            android:src="@drawable/ic_chatbot"
-                            android:contentDescription="Chatbot"
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/JournalCard"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="2dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/gradient_journal"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_journal"
+                                        app:tint="#F0ECEE" />
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Journals"
+                                android:textColor="#1F2937"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Todo Icon -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/TodoCard"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:backgroundTint="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="2dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/gradient_todo"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_list"
+                                        app:tint="#F0ECEE" />
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="List"
+                                android:textColor="#1F2937"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Audio Icon -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/audioCard"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:backgroundTint="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="2dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/gradient_audio"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_mic"
+                                        app:tint="#F0ECEE" />
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Audio"
+                                android:textColor="#1F2937"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Text Icon -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/textCard"
+                                android:layout_width="64dp"
+                                android:layout_height="64dp"
+                                android:backgroundTint="@color/white"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="2dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/gradient_text_note"
+                                    android:gravity="center"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="32dp"
+                                        android:layout_height="32dp"
+                                        android:src="@drawable/ic_text"
+                                        app:tint="#F0ECEE" />
+                                </LinearLayout>
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="Text"
+                                android:textColor="#1F2937"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:paddingHorizontal="16dp">
+
+                        <TextView
+                            android:id="@+id/tvFavouritesTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:text="Favourites"
+                            android:textColor="#EC4899"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:id="@+id/seeAllContainer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:gravity="center_vertical"
                             android:clickable="true"
                             android:focusable="true"
-                            android:background="?attr/selectableItemBackgroundBorderless"/>
+                            android:background="?attr/selectableItemBackground">
 
-                    </LinearLayout>
+                            <!-- Grid/List Toggle Button -->
+                            <ImageView
+                                android:id="@+id/btnLayoutToggle"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:padding="4dp"
+                                android:src="@drawable/ic_grid_view"
+                                android:contentDescription="Toggle layout"
+                                app:tint="#EC4899"
+                                android:layout_marginEnd="8dp" />
 
-                </androidx.cardview.widget.CardView>
+                            <!-- Sort Button -->
+                            <ImageView
+                                android:id="@+id/btnSort"
+                                android:layout_width="32dp"
+                                android:layout_height="32dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:padding="4dp"
+                                android:src="@drawable/ic_sort"
+                                android:contentDescription="Sort options"
+                                app:tint="#EC4899"
+                                android:layout_marginEnd="16dp" />
 
-                <!-- Category Icons Grid -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:orientation="horizontal"
-                    android:weightSum="4">
+                            <!-- See All Text -->
+                            <TextView
+                                android:id="@+id/tvSeeAll"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="See all"
+                                android:textStyle="italic"
+                                android:textColor="#1976D2"
+                                android:textSize="14sp"
+                                android:layout_marginEnd="4dp" />
 
-                    <!-- Journal Icon -->
-                    <LinearLayout
-                        android:layout_width="0dp"
+                            <!-- Dropdown Arrow -->
+                            <ImageView
+                                android:id="@+id/ivSeeAllArrow"
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+                                android:src="@drawable/ic_arrow_drop_down"
+                                android:contentDescription="Expand"
+                                app:tint="#1976D2" />
+
+                        </LinearLayout>
+
+                    </RelativeLayout>
+
+                    <!-- RecyclerView for All Notes -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/AllNotesRecyclerView"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:nestedScrollingEnabled="false"
+                        android:paddingBottom="16dp"
+                        android:clipToPadding="false" />
+
+                    <LinearLayout
+                        android:id="@+id/emptyStateLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:gravity="center"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="32dp"
+                        android:visibility="gone"
+                        android:layout_marginTop="48dp">
 
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/JournalCard"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
-                            app:cardCornerRadius="16dp"
-                            app:cardElevation="2dp">
+                        <ImageView
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:alpha="0.3"
+                            android:src="@drawable/ic_pin"
+                            app:tint="@color/grey" />
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/gradient_journal"
-                                android:gravity="center"
-                                android:orientation="vertical">
-
-                                <ImageView
-                                    android:layout_width="32dp"
-                                    android:layout_height="32dp"
-                                    android:src="@drawable/ic_journal"
-                                    app:tint="#F0ECEE" />
-                            </LinearLayout>
-                        </androidx.cardview.widget.CardView>
+                        <TextView
+                            android:id="@+id/emptyStateMessage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center"
+                            android:text="No favourite notes yet\nAdd your important notes to favourites to see them here"
+                            android:textColor="@color/grey"
+                            android:textSize="16sp"
+                            android:lineSpacingExtra="4dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:text="Journals"
-                            android:textColor="#1F2937"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
+                            android:text="Tap the favourite icon on any note"
+                            android:textColor="@color/grey"
+                            android:textSize="12sp"
+                            android:alpha="0.7" />
 
-                    <!-- Todo Icon -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/TodoCard"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
-                            android:backgroundTint="@color/white"
-                            app:cardCornerRadius="16dp"
-                            app:cardElevation="2dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/gradient_todo"
-                                android:gravity="center"
-                                android:orientation="vertical">
-
-                                <ImageView
-                                    android:layout_width="32dp"
-                                    android:layout_height="32dp"
-                                    android:src="@drawable/ic_list"
-                                    app:tint="#F0ECEE" />
-                            </LinearLayout>
-                        </androidx.cardview.widget.CardView>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="List"
-                            android:textColor="#1F2937"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Audio Icon -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/audioCard"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
-                            android:backgroundTint="@color/white"
-                            app:cardCornerRadius="16dp"
-                            app:cardElevation="2dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/gradient_audio"
-                                android:gravity="center"
-                                android:orientation="vertical">
-
-                                <ImageView
-                                    android:layout_width="32dp"
-                                    android:layout_height="32dp"
-                                    android:src="@drawable/ic_mic"
-                                    app:tint="#F0ECEE" />
-                            </LinearLayout>
-                        </androidx.cardview.widget.CardView>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Audio"
-                            android:textColor="#1F2937"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
-                    <!-- Text Icon -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <androidx.cardview.widget.CardView
-                            android:id="@+id/textCard"
-                            android:layout_width="64dp"
-                            android:layout_height="64dp"
-                            android:backgroundTint="@color/white"
-                            app:cardCornerRadius="16dp"
-                            app:cardElevation="2dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/gradient_text_note"
-                                android:gravity="center"
-                                android:orientation="vertical">
-
-                                <ImageView
-                                    android:layout_width="32dp"
-                                    android:layout_height="32dp"
-                                    android:src="@drawable/ic_text"
-                                    app:tint="#F0ECEE" />
-                            </LinearLayout>
-                        </androidx.cardview.widget.CardView>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="Text"
-                            android:textColor="#1F2937"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:paddingHorizontal="16dp">
-
-                    <TextView
-                        android:id="@+id/tvFavouritesTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:text="Favourites"
-                        android:textColor="#EC4899"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:id="@+id/seeAllContainer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:gravity="center_vertical"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackground">
-
-                        <!-- Grid/List Toggle Button -->
-                        <ImageView
-                            android:id="@+id/btnLayoutToggle"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="4dp"
-                            android:src="@drawable/ic_grid_view"
-                            android:contentDescription="Toggle layout"
-                            app:tint="#EC4899"
-                            android:layout_marginEnd="8dp" />
-
-                        <!-- Sort Button -->
-                        <ImageView
-                            android:id="@+id/btnSort"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:padding="4dp"
-                            android:src="@drawable/ic_sort"
-                            android:contentDescription="Sort options"
-                            app:tint="#EC4899"
-                            android:layout_marginEnd="16dp" />
-
-                        <!-- See All Text -->
-                        <TextView
-                            android:id="@+id/tvSeeAll"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="See all"
-                            android:textStyle="italic"
-                            android:textColor="#1976D2"
-                            android:textSize="14sp"
-                            android:layout_marginEnd="4dp" />
-
-                        <!-- Dropdown Arrow -->
-                        <ImageView
-                            android:id="@+id/ivSeeAllArrow"
-                            android:layout_width="26dp"
-                            android:layout_height="26dp"
-                            android:src="@drawable/ic_arrow_drop_down"
-                            android:contentDescription="Expand"
-                            app:tint="#1976D2" />
-
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-                <!-- RecyclerView for All Notes -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/AllNotesRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:paddingBottom="16dp"
-                    android:clipToPadding="false" />
-
-                <LinearLayout
-                    android:id="@+id/emptyStateLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="32dp"
-                    android:visibility="gone"
-                    android:layout_marginTop="48dp">
-
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:alpha="0.3"
-                        android:src="@drawable/ic_pin"
-                        app:tint="@color/grey" />
-
-                    <TextView
-                        android:id="@+id/emptyStateMessage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:gravity="center"
-                        android:text="No favourite notes yet\nAdd your important notes to favourites to see them here"
-                        android:textColor="@color/grey"
-                        android:textSize="16sp"
-                        android:lineSpacingExtra="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Tap the favourite icon on any note"
-                        android:textColor="@color/grey"
-                        android:textSize="12sp"
-                        android:alpha="0.7" />
-
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <!-- Progress Bar (Overlay) -->
         <ProgressBar

@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,9 +25,9 @@ class HomeFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var adapter: UnifiedNotesAdapter
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private val allNotes = mutableListOf<UnifiedNoteItem>()
-    private val filteredNotes = mutableListOf<UnifiedNoteItem>()
     private var isStaggeredLayout = true
     private var sortAscending = false // Default: descending (newest first)
     private var showOnlyPinned = true // Default: show only pinned notes
@@ -46,6 +47,7 @@ class HomeFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
 
         setupRecyclerView()
+        setupSwipeRefresh()
         loadUserProfile()
         setupNavigation()
 
@@ -63,14 +65,47 @@ class HomeFragment : Fragment() {
 
         binding.chatbot.setOnClickListener {
             startActivity(Intent(requireContext(), GeminiActivity::class.java))
-
         }
 
         return binding.root
     }
 
+    private fun setupSwipeRefresh() {
+        swipeRefreshLayout = binding.swipeRefreshLayout
+
+        // Customize refresh colors
+        swipeRefreshLayout.setColorSchemeResources(
+            R.color.purple_500,
+            R.color.teal_200,
+            R.color.purple_700
+        )
+
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
+    }
+
+    private fun refreshData() {
+        // Reload user profile
+        loadUserProfile()
+
+        // Reload notes based on current view state
+        if (showOnlyPinned) {
+            loadPinnedNotes()
+        } else {
+            loadAllNotes()
+        }
+
+        // Stop refreshing animation after a short delay if it hasn't stopped
+        binding.root.postDelayed({
+            if (swipeRefreshLayout.isRefreshing) {
+                swipeRefreshLayout.isRefreshing = false
+            }
+        }, 3000)
+    }
+
     private fun setupRecyclerView() {
-        adapter = UnifiedNotesAdapter(requireContext(), filteredNotes)
+        adapter = UnifiedNotesAdapter(requireContext(), mutableListOf())
         binding.AllNotesRecyclerView.adapter = adapter
         setStaggeredLayout()
     }
@@ -106,7 +141,7 @@ class HomeFragment : Fragment() {
             // Toggle sort order
             sortAscending = !sortAscending
             updateSortIcon()
-            sortAndUpdateNotes()
+            applyCurrentFiltersAndSort()
         }
     }
 
@@ -174,23 +209,23 @@ class HomeFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterNotes(s.toString())
+                applyCurrentFiltersAndSort()
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
     }
 
-    private fun filterNotes(query: String) {
-        filteredNotes.clear()
+    private fun applyCurrentFiltersAndSort() {
+        val query = binding.edtTxtSrch.text.toString()
 
-        if (query.isEmpty()) {
-            filteredNotes.addAll(allNotes)
+        // Filter notes based on search query
+        val filtered = if (query.isEmpty()) {
+            allNotes.toList()
         } else {
             val lowerQuery = query.lowercase()
-
-            for (note in allNotes) {
-                val matchesQuery = when (note) {
+            allNotes.filter { note ->
+                when (note) {
                     is UnifiedNoteItem.JournalItem -> {
                         note.journal.title.lowercase().contains(lowerQuery) ||
                                 note.journal.thoughts.lowercase().contains(lowerQuery) ||
@@ -209,15 +244,38 @@ class HomeFragment : Fragment() {
                                 note.audioNote.transcription.lowercase().contains(lowerQuery)
                     }
                 }
-
-                if (matchesQuery) {
-                    filteredNotes.add(note)
-                }
             }
         }
 
-        adapter.notifyDataSetChanged()
-        updateEmptyState()
+        // Sort filtered notes
+        val sorted = if (showOnlyPinned) {
+            // When showing only pinned, all are pinned, so just sort by time
+            if (sortAscending) {
+                filtered.sortedBy { it.timeAdded }
+            } else {
+                filtered.sortedByDescending { it.timeAdded }
+            }
+        } else {
+            // When showing all, sort pinned first, then by time
+            if (sortAscending) {
+                filtered.sortedWith(
+                    compareByDescending<UnifiedNoteItem> { it.isPinned }
+                        .thenBy { it.timeAdded }
+                )
+            } else {
+                filtered.sortedWith(
+                    compareByDescending<UnifiedNoteItem> { it.isPinned }
+                        .thenByDescending { it.timeAdded }
+                )
+            }
+        }
+
+        Log.d(TAG, "Applying filters: query='$query', showOnlyPinned=$showOnlyPinned, sortAscending=$sortAscending")
+        Log.d(TAG, "Filtered count: ${filtered.size}, Sorted count: ${sorted.size}")
+
+        // Update adapter with sorted list
+        adapter.updateListSimple(sorted)
+        updateEmptyState(sorted.isEmpty())
     }
 
     private fun loadAllNotes() {
@@ -233,7 +291,9 @@ class HomeFragment : Fragment() {
             loadedCollections++
             if (loadedCollections == totalCollections) {
                 binding.progressBar.visibility = View.GONE
-                sortAndUpdateNotes()
+                swipeRefreshLayout.isRefreshing = false
+                Log.d(TAG, "All notes loaded: ${allNotes.size} items")
+                applyCurrentFiltersAndSort()
             }
         }
 
@@ -245,6 +305,7 @@ class HomeFragment : Fragment() {
                     val journal = doc.toObject(Journal::class.java)
                     allNotes.add(UnifiedNoteItem.JournalItem(journal = journal, id = doc.id))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} journals")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -260,6 +321,7 @@ class HomeFragment : Fragment() {
                     val textNote = doc.toObject(TextNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TextNoteItem(textNote))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} text notes")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -275,6 +337,7 @@ class HomeFragment : Fragment() {
                     val todoItem = doc.toObject(TodoItem::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TodoItemWrapper(todoItem))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} todos")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -290,6 +353,7 @@ class HomeFragment : Fragment() {
                     val audioNote = doc.toObject(AudioNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.AudioNoteItem(audioNote))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} audio notes")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -311,7 +375,9 @@ class HomeFragment : Fragment() {
             loadedCollections++
             if (loadedCollections == totalCollections) {
                 binding.progressBar.visibility = View.GONE
-                sortAndUpdatePinnedNotes()
+                swipeRefreshLayout.isRefreshing = false
+                Log.d(TAG, "Pinned notes loaded: ${allNotes.size} items")
+                applyCurrentFiltersAndSort()
             }
         }
 
@@ -324,6 +390,7 @@ class HomeFragment : Fragment() {
                     val journal = doc.toObject(Journal::class.java)
                     allNotes.add(UnifiedNoteItem.JournalItem(journal = journal, id = doc.id))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} pinned journals")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -340,6 +407,7 @@ class HomeFragment : Fragment() {
                     val textNote = doc.toObject(TextNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TextNoteItem(textNote))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} pinned text notes")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -356,6 +424,7 @@ class HomeFragment : Fragment() {
                     val todoItem = doc.toObject(TodoItem::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TodoItemWrapper(todoItem))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} pinned todos")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -372,6 +441,7 @@ class HomeFragment : Fragment() {
                     val audioNote = doc.toObject(AudioNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.AudioNoteItem(audioNote))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} pinned audio notes")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -380,42 +450,10 @@ class HomeFragment : Fragment() {
             }
     }
 
-    private fun sortAndUpdateNotes() {
-        val sortedNotes = if (sortAscending) {
-            allNotes.sortedWith(
-                compareByDescending<UnifiedNoteItem> { it.isPinned }
-                    .thenBy { it.timeAdded }
-            )
-        } else {
-            allNotes.sortedWith(
-                compareByDescending<UnifiedNoteItem> { it.isPinned }
-                    .thenByDescending { it.timeAdded }
-            )
-        }
-
-        allNotes.clear()
-        allNotes.addAll(sortedNotes)
-
-        filterNotes(binding.edtTxtSrch.text.toString())
-    }
-
-    private fun sortAndUpdatePinnedNotes() {
-        val sortedNotes = if (sortAscending) {
-            allNotes.sortedBy { it.timeAdded }
-        } else {
-            allNotes.sortedByDescending { it.timeAdded }
-        }
-
-        allNotes.clear()
-        allNotes.addAll(sortedNotes)
-
-        filterNotes(binding.edtTxtSrch.text.toString())
-    }
-
-    private fun updateEmptyState() {
+    private fun updateEmptyState(isEmpty: Boolean = allNotes.isEmpty()) {
         val emptyLayout = binding.root.findViewById<View>(R.id.emptyStateLayout)
 
-        if (filteredNotes.isEmpty()) {
+        if (isEmpty) {
             emptyLayout?.visibility = View.VISIBLE
             binding.AllNotesRecyclerView.visibility = View.GONE
 

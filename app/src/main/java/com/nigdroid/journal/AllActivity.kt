@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.nigdroid.journal.databinding.ActivityAllBinding
@@ -21,9 +22,9 @@ class AllActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var adapter: UnifiedNotesAdapter
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     private val allNotes = mutableListOf<UnifiedNoteItem>()
-    private val filteredNotes = mutableListOf<UnifiedNoteItem>()
     private var isStaggeredLayout = true
     private var sortAscending = false // Default: descending (newest first)
 
@@ -45,12 +46,43 @@ class AllActivity : AppCompatActivity() {
 
         setupToolbar()
         setupRecyclerView()
+        setupSwipeRefresh()
         setupSortButton()
         setupLayoutToggle()
         setupSearchFunctionality()
 
         // Load all notes on activity start
         loadAllNotes()
+    }
+
+    private fun setupSwipeRefresh() {
+        swipeRefreshLayout = binding.swipeRefreshLayout
+
+        // Customize refresh colors
+        swipeRefreshLayout.setColorSchemeResources(
+            R.color.purple_500,
+            R.color.teal_200,
+            R.color.purple_700
+        )
+
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshData()
+        }
+    }
+
+    private fun refreshData() {
+        // Clear search if any
+        binding.edtTxtSrch.text?.clear()
+
+        // Reload all notes
+        loadAllNotes()
+
+        // Stop refreshing animation after a short delay if it hasn't stopped
+        binding.root.postDelayed({
+            if (swipeRefreshLayout.isRefreshing) {
+                swipeRefreshLayout.isRefreshing = false
+            }
+        }, 3000)
     }
 
     private fun setupToolbar() {
@@ -67,7 +99,7 @@ class AllActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = UnifiedNotesAdapter(this, filteredNotes)
+        adapter = UnifiedNotesAdapter(this, mutableListOf())
         binding.AllNotesRecyclerView.adapter = adapter
         setStaggeredLayout()
     }
@@ -103,7 +135,7 @@ class AllActivity : AppCompatActivity() {
             // Toggle sort order
             sortAscending = !sortAscending
             updateSortIcon()
-            sortAndUpdateNotes()
+            applyCurrentFiltersAndSort()
         }
     }
 
@@ -120,23 +152,23 @@ class AllActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterNotes(s.toString())
+                applyCurrentFiltersAndSort()
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
     }
 
-    private fun filterNotes(query: String) {
-        filteredNotes.clear()
+    private fun applyCurrentFiltersAndSort() {
+        val query = binding.edtTxtSrch.text.toString()
 
-        if (query.isEmpty()) {
-            filteredNotes.addAll(allNotes)
+        // Filter notes based on search query
+        val filtered = if (query.isEmpty()) {
+            allNotes.toList()
         } else {
             val lowerQuery = query.lowercase()
-
-            for (note in allNotes) {
-                val matchesQuery = when (note) {
+            allNotes.filter { note ->
+                when (note) {
                     is UnifiedNoteItem.JournalItem -> {
                         note.journal.title.lowercase().contains(lowerQuery) ||
                                 note.journal.thoughts.lowercase().contains(lowerQuery) ||
@@ -155,15 +187,28 @@ class AllActivity : AppCompatActivity() {
                                 note.audioNote.transcription.lowercase().contains(lowerQuery)
                     }
                 }
-
-                if (matchesQuery) {
-                    filteredNotes.add(note)
-                }
             }
         }
 
-        adapter.notifyDataSetChanged()
-        updateEmptyState()
+        // Sort filtered notes (pinned first, then by time)
+        val sorted = if (sortAscending) {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenBy { it.timeAdded }
+            )
+        } else {
+            filtered.sortedWith(
+                compareByDescending<UnifiedNoteItem> { it.isPinned }
+                    .thenByDescending { it.timeAdded }
+            )
+        }
+
+        Log.d(TAG, "Applying filters: query='$query', sortAscending=$sortAscending")
+        Log.d(TAG, "Filtered count: ${filtered.size}, Sorted count: ${sorted.size}")
+
+        // Update adapter with sorted list
+        adapter.updateListSimple(sorted)
+        updateEmptyState(sorted.isEmpty(), query)
     }
 
     private fun loadAllNotes() {
@@ -171,7 +216,8 @@ class AllActivity : AppCompatActivity() {
 
         if (currentUserId == null) {
             Log.e(TAG, "User not authenticated")
-            updateEmptyState()
+            updateEmptyState(isEmpty = true, searchQuery = "")
+            swipeRefreshLayout.isRefreshing = false
             return
         }
 
@@ -185,7 +231,9 @@ class AllActivity : AppCompatActivity() {
             loadedCollections++
             if (loadedCollections == totalCollections) {
                 binding.progressBar.visibility = View.GONE
-                sortAndUpdateNotes()
+                swipeRefreshLayout.isRefreshing = false
+                Log.d(TAG, "All notes loaded: ${allNotes.size} items")
+                applyCurrentFiltersAndSort()
             }
         }
 
@@ -198,6 +246,7 @@ class AllActivity : AppCompatActivity() {
                     val journal = doc.toObject(Journal::class.java)
                     allNotes.add(UnifiedNoteItem.JournalItem(journal = journal, id = doc.id))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} journals")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -214,6 +263,7 @@ class AllActivity : AppCompatActivity() {
                     val textNote = doc.toObject(TextNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TextNoteItem(textNote))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} text notes")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -230,6 +280,7 @@ class AllActivity : AppCompatActivity() {
                     val todoItem = doc.toObject(TodoItem::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TodoItemWrapper(todoItem))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} todos")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -246,6 +297,7 @@ class AllActivity : AppCompatActivity() {
                     val audioNote = doc.toObject(AudioNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.AudioNoteItem(audioNote))
                 }
+                Log.d(TAG, "Loaded ${documents.size()} audio notes")
                 checkIfAllLoaded()
             }
             .addOnFailureListener { e ->
@@ -254,33 +306,13 @@ class AllActivity : AppCompatActivity() {
             }
     }
 
-    private fun sortAndUpdateNotes() {
-        val sortedNotes = if (sortAscending) {
-            allNotes.sortedWith(
-                compareByDescending<UnifiedNoteItem> { it.isPinned }
-                    .thenBy { it.timeAdded }
-            )
-        } else {
-            allNotes.sortedWith(
-                compareByDescending<UnifiedNoteItem> { it.isPinned }
-                    .thenByDescending { it.timeAdded }
-            )
-        }
-
-        allNotes.clear()
-        allNotes.addAll(sortedNotes)
-
-        filterNotes(binding.edtTxtSrch.text.toString())
-    }
-
-    private fun updateEmptyState() {
+    private fun updateEmptyState(isEmpty: Boolean, searchQuery: String) {
         val emptyLayout = binding.emptyStateLayout
 
-        if (filteredNotes.isEmpty()) {
+        if (isEmpty) {
             emptyLayout.visibility = View.VISIBLE
             binding.AllNotesRecyclerView.visibility = View.GONE
 
-            val searchQuery = binding.edtTxtSrch.text.toString()
             binding.emptyStateMessage.text = if (searchQuery.isNotEmpty()) {
                 "No notes found for \"$searchQuery\""
             } else {

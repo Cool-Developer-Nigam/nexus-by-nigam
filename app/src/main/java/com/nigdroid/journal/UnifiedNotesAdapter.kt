@@ -768,7 +768,8 @@ class UnifiedNotesAdapter(
      * and provide smooth animations
      */
     fun updateList(newList: List<UnifiedNoteItem>) {
-        val diffCallback = NoteDiffCallback(notesList, newList)
+        val oldList = notesList.toList() // Create immutable copy
+        val diffCallback = NoteDiffCallback(oldList, newList)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
         notesList.clear()
