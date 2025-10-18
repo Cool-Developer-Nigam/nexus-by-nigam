@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
@@ -134,8 +135,8 @@ class UnifiedNotesAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = notesList[position]) {
             is UnifiedNoteItem.JournalItem -> bindJournal(holder as JournalViewHolder, item, position)
-            is UnifiedNoteItem.TextNoteItem -> bindTextNote(holder as TextNoteViewHolder, item)
-            is UnifiedNoteItem.TodoItemWrapper -> bindTodo(holder as TodoViewHolder, item)
+            is UnifiedNoteItem.TextNoteItem -> bindTextNote(holder as TextNoteViewHolder, item, position)
+            is UnifiedNoteItem.TodoItemWrapper -> bindTodo(holder as TodoViewHolder, item, position)
             is UnifiedNoteItem.AudioNoteItem -> bindAudioNote(holder as AudioNoteViewHolder, item, position)
         }
     }
@@ -188,7 +189,7 @@ class UnifiedNotesAdapter(
         }
     }
 
-    private fun bindTextNote(holder: TextNoteViewHolder, item: UnifiedNoteItem.TextNoteItem) {
+    private fun bindTextNote(holder: TextNoteViewHolder, item: UnifiedNoteItem.TextNoteItem, position: Int) {
         val note = item.textNote
 
         with(holder.binding) {
@@ -223,10 +224,10 @@ class UnifiedNotesAdapter(
                 textNoteContent.setTextColor(Color.BLACK)
             }
 
-            // Pin icon - FIX: Set the correct drawable based on pinned state
+            // Pin icon
             if (note.isPinned) {
                 pinIcon.visibility = View.VISIBLE
-                pinIcon.setImageResource(R.drawable.ic_pin) // Filled pin icon
+                pinIcon.setImageResource(R.drawable.ic_pin)
             } else {
                 pinIcon.visibility = View.GONE
             }
@@ -249,24 +250,29 @@ class UnifiedNotesAdapter(
                 }
                 context.startActivity(intent)
             }
+
+            // Long press to show delete option
+            textNoteCard.setOnLongClickListener {
+                showDeleteConfirmationForTextNote(note, position)
+                true
+            }
         }
     }
 
-
-
-    private fun bindTodo(holder: TodoViewHolder, item: UnifiedNoteItem.TodoItemWrapper) {
+    private fun bindTodo(holder: TodoViewHolder, item: UnifiedNoteItem.TodoItemWrapper, position: Int) {
         val todo = item.todoItem
 
         // Set title
         holder.todoTitle.text = todo.title.ifEmpty { "Untitled" }
 
-// Show/hide pin icon with correct drawable
+        // Show/hide pin icon with correct drawable
         if (todo.isPinned) {
             holder.pinIcon.visibility = View.VISIBLE
-            holder.pinIcon.setImageResource(R.drawable.ic_pin) // Filled pin icon
+            holder.pinIcon.setImageResource(R.drawable.ic_pin)
         } else {
             holder.pinIcon.visibility = View.GONE
         }
+
         // Clear previous checklist items
         holder.checklistContainer.removeAllViews()
 
@@ -320,6 +326,12 @@ class UnifiedNotesAdapter(
             }
             context.startActivity(intent)
         }
+
+        // Long press to show delete option
+        holder.todoCard.setOnLongClickListener {
+            showDeleteConfirmationForTodo(todo, position)
+            true
+        }
     }
 
     private fun bindAudioNote(holder: AudioNoteViewHolder, item: UnifiedNoteItem.AudioNoteItem, position: Int) {
@@ -330,10 +342,11 @@ class UnifiedNotesAdapter(
         // Show/hide pin icon with correct drawable
         if (note.isPinned) {
             holder.pinIcon.visibility = View.VISIBLE
-            holder.pinIcon.setImageResource(R.drawable.ic_pin) // Filled pin icon
+            holder.pinIcon.setImageResource(R.drawable.ic_pin)
         } else {
             holder.pinIcon.visibility = View.GONE
         }
+
         // Format duration
         val minutes = (note.audioDuration / 1000) / 60
         val seconds = (note.audioDuration / 1000) % 60
@@ -380,18 +393,24 @@ class UnifiedNotesAdapter(
             }
             context.startActivity(intent)
         }
+
+        // Long press to show delete option
+        holder.noteCard.setOnLongClickListener {
+            showDeleteConfirmationForAudioNote(note, position)
+            true
+        }
     }
 
-    // ==================== Delete Confirmation Dialog ====================
+    // ==================== Delete Confirmation Dialogs ====================
 
     private fun showDeleteConfirmationDialog(journal: Journal, position: Int) {
         val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogStyle)
-
-        // Use data binding
         val dialogBinding = DialogConfirmDeleteBinding.inflate(LayoutInflater.from(context))
 
+        dialogBinding.btnDelete.text = "Move to Trash"
+
         dialogBinding.btnDelete.setOnClickListener {
-            deleteJournal(journal, position)
+            moveJournalToTrash(journal, position)
             dialog.dismiss()
         }
 
@@ -404,89 +423,155 @@ class UnifiedNotesAdapter(
         dialog.show()
     }
 
-    // ==================== Delete Journal with Offline Support ====================
+    private fun showDeleteConfirmationForTextNote(note: TextNote, position: Int) {
+        val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogStyle)
+        val dialogBinding = DialogConfirmDeleteBinding.inflate(LayoutInflater.from(context))
 
-    private fun deleteJournal(journal: Journal, position: Int) {
-        // Query Firestore with indexed fields
-        // Uses offline cache when available, then syncs when online
-        db.collection(COLLECTION_JOURNALS)
-            .whereEqualTo(FIELD_USER_ID, journal.userId)
-            .whereEqualTo(FIELD_TITLE, journal.title)
-            .whereEqualTo(FIELD_TIME_ADDED, journal.timeAdded)
-            .get() // Automatically uses cache when offline
-            .addOnSuccessListener { documents ->
-                if (!documents.isEmpty) {
-                    val documentId = documents.documents[0].id
-                    val source = documents.metadata.isFromCache
+        dialogBinding.btnDelete.text = "Move to Trash"
 
-                    if (source) {
-                        Log.d(TAG, "Data retrieved from offline cache")
-                    } else {
-                        Log.d(TAG, "Data retrieved from server")
-                    }
+        dialogBinding.btnDelete.setOnClickListener {
+            moveTextNoteToTrash(note, position)
+            dialog.dismiss()
+        }
 
-                    // Delete from Firestore
-                    // This will be queued for deletion when offline and synced when online
-                    db.collection(COLLECTION_JOURNALS)
-                        .document(documentId)
-                        .delete()
-                        .addOnSuccessListener {
-                            // Delete image from Storage (only when online)
-                            deleteImageFromStorage(journal.imageUrl)
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
 
-                            // Remove from list and update RecyclerView immediately
-                            notesList.removeAt(position)
-                            notifyItemRemoved(position)
-                            notifyItemRangeChanged(position, notesList.size)
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
 
-                            val message = if (source) {
-                                "Journal deleted (will sync when online)"
-                            } else {
-                                "Journal deleted successfully"
-                            }
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    private fun showDeleteConfirmationForTodo(todo: TodoItem, position: Int) {
+        val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogStyle)
+        val dialogBinding = DialogConfirmDeleteBinding.inflate(LayoutInflater.from(context))
 
-                            // Notify activity if list is now empty
-                            if (notesList.isEmpty() && context is JournalListActivity) {
-                                (context as JournalListActivity).onJournalDeleted()
-                            }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e(TAG, "Failed to delete journal from Firestore", e)
-                            Toast.makeText(context, "Failed to delete journal: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                } else {
-                    Log.w(TAG, "Journal not found in Firestore")
-                    Toast.makeText(context, "Journal not found", Toast.LENGTH_SHORT).show()
+        dialogBinding.btnDelete.text = "Move to Trash"
+
+        dialogBinding.btnDelete.setOnClickListener {
+            moveTodoToTrash(todo, position)
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    private fun showDeleteConfirmationForAudioNote(audio: AudioNote, position: Int) {
+        val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogStyle)
+        val dialogBinding = DialogConfirmDeleteBinding.inflate(LayoutInflater.from(context))
+
+        dialogBinding.btnDelete.text = "Move to Trash"
+
+        dialogBinding.btnDelete.setOnClickListener {
+            moveAudioNoteToTrash(audio, position)
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    // ==================== Move to Trash Methods ====================
+
+    private fun moveJournalToTrash(journal: Journal, position: Int) {
+        TrashHelper.moveJournalToTrash(
+            journal = journal,
+            onSuccess = {
+                // Remove from list and update RecyclerView
+                notesList.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, notesList.size)
+
+                Toast.makeText(context, "Moved to trash", Toast.LENGTH_SHORT).show()
+
+                // Notify activity if list is now empty
+                if (notesList.isEmpty() && context is JournalListActivity) {
+                    (context as JournalListActivity).onJournalDeleted()
                 }
+            },
+            onFailure = { e ->
+                Log.e(TAG, "Failed to move journal to trash", e)
+                Toast.makeText(context, "Failed to delete: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            .addOnFailureListener { e ->
-                handleQueryError(e)
+        )
+    }
+
+    private fun moveTextNoteToTrash(note: TextNote, position: Int) {
+        TrashHelper.moveTextNoteToTrash(
+            note = note,
+            onSuccess = {
+                notesList.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, notesList.size)
+                Toast.makeText(context, "Moved to trash", Toast.LENGTH_SHORT).show()
+            },
+            onFailure = { e ->
+                Log.e(TAG, "Failed to move text note to trash", e)
+                Toast.makeText(context, "Failed to delete: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+        )
+    }
+
+    private fun moveTodoToTrash(todo: TodoItem, position: Int) {
+        TrashHelper.moveTodoToTrash(
+            todo = todo,
+            onSuccess = {
+                notesList.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, notesList.size)
+                Toast.makeText(context, "Moved to trash", Toast.LENGTH_SHORT).show()
+            },
+            onFailure = { e ->
+                Log.e(TAG, "Failed to move todo to trash", e)
+                Toast.makeText(context, "Failed to delete: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
+
+    private fun moveAudioNoteToTrash(audio: AudioNote, position: Int) {
+        TrashHelper.moveAudioNoteToTrash(
+            audio = audio,
+            onSuccess = {
+                notesList.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, notesList.size)
+                Toast.makeText(context, "Moved to trash", Toast.LENGTH_SHORT).show()
+            },
+            onFailure = { e ->
+                Log.e(TAG, "Failed to move audio note to trash", e)
+                Toast.makeText(context, "Failed to delete: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     // ==================== Offline Support Methods ====================
 
-    /**
-     * Fetch journals with offline support
-     * Call this method to load journals with cache-first strategy
-     */
     fun loadJournalsWithOfflineSupport(userId: String, callback: (List<Journal>) -> Unit) {
         db.collection(COLLECTION_JOURNALS)
             .whereEqualTo(FIELD_USER_ID, userId)
             .orderBy(FIELD_TIME_ADDED, com.google.firebase.firestore.Query.Direction.DESCENDING)
-            .get(Source.CACHE) // Try cache first
+            .get(Source.CACHE)
             .addOnSuccessListener { documents ->
                 Log.d(TAG, "Loaded ${documents.size()} journals from cache")
                 val journals = documents.toObjects(Journal::class.java)
                 callback(journals)
 
-                // Then fetch from server in background to update cache
                 fetchFromServer(userId, callback)
             }
             .addOnFailureListener { cacheException ->
                 Log.w(TAG, "Cache fetch failed, fetching from server", cacheException)
-                // If cache fails, fetch from server
                 fetchFromServer(userId, callback)
             }
     }
@@ -503,16 +588,11 @@ class UnifiedNotesAdapter(
             }
             .addOnFailureListener { serverException ->
                 Log.e(TAG, "Server fetch failed", serverException)
-                // Already showed cached data if available
             }
     }
 
-    /**
-     * Check if device is currently using offline cache
-     */
     fun isUsingOfflineCache(): Boolean {
-        // This can be checked via metadata when querying
-        return false // Placeholder - check in actual query results
+        return false
     }
 
     // ==================== Error Handling ====================
@@ -522,7 +602,6 @@ class UnifiedNotesAdapter(
             is FirebaseFirestoreException -> {
                 when (exception.code) {
                     FirebaseFirestoreException.Code.FAILED_PRECONDITION -> {
-                        // Index not created yet
                         Log.e(TAG, "Firebase index required. Check logs for index creation link.", exception)
                         Toast.makeText(
                             context,
@@ -531,7 +610,6 @@ class UnifiedNotesAdapter(
                         ).show()
                     }
                     FirebaseFirestoreException.Code.UNAVAILABLE -> {
-                        // Network unavailable, but offline persistence will handle it
                         Log.w(TAG, "Network unavailable, using offline cache", exception)
                         Toast.makeText(
                             context,
@@ -572,8 +650,6 @@ class UnifiedNotesAdapter(
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Failed to delete image from Storage (will retry when online)", e)
-                        // The journal is already deleted from Firestore
-                        // Storage deletion will be retried when online
                     }
             } catch (e: Exception) {
                 Log.e(TAG, "Invalid storage URL: $imageUrl", e)
@@ -584,7 +660,6 @@ class UnifiedNotesAdapter(
     // ==================== Audio Playback ====================
 
     private fun playAudio(note: AudioNote, holder: AudioNoteViewHolder, position: Int) {
-        // Stop current if playing
         stopCurrentAudio()
 
         try {
@@ -634,9 +709,6 @@ class UnifiedNotesAdapter(
 
     // ==================== Helper Extensions ====================
 
-    /**
-     * Extension function to trim Spanned text
-     */
     private fun Spanned.trim(): CharSequence {
         var start = 0
         var end = length
@@ -656,15 +728,60 @@ class UnifiedNotesAdapter(
         }
     }
 
+    // ==================== DiffUtil Callback ====================
+
+    private class NoteDiffCallback(
+        private val oldList: List<UnifiedNoteItem>,
+        private val newList: List<UnifiedNoteItem>
+    ) : DiffUtil.Callback() {
+
+        override fun getOldListSize() = oldList.size
+
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldItem = oldList[oldItemPosition]
+            val newItem = newList[newItemPosition]
+
+            return when {
+                oldItem is UnifiedNoteItem.JournalItem && newItem is UnifiedNoteItem.JournalItem ->
+                    oldItem.journal.timeAdded == newItem.journal.timeAdded
+                oldItem is UnifiedNoteItem.TextNoteItem && newItem is UnifiedNoteItem.TextNoteItem ->
+                    oldItem.textNote.id == newItem.textNote.id
+                oldItem is UnifiedNoteItem.TodoItemWrapper && newItem is UnifiedNoteItem.TodoItemWrapper ->
+                    oldItem.todoItem.id == newItem.todoItem.id
+                oldItem is UnifiedNoteItem.AudioNoteItem && newItem is UnifiedNoteItem.AudioNoteItem ->
+                    oldItem.audioNote.id == newItem.audioNote.id
+                else -> false
+            }
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition] == newList[newItemPosition]
+        }
+    }
+
     // ==================== Public Methods ====================
 
+    /**
+     * Updates the list with proper DiffUtil calculation to prevent duplicates
+     * and provide smooth animations
+     */
     fun updateList(newList: List<UnifiedNoteItem>) {
-        if (notesList.size > 0) {
-            val oldSize = notesList.size
-            notesList.clear()
-            notifyItemRangeRemoved(0, oldSize)
-        }
+        val diffCallback = NoteDiffCallback(notesList, newList)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        notesList.clear()
         notesList.addAll(newList)
-        notifyItemRangeInserted(0, newList.size)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    /**
+     * Simple update method without animations - use when you need immediate update
+     */
+    fun updateListSimple(newList: List<UnifiedNoteItem>) {
+        notesList.clear()
+        notesList.addAll(newList)
+        notifyDataSetChanged()
     }
 }

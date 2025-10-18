@@ -228,13 +228,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val intent = Intent(this, GeminiActivity::class.java)
                 startActivity(intent)
             }
-
-
             R.id.nav_logout -> {
                 showDeleteConfirmationDialog()
             }
             R.id.nav_all_notes->{
                 val intent = Intent(this, AllActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_trash->{
+                val intent = Intent(this, TrashActivity::class.java)
                 startActivity(intent)
             }
         }

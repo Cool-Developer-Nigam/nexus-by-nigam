@@ -118,4 +118,10 @@ dependencies {
     // Retrofit for REST API calls
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+
+    implementation(libs.androidx.work.runtime.ktx)
+
+    implementation(libs.kotlinx.coroutines.play.services)
+
+
 }

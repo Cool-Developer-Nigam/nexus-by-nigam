@@ -8,14 +8,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#E6DDF3"
+        android:fitsSystemWindows="true"
         tools:openDrawer="start">
 
         <!-- Main Content -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            >
+            android:layout_height="match_parent">
 
             <!-- Toolbar -->
             <com.google.android.material.appbar.MaterialToolbar
@@ -32,16 +31,18 @@
                 app:title="My Journal"
                 app:titleTextColor="@color/white" />
 
+            <!-- Bottom Navigation with Animation (Lower z-order) -->
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toTopOf="@id/bottom_nav"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                app:layout_constraintVertical_bias="0.0" />
 
-            <!-- Bottom Navigation with Animation (Lower z-order) -->
             <com.nigdroid.journal.AnimatedBottomNavigationView
                 android:id="@+id/bottom_nav"
                 android:layout_width="0dp"
