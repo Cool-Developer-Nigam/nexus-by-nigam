@@ -23,7 +23,8 @@
             android:src="@drawable/back_logo"
             android:scaleType="centerInside"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Back" />
+            android:contentDescription="Back"
+            app:tint="@color/white" />
 
         <TextView
             android:layout_width="0dp"
@@ -61,7 +62,8 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/costum_bg">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/profileImage"
@@ -72,7 +74,7 @@
                     android:src="@drawable/ic_profile"
                     android:scaleType="centerCrop"
                     android:contentDescription="Profile Picture"
-                    android:background="@drawable/gradient_background" />
+                    android:background="@color/grey" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/changePhotoButton"
@@ -82,7 +84,7 @@
                     android:layout_marginBottom="0dp"
                     android:src="@drawable/ic_camera"
                     android:scaleType="centerInside"
-                    android:background="@drawable/gradient_background"
+                    android:background="@color/grey"
                     app:shapeAppearance="@style/ShapeAppearance.App.CircleFAB" />
             </FrameLayout>
 

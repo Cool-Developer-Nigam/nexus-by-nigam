@@ -33,7 +33,6 @@ import android.util.Log
 
 class AddJournalActivity : AppCompatActivity() {
     lateinit var binding: ActivityAddJournalBinding
-    lateinit var toolbarBinding: com.nigdroid.journal.databinding.ToolbarAddJournalBinding
 
     private lateinit var toolbar: Toolbar
     var currentUserId: String = ""

@@ -45,6 +45,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
+                            android:background="@drawable/white_bg"
                             android:padding="16dp">
 
                             <ImageView
@@ -89,11 +90,14 @@
                         android:layout_height="250dp"
                         android:layout_marginBottom="16dp"
                         app:cardCornerRadius="16dp"
-                        app:cardElevation="4dp">
+                        app:cardElevation="4dp"
+
+                        >
 
                         <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                          >
 
                             <ImageButton
                                 android:id="@+id/postCameraButton"

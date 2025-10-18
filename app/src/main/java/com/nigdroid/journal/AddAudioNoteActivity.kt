@@ -90,12 +90,19 @@ class AddAudioNoteActivity : AppCompatActivity() {
         binding.btnPin.setOnClickListener {
             isPinned = !isPinned
             updatePinIcon()
+            Toast.makeText(
+                this,
+                if (isPinned) "Audio note will be pinned when saved" else "Audio note will be unpinned when saved",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
-        isPinned = intent.getBooleanExtra("IS_PINNED", false)
-        updatePinIcon()
+        // DON'T set pin state here - let loadAudioNoteData() handle it for edit mode
+        if (!isEditMode) {
+            isPinned = false
+            updatePinIcon()
+        }
     }
-
     private fun updatePinIcon() {
         if (isPinned) {
             binding.btnPin.setImageResource(R.drawable.ic_pin)
@@ -426,6 +433,8 @@ class AddAudioNoteActivity : AppCompatActivity() {
                             binding.etTranscription.setText(it.transcription)
                             audioUrl = it.audioUrl
                             audioDuration = it.audioDuration
+
+                            // Load pin state from Firestore
                             isPinned = it.isPinned
                             updatePinIcon()
 

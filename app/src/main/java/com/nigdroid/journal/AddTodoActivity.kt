@@ -59,14 +59,19 @@ class AddTodoActivity : AppCompatActivity() {
             finish()
         }
 
+
+
         binding.btnPin.setOnClickListener {
             isPinned = !isPinned
             updatePinIcon()
+            Toast.makeText(this, if (isPinned) "Todo will be pinned when saved" else "Todo will be unpinned when saved", Toast.LENGTH_SHORT).show()
+        }
+        if (!isEditMode) {
+            isPinned = false
+            updatePinIcon()
         }
 
-        // Set initial pin state from intent
-        isPinned = intent.getBooleanExtra("IS_PINNED", false)
-        updatePinIcon()
+
     }
 
     private fun updatePinIcon() {
@@ -130,8 +135,10 @@ class AddTodoActivity : AppCompatActivity() {
                         val todo = document.toObject(TodoItem::class.java)
                         todo?.let {
                             binding.etTitle.setText(it.title)
+
+                            // Load pin state from Firestore
                             isPinned = it.isPinned
-                            timeAdded = it.timeAdded  // Preserve original creation time
+                            timeAdded = it.timeAdded
                             updatePinIcon()
 
                             checklistItems.clear()

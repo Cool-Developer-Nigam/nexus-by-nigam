@@ -1,5 +1,7 @@
 package com.nigdroid.journal
 
+import com.google.firebase.firestore.PropertyName
+
 data class AudioNote(
     val id: String = "",
     val title: String = "",
@@ -10,6 +12,9 @@ data class AudioNote(
     val username: String = "",
     val timeAdded: Long = System.currentTimeMillis(),
     val timeModified: Long = System.currentTimeMillis(),
-    val isPinned: Boolean = false,
+
+    @get:PropertyName("isPinned")
+    @set:PropertyName("isPinned")
+    var isPinned: Boolean = false,
     val backgroundColor: String = "#FFFFFF"
 )
