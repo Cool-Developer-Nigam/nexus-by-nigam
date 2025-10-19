@@ -50,6 +50,7 @@ android {
     buildFeatures {
         dataBinding = true
         buildConfig = true
+        viewBinding = true
     }
 
     packaging {
@@ -72,57 +73,62 @@ android {
 }
 
 dependencies {
+    // Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.auth)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.googleid)
-    implementation(libs.firebase.database)
-    implementation(libs.firebase.firestore)
     implementation(libs.androidx.recyclerview)
-    implementation(libs.firebase.storage)
+    implementation(libs.androidx.cardview)
+    implementation(libs.androidx.drawerlayout)
+    implementation(libs.androidx.swiperefreshlayout)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.androidx.drawerlayout)
+    // Firebase
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+
+    // Google Services
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     implementation(libs.play.services.auth)
+
+    // Image Loading - Glide
     implementation(libs.glide)
     kapt(libs.compiler)
 
-    // Google Auth for OAuth tokens (compatible version)
+    // Google Auth for OAuth tokens
     implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0") {
         exclude(group = "com.google.guava", module = "guava")
         exclude(group = "io.grpc", module = "grpc-context")
     }
 
-    // OkHttp for API calls
+    // Networking
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
-    // Gson for JSON parsing
+    // JSON
     implementation(libs.gson)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Gemini AI SDK
     implementation(libs.generativeai)
 
-    // Retrofit for REST API calls
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-
+    // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
-
-    implementation(libs.kotlinx.coroutines.play.services)
-    implementation(libs.androidx.swiperefreshlayout)
-
-
 }
