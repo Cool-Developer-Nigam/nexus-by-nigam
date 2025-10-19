@@ -2,7 +2,7 @@
 <resources>
     <style name="RoundedImageStyle">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">25dp</item>
+        <item name="cornerSize">18dp</item>
     </style>
 
     <style name="ToolbarRoundedImageStyle">

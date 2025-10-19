@@ -22,7 +22,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Are you sure you want to delete this entry? This action cannot be undone."
+            android:text="Are you sure you want to delete this entry? It will remain in trash for 7 days before being permanently deleted."
             android:textSize="16sp"
             android:textColor="@android:color/darker_gray"
             android:gravity="center"

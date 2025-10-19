@@ -1,25 +1,23 @@
 package com.nigdroid.journal
 
+import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.*
+import com.nigdroid.journal.databinding.FragmentBookBinding
 
 class BookFragment : Fragment() {
 
-    private lateinit var categoryRecyclerView: RecyclerView
-    private lateinit var popularRecyclerView: RecyclerView
-    private lateinit var progressBar1: ProgressBar
-    private lateinit var progressBar2: ProgressBar
-    private lateinit var searchBooks: EditText
+    private var _binding: FragmentBookBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var categoryAdapter: BookCategoryAdapter
     private lateinit var popularAdapter: PopularBookAdapter
@@ -27,57 +25,175 @@ class BookFragment : Fragment() {
     private val database = FirebaseDatabase.getInstance()
     private val categories = mutableListOf<CategoryModel>()
     private val popularBooks = mutableListOf<BookModel>()
+    private val allBooks = mutableListOf<BookModel>()
+
+    private var isExpanded = false
+    private val collapsedItemCount = 4
+    private var isFragmentAlive = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_book, container, false)
+    ): View {
+        _binding = FragmentBookBinding.inflate(inflater, container, false)
+        isFragmentAlive = true
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        categoryRecyclerView = view.findViewById(R.id.recyclerView1)
-        popularRecyclerView = view.findViewById(R.id.recyclerView2)
-        progressBar1 = view.findViewById(R.id.progressBar2)
-        progressBar2 = view.findViewById(R.id.progressBar3)
-        searchBooks = view.findViewById(R.id.edt_txt_srch)
+        binding.chatbot.setOnClickListener {
+            if (isAdded && isFragmentAlive) {
+                startActivity(Intent(requireContext(), GeminiActivity::class.java))
+            }
+        }
 
         setupRecyclerViews()
+        setupSearchFunctionality()
+        setupSeeAllFunctionality()
         loadCategoriesFromRealtimeDatabase()
-        loadPopularBooksFromRealtimeDatabase()
+        loadAllBooksFromRealtimeDatabase()
     }
 
     private fun setupRecyclerViews() {
         categoryAdapter = BookCategoryAdapter(categories)
-        categoryRecyclerView.apply {
+        binding.recyclerView1.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = categoryAdapter
         }
 
         popularAdapter = PopularBookAdapter(popularBooks)
-        popularRecyclerView.apply {
+        binding.recyclerView2.apply {
             layoutManager = GridLayoutManager(context, 2)
             adapter = popularAdapter
         }
     }
 
+    private fun setupSearchFunctionality() {
+        binding.edtTxtSrch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (isAdded && isFragmentAlive) {
+                    filterBooks(s.toString())
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun filterBooks(query: String) {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        if (query.isEmpty()) {
+            // Show all books or collapsed view based on current state
+            updatePopularBooksDisplay()
+        } else {
+            // Filter ALL books (not just popular) based on search query
+            val filteredBooks = allBooks.filter { book ->
+                book.title.contains(query, ignoreCase = true) ||
+                        book.author.contains(query, ignoreCase = true) ||
+                        book.description.contains(query, ignoreCase = true) ||
+                        book.extra.contains(query, ignoreCase = true)
+            }
+
+            popularBooks.clear()
+            popularBooks.addAll(filteredBooks)
+            popularAdapter.notifyDataSetChanged()
+
+            if (filteredBooks.isEmpty()) {
+                context?.let {
+                    Toast.makeText(it, "No books found matching \"$query\"", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun setupSeeAllFunctionality() {
+        binding.txtSeeAll.setOnClickListener {
+            if (!isAdded || !isFragmentAlive || _binding == null) return@setOnClickListener
+
+            isExpanded = !isExpanded
+
+            // Clear search when toggling see all
+            if (isExpanded && binding.edtTxtSrch.text.toString().isNotEmpty()) {
+                binding.edtTxtSrch.setText("")
+            }
+
+            updatePopularBooksDisplay()
+            animateArrow()
+
+            // Update text
+            binding.txtSeeAll.text = if (isExpanded) "Show less" else "See all"
+        }
+
+        binding.ivSeeAllArrow.setOnClickListener {
+            if (!isAdded || !isFragmentAlive || _binding == null) return@setOnClickListener
+
+            isExpanded = !isExpanded
+
+            // Clear search when toggling see all
+            if (isExpanded && binding.edtTxtSrch.text.toString().isNotEmpty()) {
+                binding.edtTxtSrch.setText("")
+            }
+
+            updatePopularBooksDisplay()
+            animateArrow()
+
+            // Update text
+            binding.txtSeeAll.text = if (isExpanded) "Show less" else "See all"
+        }
+    }
+
+    private fun animateArrow() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        val rotation = if (isExpanded) 180f else 0f
+        binding.ivSeeAllArrow.animate()
+            .rotation(rotation)
+            .setDuration(200)
+            .start()
+    }
+
+    private fun updatePopularBooksDisplay() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        popularBooks.clear()
+
+        if (isExpanded) {
+            // Show ALL books from all categories in reverse order
+            popularBooks.addAll(allBooks.reversed())
+        } else {
+            // Show only first few items (collapsed view)
+            popularBooks.addAll(allBooks.take(collapsedItemCount))
+        }
+
+        popularAdapter.notifyDataSetChanged()
+    }
+
     private fun loadCategoriesFromRealtimeDatabase() {
-        progressBar1.visibility = View.VISIBLE
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        binding.progressBar2.visibility = View.VISIBLE
 
         android.util.Log.d("BookFragment", "Loading categories from Realtime Database...")
 
         database.reference.child("Category")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!isAdded || !isFragmentAlive || _binding == null) return
+
                     android.util.Log.d("BookFragment", "Query successful. Children count: ${snapshot.childrenCount}")
 
                     if (!snapshot.exists()) {
                         android.util.Log.w("BookFragment", "No data in Category node!")
-                        Toast.makeText(context, "No categories found. Please check Firebase.", Toast.LENGTH_LONG).show()
-                        progressBar1.visibility = View.GONE
+                        context?.let {
+                            Toast.makeText(it, "No categories found. Please check Firebase.", Toast.LENGTH_LONG).show()
+                        }
+                        binding.progressBar2.visibility = View.GONE
                         return
                     }
 
@@ -103,45 +219,49 @@ class BookFragment : Fragment() {
                     }
 
                     categoryAdapter.notifyDataSetChanged()
-                    progressBar1.visibility = View.GONE
+                    binding.progressBar2.visibility = View.GONE
 
                     android.util.Log.d("BookFragment", "Total categories loaded: ${categories.size}")
 
                     if (categories.isEmpty()) {
-                        Toast.makeText(context, "No valid categories found", Toast.LENGTH_LONG).show()
+                        context?.let {
+                            Toast.makeText(it, "No valid categories found", Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
+                    if (!isAdded || !isFragmentAlive || _binding == null) return
+
                     android.util.Log.e("BookFragment", "Error loading categories: ${error.message}", error.toException())
-                    progressBar1.visibility = View.GONE
-                    Toast.makeText(context, "Error loading categories: ${error.message}", Toast.LENGTH_LONG).show()
+                    binding.progressBar2.visibility = View.GONE
+                    context?.let {
+                        Toast.makeText(it, "Error loading categories: ${error.message}", Toast.LENGTH_LONG).show()
+                    }
                 }
             })
     }
 
-    private fun loadPopularBooksFromRealtimeDatabase() {
-        progressBar2.visibility = View.VISIBLE
+    private fun loadAllBooksFromRealtimeDatabase() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
 
-        android.util.Log.d("BookFragment", "Loading popular books from Realtime Database...")
+        binding.progressBar3.visibility = View.VISIBLE
 
+        android.util.Log.d("BookFragment", "Loading all books from Realtime Database...")
+
+        // Load from Popular node first
         database.reference.child("Popular")
             .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    android.util.Log.d("BookFragment", "Query successful. Books count: ${snapshot.childrenCount}")
+                override fun onDataChange(popularSnapshot: DataSnapshot) {
+                    if (!isAdded || !isFragmentAlive || _binding == null) return
 
-                    if (!snapshot.exists()) {
-                        android.util.Log.w("BookFragment", "No data in Popular node!")
-                        Toast.makeText(context, "No popular books found. Please check Firebase.", Toast.LENGTH_LONG).show()
-                        progressBar2.visibility = View.GONE
-                        return
-                    }
+                    android.util.Log.d("BookFragment", "Popular books count: ${popularSnapshot.childrenCount}")
 
-                    popularBooks.clear()
-                    for (bookSnapshot in snapshot.children) {
+                    allBooks.clear()
+
+                    // Add popular books
+                    for (bookSnapshot in popularSnapshot.children) {
                         try {
-                            android.util.Log.d("BookFragment", "Book key: ${bookSnapshot.key}, Data: ${bookSnapshot.value}")
-
                             val book = BookModel(
                                 categoryId = bookSnapshot.child("categoryId").getValue(String::class.java) ?: "",
                                 title = bookSnapshot.child("title").getValue(String::class.java) ?: "",
@@ -153,24 +273,82 @@ class BookFragment : Fragment() {
                                 fileSize = bookSnapshot.child("fileSize").getValue(String::class.java) ?: "",
                                 pdfUrl = bookSnapshot.child("pdfUrl").getValue(String::class.java) ?: ""
                             )
-                            popularBooks.add(book)
-                            android.util.Log.d("BookFragment", "Added book: ${book.title}")
+                            allBooks.add(book)
                         } catch (e: Exception) {
-                            android.util.Log.e("BookFragment", "Error parsing book", e)
+                            android.util.Log.e("BookFragment", "Error parsing popular book", e)
                         }
                     }
 
-                    popularAdapter.notifyDataSetChanged()
-                    progressBar2.visibility = View.GONE
+                    // Now load all items from Items node
+                    database.reference.child("Items")
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(itemsSnapshot: DataSnapshot) {
+                                if (!isAdded || !isFragmentAlive || _binding == null) return
 
-                    android.util.Log.d("BookFragment", "Total books loaded: ${popularBooks.size}")
+                                android.util.Log.d("BookFragment", "Items books count: ${itemsSnapshot.childrenCount}")
+
+                                for (bookSnapshot in itemsSnapshot.children) {
+                                    try {
+                                        val book = BookModel(
+                                            categoryId = bookSnapshot.child("categoryId").getValue(String::class.java) ?: "",
+                                            title = bookSnapshot.child("title").getValue(String::class.java) ?: "",
+                                            author = bookSnapshot.child("author").getValue(String::class.java) ?: "",
+                                            description = bookSnapshot.child("description").getValue(String::class.java) ?: "",
+                                            extra = bookSnapshot.child("extra").getValue(String::class.java) ?: "",
+                                            picUrl = bookSnapshot.child("picUrl").getValue(String::class.java) ?: "",
+                                            rating = bookSnapshot.child("rating").getValue(Double::class.java) ?: 0.0,
+                                            fileSize = bookSnapshot.child("fileSize").getValue(String::class.java) ?: "",
+                                            pdfUrl = bookSnapshot.child("pdfUrl").getValue(String::class.java) ?: ""
+                                        )
+
+                                        // Avoid duplicates by checking if book already exists
+                                        if (!allBooks.any { it.title == book.title && it.author == book.author }) {
+                                            allBooks.add(book)
+                                        }
+                                    } catch (e: Exception) {
+                                        android.util.Log.e("BookFragment", "Error parsing item book", e)
+                                    }
+                                }
+
+                                updatePopularBooksDisplay()
+                                binding.progressBar3.visibility = View.GONE
+
+                                android.util.Log.d("BookFragment", "Total books loaded: ${allBooks.size}")
+
+                                if (allBooks.isEmpty()) {
+                                    context?.let {
+                                        Toast.makeText(it, "No books found in database", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                if (!isAdded || !isFragmentAlive || _binding == null) return
+
+                                android.util.Log.e("BookFragment", "Error loading items: ${error.message}", error.toException())
+                                binding.progressBar3.visibility = View.GONE
+                                context?.let {
+                                    Toast.makeText(it, "Error loading books: ${error.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        })
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    android.util.Log.e("BookFragment", "Error loading books: ${error.message}", error.toException())
-                    progressBar2.visibility = View.GONE
-                    Toast.makeText(context, "Error loading books: ${error.message}", Toast.LENGTH_SHORT).show()
+                    if (!isAdded || !isFragmentAlive || _binding == null) return
+
+                    android.util.Log.e("BookFragment", "Error loading popular books: ${error.message}", error.toException())
+                    binding.progressBar3.visibility = View.GONE
+                    context?.let {
+                        Toast.makeText(it, "Error loading books: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        isFragmentAlive = false
+        _binding = null
     }
 }

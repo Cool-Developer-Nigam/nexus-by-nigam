@@ -10,8 +10,9 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
+            android:background="@drawable/toolbar_bg"
             android:layout_height="?attr/actionBarSize"
-            android:backgroundTint="@color/semi_trans">
+           >
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -55,7 +56,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:background="@drawable/edt_txt_bg"
                     android:orientation="horizontal">
 
                     <ImageButton
@@ -64,9 +64,9 @@
                         android:layout_height="wrap_content"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:contentDescription="Pin"
-                        android:padding="12dp"
+                        android:layout_gravity="center_vertical"
                         android:src="@drawable/ic_pin_outline"
-                        app:tint="@color/pinkish" />
+                        app:tint="@color/white" />
 
                     <ImageButton
                         android:id="@+id/save"

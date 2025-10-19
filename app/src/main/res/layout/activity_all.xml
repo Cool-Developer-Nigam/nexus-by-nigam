@@ -20,8 +20,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:navigationIcon="@drawable/back_logo"
-            app:navigationIconTint="@color/black"
+            app:navigationIcon="@drawable/ic_back_arrow"
+            android:background="@drawable/toolbar_bg"
+            app:navigationIconTint="@color/white"
             app:title="All Notes"
             app:titleTextColor="@color/text_primary">
 
@@ -63,7 +64,7 @@
                     android:contentDescription="Toggle layout"
                     android:padding="8dp"
                     android:src="@drawable/ic_grid_view"
-                    app:tint="@color/pinkish" />
+                    app:tint="@color/white" />
 
                 <!-- Sort Button -->
                 <ImageButton
@@ -74,7 +75,7 @@
                     android:contentDescription="Sort notes"
                     android:padding="8dp"
                     android:src="@drawable/ic_sort_descending"
-                    app:tint="@color/pinkish" />
+                    app:tint="@color/white" />
 
             </LinearLayout>
 

@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#E6DDF3">
+        android:background="#E3D4F9">
 
         <!-- SwipeRefreshLayout wrapping the NestedScrollView -->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -339,7 +339,7 @@
                                 android:layout_height="32dp"
                                 android:background="?attr/selectableItemBackgroundBorderless"
                                 android:padding="4dp"
-                                android:src="@drawable/ic_sort"
+                                android:src="@drawable/ic_sort_descending"
                                 android:contentDescription="Sort options"
                                 app:tint="#EC4899"
                                 android:layout_marginEnd="16dp" />
@@ -424,6 +424,7 @@
         <!-- Progress Bar (Overlay) -->
         <ProgressBar
             android:id="@+id/progressBar"
+            android:indeterminateTint="@color/colorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"

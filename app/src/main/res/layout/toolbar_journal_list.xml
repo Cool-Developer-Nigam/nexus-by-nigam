@@ -48,8 +48,8 @@
                     android:maxLines="1"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:textColor="@color/text_primary"
-                    android:textColorHint="@color/grey"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/DarkBrown"
                     android:textSize="14sp" />
 
                 <!-- Layout Toggle Button -->

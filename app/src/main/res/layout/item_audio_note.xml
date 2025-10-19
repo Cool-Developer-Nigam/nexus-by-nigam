@@ -10,7 +10,7 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
     app:strokeWidth="1dp"
-    android:backgroundTint="@color/cream"
+    android:backgroundTint="@color/lightCream"
     app:strokeColor="#E0E0E0">
 
     <LinearLayout
@@ -57,6 +57,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:background="@drawable/white_bg"
+            android:elevation="16dp"
             android:padding="12dp"
             android:layout_marginBottom="12dp">
 

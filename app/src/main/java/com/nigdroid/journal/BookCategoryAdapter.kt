@@ -63,7 +63,7 @@ class BookCategoryAdapter(val items: MutableList<CategoryModel>) :
             holder.titleCat.setTextColor(context.resources.getColor(R.color.white))
         } else {
             holder.titleCat.setBackgroundResource(R.drawable.white_bg)
-            holder.titleCat.setTextColor(context.resources.getColor(R.color.DarkBrown))
+            holder.titleCat.setTextColor(context.resources.getColor(R.color.purple_200))
         }
     }
 

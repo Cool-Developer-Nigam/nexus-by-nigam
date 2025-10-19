@@ -12,7 +12,7 @@
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/semi_trans">
+            android:background="@drawable/toolbar_bg">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -54,7 +54,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:background="@drawable/edt_txt_bg"
+
                     android:layout_marginEnd="16dp">
 
                     <ImageButton
@@ -65,7 +65,7 @@
                         android:contentDescription="Pin"
                         android:padding="12dp"
                         android:src="@drawable/ic_pin_outline"
-                        />
+                        app:tint="@color/white" />
                 </LinearLayout>
 
 

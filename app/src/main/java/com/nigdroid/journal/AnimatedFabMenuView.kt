@@ -28,7 +28,7 @@ class AnimatedFabMenuView @JvmOverloads constructor(
     )
 
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E6000000")
+        color = Color.parseColor("#E6302E2E")
         style = Paint.Style.FILL
     }
 

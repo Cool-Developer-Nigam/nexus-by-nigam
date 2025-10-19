@@ -5,19 +5,16 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightcream"
+    android:background="@color/background"
     tools:context=".BookDetailActivity">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -28,60 +25,53 @@
                 android:id="@+id/constraintLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="45dp"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.5">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:id="@+id/picMain"
                     android:layout_width="match_parent"
                     android:layout_height="430dp"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0"
                     tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
                 <LinearLayout
                     android:id="@+id/backBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_primary_green"
+                    android:background="@drawable/bg_back_button"
                     android:orientation="horizontal"
-                    android:paddingStart="6dp"
-                    android:paddingEnd="6dp"
-                    app:flow_verticalBias="0.1"
+                    android:paddingStart="12dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.1"
-                    app:layout_constraintStart_toStartOf="@id/picMain"
-                    app:layout_constraintTop_toTopOf="@+id/picMain"
-                    app:layout_constraintVertical_bias="0.25">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.1">
 
                     <ImageView
                         android:id="@+id/imageView4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_weight="1"
                         app:srcCompat="@drawable/ic_back_arrow"
                         app:tint="@color/white" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="3dp"
-                        android:layout_weight="1"
+                        android:layout_marginStart="6dp"
                         android:text="Back"
                         android:textColor="@color/white"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                 </LinearLayout>
@@ -93,14 +83,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="380dp"
-
+                android:background="@drawable/bg_book_details"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:paddingBottom="32dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/titleTxt"
@@ -109,169 +97,92 @@
                     android:layout_margin="16dp"
                     android:text="Book Title"
                     android:textAlignment="center"
-                    android:textColor="@color/DarkBrown"
-                    android:textSize="22sp"
+                    android:textColor="@color/purple_700"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/text8"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:text="File Size"
-                    android:textColor="@color/DarkBrown"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="32dp"
-                    android:background="@drawable/orange_bg"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/smallBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Small"
-                        android:textColor="@color/DarkBrown"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/mediumBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Medium"
-                        android:textColor="@color/DarkBrown"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/largeBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Large"
-                        android:textColor="@color/DarkBrown"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:visibility="gone" />
-                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_file_info"
                     android:orientation="horizontal"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp">
+                    android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/text9"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="File Size: "
-                        android:textColor="@color/DarkBrown"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="6dp"
-                        android:minWidth="90dp"
-                        android:visibility="gone">
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/minusCart"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:minWidth="25dp"
-                            android:text="-"
-                            android:textColor="@color/DarkBrown"
-                            android:textSize="21sp"
-                            android:textStyle="bold"
-                            android:visibility="gone"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.15"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintVertical_bias="0.0" />
+                            android:text="File Size"
+                            android:textColor="@color/purple_500"
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/numberItemTxt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:minWidth="25dp"
+                            android:layout_marginTop="4dp"
                             android:text="2.5 MB"
-                            android:textColor="@color/DarkBrown"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.5"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintVertical_bias="0.0" />
+                            android:textColor="@color/purple_700"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="@color/purple_500" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/plusCart"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:minWidth="25dp"
-                            android:text="+"
-                            android:textColor="@color/DarkBrown"
-                            android:textSize="21sp"
-                            android:textStyle="bold"
-                            android:visibility="gone"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.98"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintVertical_bias="0" />
+                            android:text="Rating"
+                            android:textColor="@color/purple_500"
+                            android:textSize="14sp" />
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/ratingTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="right"
-                        android:minWidth="100dp"
-                        android:text="4.5"
-                        android:textColor="@color/DarkBrown"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/ratingTxt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="4.5"
+                                android:textColor="@color/purple_700"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
 
-                    <ImageView
-                        android:id="@+id/imageView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/star" />
+                            <ImageView
+                                android:id="@+id/imageView5"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginStart="4dp"
+                                app:srcCompat="@drawable/star"
+                                app:tint="@color/purple_500" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -280,9 +191,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Description :-"
-                    android:textColor="@color/DarkBrown"
+                    android:layout_marginTop="24dp"
+                    android:text="Description"
+                    android:textColor="@color/purple_700"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -290,49 +201,32 @@
                     android:id="@+id/descriptionTxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
                     android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="8dp"
                     android:text="Book Description"
-                    android:textColor="@color/DarkBrown"
-                    android:textSize="16sp" />
+                    android:textColor="@color/purple_200"
+                    android:textSize="16sp"
+                    android:lineSpacingExtra="4dp" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/addToCartBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginBottom="40dp"
-
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp">
-
-                    <TextView
-                        android:id="@+id/priceTxt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
-                        android:text="2.5 MB"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.9"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_open_button"
+                    android:paddingVertical="16dp">
 
                     <TextView
                         android:id="@+id/text13"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="32dp"
                         android:text="Open Book"
                         android:textColor="@color/white"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintEnd_toStartOf="@+id/view"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -343,13 +237,28 @@
                         android:background="@color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.75"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.5" />
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/priceTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2.5 MB"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/view"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

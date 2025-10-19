@@ -21,7 +21,8 @@ import com.nigdroid.journal.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var adapter: UnifiedNotesAdapter
@@ -32,6 +33,7 @@ class HomeFragment : Fragment() {
     private var sortAscending = false // Default: descending (newest first)
     private var showOnlyPinned = true // Default: show only pinned notes
     private var isExpanded = false // Track if "See all" is expanded
+    private var isFragmentAlive = false // Track fragment lifecycle
 
     private val TAG = "HomeFragment"
 
@@ -40,8 +42,9 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
+        isFragmentAlive = true
 
         firebaseAuth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
@@ -60,11 +63,15 @@ class HomeFragment : Fragment() {
         loadPinnedNotes()
 
         binding.profileImage.setOnClickListener {
-            startActivity(Intent(requireContext(), ProfileActivity::class.java))
+            if (isAdded && isFragmentAlive) {
+                startActivity(Intent(requireContext(), ProfileActivity::class.java))
+            }
         }
 
         binding.chatbot.setOnClickListener {
-            startActivity(Intent(requireContext(), GeminiActivity::class.java))
+            if (isAdded && isFragmentAlive) {
+                startActivity(Intent(requireContext(), GeminiActivity::class.java))
+            }
         }
 
         return binding.root
@@ -81,11 +88,15 @@ class HomeFragment : Fragment() {
         )
 
         swipeRefreshLayout.setOnRefreshListener {
-            refreshData()
+            if (isAdded && isFragmentAlive) {
+                refreshData()
+            }
         }
     }
 
     private fun refreshData() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         // Reload user profile
         loadUserProfile()
 
@@ -98,7 +109,7 @@ class HomeFragment : Fragment() {
 
         // Stop refreshing animation after a short delay if it hasn't stopped
         binding.root.postDelayed({
-            if (swipeRefreshLayout.isRefreshing) {
+            if (isAdded && isFragmentAlive && _binding != null && swipeRefreshLayout.isRefreshing) {
                 swipeRefreshLayout.isRefreshing = false
             }
         }, 3000)
@@ -111,6 +122,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun setStaggeredLayout() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         binding.AllNotesRecyclerView.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         isStaggeredLayout = true
@@ -118,6 +131,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun setLinearLayout() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         binding.AllNotesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         isStaggeredLayout = false
         binding.btnLayoutToggle.setImageResource(R.drawable.ic_list_view)
@@ -125,10 +140,12 @@ class HomeFragment : Fragment() {
 
     private fun setupLayoutToggle() {
         binding.btnLayoutToggle.setOnClickListener {
-            if (isStaggeredLayout) {
-                setLinearLayout()
-            } else {
-                setStaggeredLayout()
+            if (isAdded && isFragmentAlive) {
+                if (isStaggeredLayout) {
+                    setLinearLayout()
+                } else {
+                    setStaggeredLayout()
+                }
             }
         }
     }
@@ -138,14 +155,18 @@ class HomeFragment : Fragment() {
         updateSortIcon()
 
         binding.btnSort.setOnClickListener {
-            // Toggle sort order
-            sortAscending = !sortAscending
-            updateSortIcon()
-            applyCurrentFiltersAndSort()
+            if (isAdded && isFragmentAlive) {
+                // Toggle sort order
+                sortAscending = !sortAscending
+                updateSortIcon()
+                applyCurrentFiltersAndSort()
+            }
         }
     }
 
     private fun updateSortIcon() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         if (sortAscending) {
             binding.btnSort.setImageResource(R.drawable.ic_sort_ascending)
         } else {
@@ -157,21 +178,29 @@ class HomeFragment : Fragment() {
         val seeAllContainer = binding.root.findViewById<View>(R.id.seeAllContainer)
 
         seeAllContainer?.setOnClickListener {
-            toggleNotesView()
+            if (isAdded && isFragmentAlive) {
+                toggleNotesView()
+            }
         }
 
         binding.tvSeeAll.setOnClickListener {
-            toggleNotesView()
+            if (isAdded && isFragmentAlive) {
+                toggleNotesView()
+            }
         }
 
         binding.ivSeeAllArrow.setOnClickListener {
-            toggleNotesView()
+            if (isAdded && isFragmentAlive) {
+                toggleNotesView()
+            }
         }
 
         updateSeeAllUI()
     }
 
     private fun toggleNotesView() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         if (showOnlyPinned) {
             isExpanded = true
             showOnlyPinned = false
@@ -187,6 +216,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun animateArrow() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         val rotation = if (isExpanded) 180f else 0f
         binding.ivSeeAllArrow.animate()
             .rotation(rotation)
@@ -195,6 +226,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateSeeAllUI() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         if (showOnlyPinned) {
             binding.tvSeeAll.text = "See all"
             binding.ivSeeAllArrow.rotation = 0f
@@ -209,7 +242,9 @@ class HomeFragment : Fragment() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                applyCurrentFiltersAndSort()
+                if (isAdded && isFragmentAlive) {
+                    applyCurrentFiltersAndSort()
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -217,6 +252,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun applyCurrentFiltersAndSort() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         val query = binding.edtTxtSrch.text.toString()
 
         // Filter notes based on search query
@@ -281,6 +318,8 @@ class HomeFragment : Fragment() {
     private fun loadAllNotes() {
         val currentUserId = firebaseAuth.currentUser?.uid ?: return
 
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         binding.progressBar.visibility = View.VISIBLE
         allNotes.clear()
 
@@ -290,10 +329,12 @@ class HomeFragment : Fragment() {
         fun checkIfAllLoaded() {
             loadedCollections++
             if (loadedCollections == totalCollections) {
-                binding.progressBar.visibility = View.GONE
-                swipeRefreshLayout.isRefreshing = false
-                Log.d(TAG, "All notes loaded: ${allNotes.size} items")
-                applyCurrentFiltersAndSort()
+                if (isAdded && isFragmentAlive && _binding != null) {
+                    binding.progressBar.visibility = View.GONE
+                    swipeRefreshLayout.isRefreshing = false
+                    Log.d(TAG, "All notes loaded: ${allNotes.size} items")
+                    applyCurrentFiltersAndSort()
+                }
             }
         }
 
@@ -301,6 +342,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("userId", currentUserId)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val journal = doc.toObject(Journal::class.java)
                     allNotes.add(UnifiedNoteItem.JournalItem(journal = journal, id = doc.id))
@@ -317,6 +360,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("userId", currentUserId)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val textNote = doc.toObject(TextNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TextNoteItem(textNote))
@@ -333,6 +378,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("userId", currentUserId)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val todoItem = doc.toObject(TodoItem::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TodoItemWrapper(todoItem))
@@ -349,6 +396,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("userId", currentUserId)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val audioNote = doc.toObject(AudioNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.AudioNoteItem(audioNote))
@@ -365,6 +414,8 @@ class HomeFragment : Fragment() {
     private fun loadPinnedNotes() {
         val currentUserId = firebaseAuth.currentUser?.uid ?: return
 
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         binding.progressBar.visibility = View.VISIBLE
         allNotes.clear()
 
@@ -374,10 +425,12 @@ class HomeFragment : Fragment() {
         fun checkIfAllLoaded() {
             loadedCollections++
             if (loadedCollections == totalCollections) {
-                binding.progressBar.visibility = View.GONE
-                swipeRefreshLayout.isRefreshing = false
-                Log.d(TAG, "Pinned notes loaded: ${allNotes.size} items")
-                applyCurrentFiltersAndSort()
+                if (isAdded && isFragmentAlive && _binding != null) {
+                    binding.progressBar.visibility = View.GONE
+                    swipeRefreshLayout.isRefreshing = false
+                    Log.d(TAG, "Pinned notes loaded: ${allNotes.size} items")
+                    applyCurrentFiltersAndSort()
+                }
             }
         }
 
@@ -386,6 +439,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("isPinned", true)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val journal = doc.toObject(Journal::class.java)
                     allNotes.add(UnifiedNoteItem.JournalItem(journal = journal, id = doc.id))
@@ -403,6 +458,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("isPinned", true)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val textNote = doc.toObject(TextNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TextNoteItem(textNote))
@@ -420,6 +477,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("isPinned", true)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val todoItem = doc.toObject(TodoItem::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.TodoItemWrapper(todoItem))
@@ -437,6 +496,8 @@ class HomeFragment : Fragment() {
             .whereEqualTo("isPinned", true)
             .get()
             .addOnSuccessListener { documents ->
+                if (!isAdded || !isFragmentAlive) return@addOnSuccessListener
+
                 for (doc in documents) {
                     val audioNote = doc.toObject(AudioNote::class.java).copy(id = doc.id)
                     allNotes.add(UnifiedNoteItem.AudioNoteItem(audioNote))
@@ -451,6 +512,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateEmptyState(isEmpty: Boolean = allNotes.isEmpty()) {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         val emptyLayout = binding.root.findViewById<View>(R.id.emptyStateLayout)
 
         if (isEmpty) {
@@ -470,6 +533,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadUserProfile() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
         val currentUser = firebaseAuth.currentUser
 
         if (currentUser == null) {
@@ -481,7 +546,7 @@ class HomeFragment : Fragment() {
         val email = currentUser.email
 
         val userName = when {
-            !displayName.isNullOrEmpty() -> displayName
+            !displayName.isNullOrEmpty() -> displayName.split(" ").firstOrNull() ?: displayName
             !email.isNullOrEmpty() -> email.substringBefore("@")
             else -> "User"
         }
@@ -516,35 +581,52 @@ class HomeFragment : Fragment() {
 
     private fun setupNavigation() {
         binding.JournalCard.setOnClickListener {
-            startActivity(Intent(requireContext(), JournalListActivity::class.java))
+            if (isAdded && isFragmentAlive) {
+                startActivity(Intent(requireContext(), JournalListActivity::class.java))
+            }
         }
 
         binding.TodoCard.setOnClickListener {
-            startActivity(Intent(requireContext(), TodoListActivity::class.java))
+            if (isAdded && isFragmentAlive) {
+                startActivity(Intent(requireContext(), TodoListActivity::class.java))
+            }
         }
 
         binding.audioCard.setOnClickListener {
-            startActivity(Intent(requireContext(), AudioNotesListActivity::class.java))
+            if (isAdded && isFragmentAlive) {
+                startActivity(Intent(requireContext(), AudioNotesListActivity::class.java))
+            }
         }
 
         binding.textCard.setOnClickListener {
-            startActivity(Intent(requireContext(), TextNotesListActivity::class.java))
+            if (isAdded && isFragmentAlive) {
+                startActivity(Intent(requireContext(), TextNotesListActivity::class.java))
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        loadUserProfile()
+        if (isAdded && isFragmentAlive) {
+            loadUserProfile()
 
-        if (showOnlyPinned) {
-            loadPinnedNotes()
-        } else {
-            loadAllNotes()
+            if (showOnlyPinned) {
+                loadPinnedNotes()
+            } else {
+                loadAllNotes()
+            }
         }
     }
 
     override fun onPause() {
         super.onPause()
         adapter.releasePlayer()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        isFragmentAlive = false
+        adapter.releasePlayer()
+        _binding = null
     }
 }
