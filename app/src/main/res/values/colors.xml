@@ -32,12 +32,13 @@
 
 
     <color name="purple_200">#BB1E1E1E</color>
+    <color name="purple_300">#BB1E1E1E</color>
 
+
+<color name="trial">#515660</color>
     <color name="purple_500">#A855F7</color>
     <color name="purple_700">#7C3AED</color>
 
-    <!-- Bottom nav item colors -->
-    <color name="bottom_nav_item_color">#FFFFFF</color>
 
     <!-- Menu option colors with glassmorphism -->
     <color name="menu_journal_primary">#FF69B4</color>
@@ -82,6 +83,10 @@
     <color name="text_secondary">@color/gray</color>
     <color name="text_hint">#BDBDBD</color>
 
+    <color name="nav_item_selected">#6C5DD3</color>
+    <color name="nav_item_unselected">#616161</color>
+    <color name="nav_item_bg_selected">#F3F0FF</color>
+
     <!-- Transparent -->
 
     <color name="semi_transparent_black">#80000000</color>
@@ -90,7 +95,7 @@
     <color name="nav_purple_secondary">#9D5CE6</color>
     <color name="nav_pink">#E65C9D</color>
     <color name="nav_background">#F8F9FF</color>
-    <color name="nav_item_text">#2D2D2D</color>
+    <color name="nav_item_text">#3D3C3C</color>
     <color name="nav_item_text_selected">#6B4CE6</color>
     <color name="nav_item_icon">#5A5A5A</color>
     <color name="nav_item_icon_selected">#6B4CE6</color>

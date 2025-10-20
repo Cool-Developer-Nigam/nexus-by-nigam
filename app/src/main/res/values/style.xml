@@ -69,19 +69,5 @@
     </style>
 
 
-    <!-- Navigation View Style -->
-    <style name="GlassyNavigationView" parent="Widget.MaterialComponents.NavigationView">
-        <item name="itemBackground">@drawable/glassy_nav_item_bg</item>
 
-        <item name="itemIconTint">@color/nav_item_color</item>
-        <item name="itemTextColor">@color/nav_item_color</item>
-        <item name="itemShapeFillColor">@android:color/transparent</item>
-        <item name="itemIconSize">24dp</item>
-        <item name="itemHorizontalPadding">16dp</item>
-        <item name="itemVerticalPadding">12dp</item>
-        <item name="itemShapeInsetStart">12dp</item>
-        <item name="itemShapeInsetTop">4dp</item>
-        <item name="itemShapeInsetEnd">12dp</item>
-        <item name="itemShapeInsetBottom">4dp</item>
-    </style>
 </resources>

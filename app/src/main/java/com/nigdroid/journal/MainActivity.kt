@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.nigdroid.journal.databinding.ActivityMainBinding
@@ -54,6 +55,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         // Setup navigation view
         binding.navView.setNavigationItemSelectedListener(this)
+        binding.navView.itemIconTintList = null  // Add this line
+
+        // Setup logout button (Material Button in action layout)
+        setupLogoutButton()
 
         // Load user profile in nav header
         loadNavHeaderProfile()
@@ -108,6 +113,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             // Update bottom navigation state
             binding.bottomNav.setMenuOpenState(isOpen, true)
+        }
+    }
+
+    private fun setupLogoutButton() {
+        // Find the logout menu item and get its action view (Material Button)
+        val logoutMenuItem = binding.navView.menu.findItem(R.id.nav_logout)
+        val logoutButton = logoutMenuItem?.actionView?.findViewById<MaterialButton>(R.id.btn_logout)
+
+        logoutButton?.setOnClickListener {
+            showDeleteConfirmationDialog()
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
         }
     }
 
@@ -218,26 +234,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_profile -> {
                 val intent = Intent(this, ProfileActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_gemini->{
+            R.id.nav_gemini -> {
                 val intent = Intent(this, GeminiActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_logout -> {
-                showDeleteConfirmationDialog()
-            }
-            R.id.nav_all_notes->{
+            R.id.nav_all_notes -> {
                 val intent = Intent(this, AllActivity::class.java)
                 startActivity(intent)
             }
-            R.id.nav_trash->{
+            R.id.nav_trash -> {
                 val intent = Intent(this, TrashActivity::class.java)
                 startActivity(intent)
+            }
+            R.id.nav_about -> {
+                Toast.makeText(this, "About Us", Toast.LENGTH_SHORT).show()
+//                val intent = Intent(this, AboutActivity::class.java)
+//                startActivity(intent)
             }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)

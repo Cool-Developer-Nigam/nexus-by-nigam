@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -11,7 +10,7 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- Header with Logo and Title -->
+        <!-- Header with Icon and Title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -19,11 +18,13 @@
             android:gravity="center_vertical">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/preview_image"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
                 android:src="@drawable/app_logo"
-                app:shapeAppearance="@style/RoundedImageStyle" />
+                android:padding="8dp"
+                android:background="@drawable/circle_red_background"
+                app:shapeAppearance="@style/RoundedImageStyle"
+                />
 
             <!-- Title -->
             <TextView
@@ -31,24 +32,36 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="10dp"
-                android:text="Confirm Image.."
+                android:text="Delete Account"
                 android:textColor="#2C2C2C"
                 android:textSize="22sp"
                 android:textStyle="bold"/>
 
         </LinearLayout>
 
-        <!-- Message -->
+        <!-- Warning Message -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="start"
+            android:lineSpacingExtra="4dp"
+            android:text="Are you sure you want to delete your account?"
+            android:textColor="#2C2C2C"
+            android:textSize="17sp"
+            android:textStyle="bold"/>
+
+        <!-- Additional Warning Text -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="18dp"
             android:gravity="start"
             android:lineSpacingExtra="4dp"
-            android:text="Do you want to use this image for your journal post?"
+            android:text="This action is permanent and cannot be undone. All your data including journals, notes, and todos will be permanently deleted."
             android:textColor="#666666"
-            android:textSize="17sp"/>
+            android:textSize="15sp"/>
 
         <!-- Buttons Container -->
         <LinearLayout
@@ -57,15 +70,15 @@
             android:orientation="horizontal"
             android:gravity="center">
 
-            <!-- Yes Button -->
+            <!-- Delete Button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_confirm_yes"
+                android:id="@+id/btnDelete"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_open_button"
-                android:text="Yes"
+                android:background="@drawable/button_primary_red"
+                android:text="Delete"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
@@ -73,17 +86,17 @@
                 app:backgroundTint="@null"
                 app:elevation="2dp"/>
 
-            <!-- No Button -->
+            <!-- Cancel Button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_confirm_no"
+                android:id="@+id/btnCancel"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:background="@drawable/bg_file_info"
-                android:text="No"
+                android:background="@drawable/button_outline"
+                android:text="Cancel"
                 android:textAllCaps="false"
-                android:textColor="@color/purple_500"
+                android:textColor="@color/red"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:backgroundTint="@null"

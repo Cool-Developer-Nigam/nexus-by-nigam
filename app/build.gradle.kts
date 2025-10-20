@@ -10,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.nigdroid.journal"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.nigdroid.journal"

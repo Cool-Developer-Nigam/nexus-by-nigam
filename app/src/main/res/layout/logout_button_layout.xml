@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:textColor="@android:color/white"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_logout_white"
+        app:iconTint="@android:color/white"
+        app:iconGravity="textStart"
+        app:iconPadding="12dp"
+        app:cornerRadius="12dp"
+        app:backgroundTint="#E74C3C"
+        app:elevation="2dp"
+        app:rippleColor="#FFFFFF"
+        style="@style/Widget.MaterialComponents.Button.Icon" />
+
+</FrameLayout>

@@ -13,6 +13,6 @@
 
     <item
         android:id="@+id/nav_chatbot"
-        android:icon="@drawable/ic_book_outline"
-        android:title="eBooks"/>
+        android:icon="@drawable/nav_icon_book"
+        android:title="Books"/>
 </menu>

@@ -1,42 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <!-- Main Navigation -->
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_all_notes"
-            android:icon="@drawable/ic_lightbulb"
+            android:icon="@drawable/ic_notes_colorful"
             android:title="All Notes" />
+
         <item
             android:id="@+id/nav_gemini"
-            android:icon="@drawable/ic_chatbot"
+            android:icon="@drawable/ic_ai_colorful"
             android:title="AI Chatbot" />
+
         <item
             android:id="@+id/nav_profile"
-            android:icon="@drawable/ic_profile"
+            android:icon="@drawable/ic_profile_colorfull"
             android:title="Profile" />
-        <item
-            android:id="@+id/nav_reminders"
-            android:icon="@drawable/ic_notifications"
-            android:title="Reminders" />
 
         <item
             android:id="@+id/nav_trash"
-            android:icon="@drawable/ic_delete_filled"
+            android:icon="@drawable/ic_trash_colorfull"
             android:title="Trash" />
 
         <item
             android:id="@+id/nav_about"
-            android:icon="@drawable/ic_info"
+            android:icon="@drawable/ic_about_colorfull"
             android:title="About Us" />
 
+        <!-- Logout as action view (Material Button style) -->
         <item
             android:id="@+id/nav_logout"
-            android:icon="@drawable/ic_logout"
-            android:title="Logout" />
-
+            app:actionLayout="@layout/logout_button_layout"
+            android:title="" />
     </group>
 
 </menu>
