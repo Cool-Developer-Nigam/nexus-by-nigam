@@ -22,6 +22,7 @@
             app:layout_constraintHeight_percent="0.18"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
         <!-- White Wave at Bottom -->
         <ImageView
             android:id="@+id/waveBottom"
@@ -34,175 +35,111 @@
             app:layout_constraintHeight_percent="0.15"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <!-- ScrollView for Content -->
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:fillViewport="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:scrollbars="none">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="@dimen/spacing_large"
-                android:paddingTop="@dimen/spacing_xlarge"
-                android:paddingBottom="@dimen/spacing_large">
+                android:paddingBottom="20dp">
 
-
-
-                <!-- Welcome Text -->
-                <TextView
-                    android:id="@+id/tvWelcome"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="66dp"
-                    android:gravity="center"
-                    android:text="@string/welcome_message"
-                    android:textColor="#4A148C"
-                    android:textSize="@dimen/text_size_title"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                <!-- App Logo -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/ivAppLogo"
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:src="@drawable/app_logo"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="Welcome to our Journal App" />
-
-                <!-- Subtitle Text -->
-                <TextView
-                    android:id="@+id/tvSubtitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_small"
-                    android:gravity="center"
-                    android:text="@string/login_subtitle"
-                    android:textColor="#6A1B9A"
-                    android:textSize="@dimen/text_size_body"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvWelcome"
-                    tools:text="Sign in to continue your journey" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="70dp"
+                    app:shapeAppearance="@style/RoundedImageStyle" />
+
+                <!-- Sign In Title -->
+                <TextView
+                    android:id="@+id/tvSignIn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign In"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="#4A148C"
+                    app:layout_constraintTop_toBottomOf="@id/ivAppLogo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="24dp"/>
 
                 <!-- Email AutoCompleteTextView -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilEmail"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <AutoCompleteTextView
+                    android:id="@+id/etEmail"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_xlarge"
-                    android:hint="@string/hint_email"
+                    android:hint="Email"
                     android:textColorHint="#6A1B9A"
-                    app:boxStrokeColor="#7C3AED"
-                    app:hintTextColor="#7C3AED"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:textColor="#1A1A1A"
+                    android:inputType="textEmailAddress"
+                    android:padding="16dp"
+                    android:background="@drawable/label_background"
+                    app:layout_constraintTop_toBottomOf="@id/tvSignIn"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
-                    tools:hint="Email">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginTop="48dp"/>
 
-                    <AutoCompleteTextView
-                        android:id="@+id/etEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress"
-                        android:paddingVertical="@dimen/spacing_medium"
-                        android:paddingStart="12dp"
-                        android:textColor="#1A1A1A"
-                        android:textSize="@dimen/text_size_body" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Password EditText -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <!-- Password -->
+                <EditText
+                    android:id="@+id/etPassword"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_medium"
-                    android:hint="@string/hint_password"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:padding="16dp"
                     android:textColorHint="#6A1B9A"
-                    app:boxStrokeColor="#7C3AED"
-                    app:endIconMode="password_toggle"
-                    app:endIconTint="#7C3AED"
-                    app:hintTextColor="#7C3AED"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:textColor="#1A1A1A"
+                    android:background="@drawable/label_background"
+                    app:layout_constraintTop_toBottomOf="@id/etEmail"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tilEmail"
-                    tools:hint="Password">
-
-                    <EditText
-                        android:id="@+id/etPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:paddingVertical="@dimen/spacing_medium"
-                        android:textColor="#1A1A1A"
-                        android:textSize="@dimen/text_size_body" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginTop="16dp"/>
 
                 <!-- Forgot Password Text -->
                 <TextView
                     android:id="@+id/forgotPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_small"
-                    android:padding="@dimen/spacing_small"
-                    android:text="@string/forgot_password"
+                    android:layout_marginTop="12dp"
+                    android:padding="8dp"
+                    android:text="Forgot Password?"
                     android:textColor="#7C3AED"
-                    android:textSize="@dimen/text_size_small"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tilPassword"
-                    tools:text="Forgot Password?" />
+                    app:layout_constraintTop_toBottomOf="@id/etPassword"
+                    android:layout_marginEnd="32dp"/>
 
                 <!-- Login Button -->
-                <com.google.android.material.button.MaterialButton
+                <Button
                     android:id="@+id/btnLogin"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_large"
-                    android:backgroundTint="#7C3AED"
-                    android:paddingVertical="@dimen/spacing_medium"
-                    android:text="@string/login"
-                    android:textColor="@android:color/white"
-                    android:textSize="@dimen/text_size_button"
-                    android:textStyle="bold"
-                    app:cornerRadius="12dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:text="LOGIN"
+                    android:backgroundTint="@color/pinkish"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
                     app:layout_constraintTop_toBottomOf="@id/forgotPassword"
-                    tools:text="LOGIN" />
-
-                <!-- Divider with OR text -->
-                <LinearLayout
-                    android:id="@+id/dividerLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_large"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/btnLogin">
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"
-                        android:background="#BDBDBD" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/spacing_medium"
-                        android:text="@string/or"
-                        android:textColor="#6A1B9A"
-                        android:textSize="@dimen/text_size_small"
-                        android:textStyle="bold"
-                        tools:text="OR" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1"
-                        android:background="#BDBDBD" />
-                </LinearLayout>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginTop="32dp"/>
 
                 <!-- Google Sign In Button -->
                 <com.google.android.material.button.MaterialButton
@@ -210,34 +147,34 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_large"
-                    android:paddingVertical="@dimen/spacing_medium"
-                    android:text="@string/continue_google"
+                    android:layout_marginTop="34dp"
+                    android:paddingVertical="12dp"
+                    android:paddingHorizontal="16dp"
+                    android:text="Continue with Google"
                     android:textColor="#1A1A1A"
-                    android:textSize="@dimen/text_size_body"
+                    android:textSize="14sp"
                     app:cornerRadius="12dp"
-                   android:backgroundTint="@color/white"
+                    android:backgroundTint="@color/white"
                     app:icon="@drawable/google"
                     app:iconGravity="textStart"
-                    app:iconPadding="@dimen/spacing_small"
+                    app:iconPadding="8dp"
                     app:iconTint="@null"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/dividerLayout"
+                    app:layout_constraintTop_toBottomOf="@id/btnLogin"
                     app:strokeColor="#BDBDBD"
-                    app:strokeWidth="1dp"
-                    tools:text="Continue with Google" />
+                    app:strokeWidth="1dp"/>
 
                 <!-- Create Account Button -->
                 <LinearLayout
                     android:id="@+id/btnCreateAccount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_large"
-                    android:layout_marginBottom="@dimen/spacing_xlarge"
-                    android:background="@drawable/signup_text_bg"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="32dp"
+                    android:background="@drawable/label_background"
                     android:orientation="horizontal"
-                    android:padding="@dimen/spacing_medium"
+                    android:padding="12dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/btnGoogle">
@@ -247,21 +184,20 @@
                         android:layout_height="wrap_content"
                         android:text="Don't have an account? "
                         android:textColor="#424242"
-                        android:textSize="@dimen/text_size_body" />
+                        android:textSize="14sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sign up"
                         android:textColor="#7C3AED"
-                        android:textSize="@dimen/text_size_body"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </ScrollView>
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -13,20 +13,28 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/app_logo"
-        android:label="My Journal"
+        android:label="Nexus"
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Journal">
-
-        <activity android:name=".BookListActivity"
+        <activity
+            android:name=".AboutUsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".VideoActivity"
             android:exported="false"
-            android:theme="@style/Theme.Journal"/>
-        <activity android:name=".BookDetailActivity"
+            android:theme="@style/Theme.Transparent" />
+        <activity
+            android:name=".BookListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Journal" />
+        <activity
+            android:name=".BookDetailActivity"
             android:exported="false" />
         <activity
             android:name=".TrashActivity"
             android:exported="false"
-            android:theme="@style/Theme.Journal"/>
+            android:theme="@style/Theme.Journal" />
         <activity
             android:name=".AllActivity"
             android:exported="false" />

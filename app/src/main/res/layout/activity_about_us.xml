@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="isAppDescExpanded"
+            type="Boolean" />
+        <variable
+            name="isAboutMeExpanded"
+            type="Boolean" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/costum_background"
+        android:fitsSystemWindows="true"
+        >
+
+        <!-- App Bar -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:elevation="0dp">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@drawable/toolbar_bg"
+                android:layout_marginHorizontal="16dp"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="About      "
+                        android:textColor="@color/white"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05" />
+
+                </LinearLayout>
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Developer Card with Glassmorphism -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:cardBackgroundColor="#fff"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="8dp"
+                    app:strokeColor="#2A3F5F"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="32dp">
+
+                        <!-- Profile Photo with Gradient Border -->
+                        <FrameLayout
+                            android:layout_width="140dp"
+                            android:layout_height="140dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="140dp"
+                                android:layout_height="140dp"
+                                app:cardCornerRadius="70dp"
+                                app:cardElevation="8dp"
+                                app:strokeColor="#6366F1"
+                                app:strokeWidth="3dp">
+
+                                <ImageView
+                                    android:id="@+id/ivDeveloperPhoto"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:contentDescription="Developer Photo"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/dev_pic" />
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                        </FrameLayout>
+
+                        <!-- Developed by text -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Developed by"
+                            android:textColor="@color/DarkBrown"
+                            android:textSize="14sp"
+                            android:letterSpacing="0.1" />
+
+                        <!-- Developer Name -->
+                        <TextView
+                            android:id="@+id/tvDeveloperName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Nigam Prasad Sahoo"
+                            android:textColor="@color/DarkBrown"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.02" />
+
+                        <!-- Batch Info -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="17th CSE ( 2024-28 )"
+                            android:textColor="@color/grey"
+                            android:textSize="15sp"
+                            android:letterSpacing="0.05" />
+
+                        <!-- Social Media Icons -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="24dp"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                          <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivInstagram"
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Instagram"
+                                app:shapeAppearance="@style/icon_round"
+                              android:scaleType="centerCrop"
+
+                                android:src="@drawable/insta" />
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivLinkedIn"
+                                android:layout_width="44dp"
+                                android:layout_height="44dp"
+                                android:layout_marginStart="26dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="LinkedIn"
+                                app:shapeAppearance="@style/icon_round"
+
+                                android:src="@drawable/linkedin" />
+
+                           <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/ivYouTube"
+                                android:layout_width="34dp"
+                                android:layout_height="28dp"
+                                android:layout_marginStart="26dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="YouTube"
+                                app:shapeAppearance="@style/icon_round"
+                               android:scaleType="centerCrop"
+                                android:src="@drawable/youtube" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Special Thanks Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="#fff"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="6dp"
+                    app:strokeColor="#2A3F5F"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="24dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💬 Let's Connect!"
+                            android:textColor="@color/DarkBrown"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:gravity="center"
+                            android:text="Follow me on social media for updates and more!"
+                            android:textColor="#566376"
+                            android:textSize="14sp"
+                            android:lineSpacingExtra="4dp" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- About the App Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAppDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="#fff"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="6dp"
+                    app:strokeColor="#2A3F5F"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <!-- Header -->
+                        <LinearLayout
+                            android:id="@+id/layoutAppDescHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="About the App"
+                                android:textColor="@color/DarkBrown"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.03" />
+
+                            <ImageView
+                                android:id="@+id/ivAppDescArrow"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:contentDescription="Expand"
+                                android:src="@android:drawable/arrow_down_float"
+                                app:tint="@color/purple_700" />
+
+                        </LinearLayout>
+
+                        <!-- Content -->
+                        <TextView
+                            android:id="@+id/tvAppDescContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:lineSpacingExtra="6dp"
+                            android:text="Nexus is your all-in-one productivity companion designed to streamline your daily life and boost your efficiency.\n\nNOTES &amp; JOURNALING\n✦ Create rich-formatted notes with customizable text styles\n✦ Write journals with flexible background colors and themes\n✦ Smart todo lists with priority management and completion tracking\n✦ Audio notes with automatic speech-to-text transcription\n✦ Pin important notes to keep them at the top\n✦ Advanced search functionality to find notes instantly\n✦ Trash management with safe deletion and restoration options\n\neBOOK READER\n✦ Access a curated collection of 100+ books across various genres\n✦ Download and read PDFs seamlessly\n✦ Built-in search to quickly find your favorite titles\n✦ Smooth reading experience with intuitive controls\n\nAI-POWERED ASSISTANT\n✦ Intelligent chatbot for instant help and productivity tips\n✦ Get answers and assistance whenever you need\n\nSECURE AUTHENTICATION\n✦ Sign in effortlessly with Google\n✦ Password reset via email link for easy account recovery\n✦ Secure and reliable authentication system\n\nPERSONALIZATION\n✦ Add and update your personal information\n✦ Change your profile picture to make it truly yours\n✦ Customize banner colors with smooth animations\n✦ Interactive buttons with delightful animations throughout the app\n\nBEAUTIFUL DESIGN\n✦ Clean, intuitive interface for effortless navigation\n✦ Thoughtful animations that bring the app to life\n✦ Designed with user experience at the forefront\n\nBUILT WITH DEDICATION\nNexus represents months of hard work, countless late nights, and unwavering commitment. With over 25,000 lines of carefully crafted code, every feature has been thoughtfully designed and rigorously tested to deliver a seamless experience. This isn't just an app—it's a labor of love built to genuinely improve your productivity and daily workflow."
+                            android:textColor="#374D6F"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- About Me Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAboutMe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="#fff"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="6dp"
+                    app:strokeColor="#2A3F5F"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <!-- Header -->
+                        <LinearLayout
+                            android:id="@+id/layoutAboutMeHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingVertical="4dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="About the Developer"
+                                android:textColor="@color/DarkBrown"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:letterSpacing="0.03" />
+
+                            <ImageView
+                                android:id="@+id/ivAboutMeArrow"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:contentDescription="Expand"
+                                android:src="@android:drawable/arrow_down_float"
+                                app:tint="@color/purple_700" />
+
+                        </LinearLayout>
+
+                        <!-- Content -->
+                        <LinearLayout
+                            android:id="@+id/layoutAboutMeContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:lineSpacingExtra="6dp"
+                                android:text="Hi! I'm a passionate Android developer and second-year Computer Science student at IGIT Sarang."
+                                android:textColor="#374D6F"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:lineSpacingExtra="6dp"
+                                android:text="Building apps while juggling academics is quite challenging, but it's incredibly rewarding when you see your ideas come to life! 🚀"
+                                android:textColor="#374D6F"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="✨ What Drives Me"
+                                android:textColor="#374D6F"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:lineSpacingExtra="6dp"
+                                android:text="I believe in creating apps that genuinely make people's lives easier. Whether it's helping you stay organized, boost productivity, or simply enjoy a smoother experience – that's what motivates me to code late into the night! 💙"
+                                android:textColor="#374D6F"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:lineSpacingExtra="6dp"
+                                android:text="Nexus is more than just a project for me – it's a commitment to solving real-world problems with clean, intuitive design. Every feature is crafted with you in mind."
+                                android:textColor="#374D6F"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:lineSpacingExtra="6dp"
+                                android:text="Thanks for being part of this journey! Your feedback and support mean the world to me. 🌟"
+                                android:textColor="#374D6F"
+                                android:textSize="14sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Version Info -->
+                <TextView
+                    android:id="@+id/tvVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:gravity="center"
+                    android:text="© 2025 Nexus. All rights reserved.\nVersion 1.0.0"
+                    android:textColor="#425167"
+                    android:textSize="12sp"
+                    android:lineSpacingExtra="2dp"
+                    android:letterSpacing="0.05" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

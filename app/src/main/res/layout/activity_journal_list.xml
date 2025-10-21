@@ -37,21 +37,36 @@
                     android:indeterminateTint="#C84E7E"
                     android:visibility="gone" />
 
-                <!-- Empty State -->
-                <TextView
+                <LinearLayout
                     android:id="@+id/NoPostTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="100dp"
                     android:gravity="center"
+                    android:orientation="vertical"
                     android:padding="32dp"
-                    android:text="No journals yet\nTap + to create your first journal"
-                    android:textColor="@color/grey"
-                    android:textSize="16sp"
                     android:visibility="gone"
-                    android:drawableTop="@drawable/ic_journal"
-                    android:drawableTint="@color/black"
-                    android:drawablePadding="16dp" />
+
+                    >
+
+                    <ImageView
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:alpha="0.3"
+                        android:src="@drawable/ic_journal"
+                        app:tint="@color/black" />
+
+                    <!-- Empty State -->
+                    <TextView
+                        android:id="@+id/emptyStateMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="No journals yet\nTap + to create your first journal"
+                        android:textColor="@color/grey"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
 
                 <!-- Single RecyclerView for all journals -->
                 <androidx.recyclerview.widget.RecyclerView

@@ -2,6 +2,7 @@ package com.nigdroid.journal
 
 import android.animation.ObjectAnimator
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
@@ -57,8 +58,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.navView.setNavigationItemSelectedListener(this)
         binding.navView.itemIconTintList = null  // Add this line
 
-        // Setup logout button (Material Button in action layout)
-        setupLogoutButton()
+
 
         // Load user profile in nav header
         loadNavHeaderProfile()
@@ -116,16 +116,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun setupLogoutButton() {
-        // Find the logout menu item and get its action view (Material Button)
-        val logoutMenuItem = binding.navView.menu.findItem(R.id.nav_logout)
-        val logoutButton = logoutMenuItem?.actionView?.findViewById<MaterialButton>(R.id.btn_logout)
 
-        logoutButton?.setOnClickListener {
-            showDeleteConfirmationDialog()
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        }
-    }
 
     private fun toggleFabMenu() {
         isFabMenuOpen = !isFabMenuOpen
@@ -253,10 +244,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val intent = Intent(this, TrashActivity::class.java)
                 startActivity(intent)
             }
+            R.id.nav_logout -> {
+                showDeleteConfirmationDialog()
+            }
             R.id.nav_about -> {
-                Toast.makeText(this, "About Us", Toast.LENGTH_SHORT).show()
-//                val intent = Intent(this, AboutActivity::class.java)
-//                startActivity(intent)
+                val intent = Intent(this, AboutUsActivity::class.java)
+                startActivity(intent)
+
             }
         }
         binding.drawerLayout.closeDrawer(GravityCompat.START)

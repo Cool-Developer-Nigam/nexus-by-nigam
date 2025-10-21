@@ -28,7 +28,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIcon="@drawable/ic_menu"
                 app:navigationIconTint="@color/white"
-                app:title="My Journal"
+                app:title="NEXUS"
+                app:titleTextAppearance="@style/AppTitle"
                 app:titleTextColor="@color/white" />
 
             <!-- Bottom Navigation with Animation (Lower z-order) -->
@@ -97,7 +98,7 @@
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
-            android:layout_width="300dp"
+            android:layout_width="270dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@drawable/nav_drawer_bg"
@@ -105,12 +106,13 @@
             app:headerLayout="@layout/nav_header"
             app:menu="@menu/drawer_menu"
             app:itemIconTint="@null"
+
         app:itemTextColor="#2C3E50"
         app:itemShapeFillColor="@color/nav_item_background"
         app:itemShapeInsetStart="16dp"
         app:itemShapeInsetEnd="16dp"
-        app:itemIconSize="26dp"
-        app:itemVerticalPadding="14dp"
+        app:itemIconSize="30dp"
+        app:itemVerticalPadding="18dp"
         app:itemHorizontalPadding="20dp" />
 
     </androidx.drawerlayout.widget.DrawerLayout>

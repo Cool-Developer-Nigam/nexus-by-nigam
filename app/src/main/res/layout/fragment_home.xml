@@ -119,6 +119,62 @@
 
                     </androidx.cardview.widget.CardView>
 
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/banner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="4dp"
+
+                        >
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/costum_bg"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:padding="24dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Discover More Features \nTap to Explore"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/app_logo"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"
+                                    android:layout_marginStart="16dp"
+                                    android:scaleType="centerCrop"
+                                    app:shapeAppearance="@style/RoundedImageStyle"
+                                    android:src="@drawable/app_logo"
+                                    android:background="@drawable/glassy_profile_bg"
+                                    />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:text="Pull to refresh for a colour change ."
+                                android:layout_marginBottom="16dp"
+                                />
+                        </LinearLayout>
+
+
+                    </androidx.cardview.widget.CardView>
+
                     <!-- Category Icons Grid -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -386,14 +442,14 @@
                         android:orientation="vertical"
                         android:padding="32dp"
                         android:visibility="gone"
-                        android:layout_marginTop="48dp">
+                        android:layout_marginTop="0dp">
 
                         <ImageView
                             android:layout_width="120dp"
                             android:layout_height="120dp"
                             android:alpha="0.3"
-                            android:src="@drawable/ic_pin"
-                            app:tint="@color/grey" />
+                            android:src="@drawable/ic_notes_colorful"
+                             />
 
                         <TextView
                             android:id="@+id/emptyStateMessage"

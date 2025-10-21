@@ -29,12 +29,14 @@
             android:id="@+id/nav_about"
             android:icon="@drawable/ic_about_colorfull"
             android:title="About Us" />
+    </group>
 
-        <!-- Logout as action view (Material Button style) -->
+    <!-- Separate group for logout -->
+    <group android:id="@+id/logout_group">
         <item
             android:id="@+id/nav_logout"
-            app:actionLayout="@layout/logout_button_layout"
-            android:title="" />
+            android:icon="@drawable/ic_logout"
+            android:title="Logout" />
     </group>
 
 </menu>

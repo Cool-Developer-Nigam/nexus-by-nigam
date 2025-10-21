@@ -295,7 +295,7 @@ class JournalListActivity : AppCompatActivity() {
             binding.NoPostTv.visibility = View.VISIBLE
             binding.recyclerView.visibility = View.GONE
 
-            binding.NoPostTv.text = if (searchQuery.isNotEmpty()) {
+            binding.emptyStateMessage.text = if (searchQuery.isNotEmpty()) {
                 "No journals found for \"$searchQuery\""
             } else {
                 "No journals yet\nStart writing your first journal"

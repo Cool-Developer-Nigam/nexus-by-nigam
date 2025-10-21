@@ -2,6 +2,7 @@ package com.nigdroid.journal
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +22,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.nigdroid.journal.databinding.FragmentHomeBinding
+import kotlin.random.Random
 
 class HomeFragment : Fragment() {
 
@@ -30,12 +35,72 @@ class HomeFragment : Fragment() {
 
     private val allNotes = mutableListOf<UnifiedNoteItem>()
     private var isStaggeredLayout = true
-    private var sortAscending = false // Default: descending (newest first)
-    private var showOnlyPinned = true // Default: show only pinned notes
-    private var isExpanded = false // Track if "See all" is expanded
-    private var isFragmentAlive = false // Track fragment lifecycle
+    private var sortAscending = false
+    private var showOnlyPinned = true
+    private var isExpanded = false
+    private var isFragmentAlive = false
 
     private val TAG = "HomeFragment"
+
+    // 20 different gradient colors
+    private val bannerGradients = listOf(
+        intArrayOf(0xFFFF6B6B.toInt(), 0xFFEE5A6F.toInt()),
+        intArrayOf(0xFF4ECDC4.toInt(), 0xFF44A08D.toInt()),
+        intArrayOf(0xFF556270.toInt(), 0xFFFF6B6B.toInt()),
+        intArrayOf(0xFF00B4DB.toInt(), 0xFF0083B0.toInt()),
+        intArrayOf(0xFFFC466B.toInt(), 0xFF3F5EFB.toInt()),
+        intArrayOf(0xFF11998E.toInt(), 0xFF38EF7D.toInt()),
+        intArrayOf(0xFFFF758C.toInt(), 0xFFFF7EB3.toInt()),
+        intArrayOf(0xFF667EEA.toInt(), 0xFF764BA2.toInt()),
+        intArrayOf(0xFFF093FB.toInt(), 0xFFF5576C.toInt()),
+        intArrayOf(0xFF4FACFE.toInt(), 0xFF00F2FE.toInt()),
+        intArrayOf(0xFF43E97B.toInt(), 0xFF38F9D7.toInt()),
+        intArrayOf(0xFFFA709A.toInt(), 0xFFFEE140.toInt()),
+        intArrayOf(0xFF30CFD0.toInt(), 0xFF330867.toInt()),
+        intArrayOf(0xFFA8EDEA.toInt(), 0xFFFED6E3.toInt()),
+        intArrayOf(0xFFFF9A9E.toInt(), 0xFFFAD0C4.toInt()),
+        intArrayOf(0xFFFBC2EB.toInt(), 0xFFA6C1EE.toInt()),
+        intArrayOf(0xFFFFDEE9.toInt(), 0xFFB5FFFC.toInt()),
+        intArrayOf(0xFFFEAC5E.toInt(), 0xFFC779D0.toInt()),
+        intArrayOf(0xFF4BC0C8.toInt(), 0xFFC779D0.toInt()),
+        intArrayOf(0xFFD299C2.toInt(), 0xFFFEF9D7.toInt())
+    )
+
+    // 20 different banner texts
+    private val bannerTexts = listOf(
+        "Discover More Features\nTap to Explore",
+        "Unlock Your Creativity\nStart Journaling Today",
+        "Your Thoughts Matter\nCapture Every Moment",
+        "Stay Organized\nCreate Your First Note",
+        "Begin Your Journey\nWrite Your Story",
+        "Express Yourself\nStart Creating Now",
+        "Keep Track of Ideas\nTap to Get Started",
+        "Organize Your Life\nOne Note at a Time",
+        "Capture Inspiration\nCreate Something Amazing",
+        "Your Digital Diary\nBegins Here",
+        "Transform Thoughts\nInto Actions",
+        "Never Forget Again\nStart Noting Down",
+        "Build Better Habits\nOne Task at a Time",
+        "Your Personal Space\nCreate & Organize",
+        "Ideas Worth Keeping\nTap to Start",
+        "Document Your Day\nBegin Your Story",
+        "Stay Productive\nCreate Your List",
+        "Memories Matter\nStart Recording",
+        "Achieve Your Goals\nPlan & Execute",
+        "Your Creative Hub\nExplore Features"
+    )
+
+    // Colors for logo rotation animation
+    private val logoColors = listOf(
+        0xFFFF6B6B.toInt(),
+        0xFF4ECDC4.toInt(),
+        0xFFFC466B.toInt(),
+        0xFF11998E.toInt(),
+        0xFF667EEA.toInt(),
+        0xFF4FACFE.toInt(),
+        0xFFFA709A.toInt(),
+        0xFF30CFD0.toInt()
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,6 +124,9 @@ class HomeFragment : Fragment() {
         setupSeeAllToggle()
         setupSearchFunctionality()
 
+        // Set random banner style on initial load
+        updateBannerStyle()
+
         // Load pinned notes by default
         loadPinnedNotes()
 
@@ -77,10 +145,108 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    private fun updateBannerStyle() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        val randomIndex = Random.nextInt(bannerGradients.size)
+        val colors = bannerGradients[randomIndex]
+        val text = bannerTexts[randomIndex]
+
+        // Create gradient drawable
+        val gradientDrawable = GradientDrawable(
+            GradientDrawable.Orientation.LEFT_RIGHT,
+            colors
+        )
+        gradientDrawable.cornerRadius = 48f // 16dp * 3 for pixel density
+
+        // Find the LinearLayout inside banner CardView
+        val bannerLayout = binding.banner.getChildAt(0) as? android.widget.LinearLayout
+        bannerLayout?.background = gradientDrawable
+
+        // Update text
+        val bannerTextView = bannerLayout?.getChildAt(0) as? TextView
+        bannerTextView?.text = text
+    }
+
+    private fun rotateLogoWithColorChange() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        try {
+            // Find the logo view
+            val logoView = binding.root.findViewById<com.google.android.material.imageview.ShapeableImageView>(R.id.app_logo)
+
+            if (logoView != null) {
+                // Get random color
+                val randomColor = logoColors[Random.nextInt(logoColors.size)]
+
+                // Apply color tint to logo
+                logoView.setColorFilter(randomColor)
+
+                // Create translate (upward) animation
+                val translateAnimation = android.view.animation.TranslateAnimation(
+                    0f, 0f,  // No horizontal movement
+                    0f, -200f  // Move up by 200 pixels
+                ).apply {
+                    duration = 600
+                    fillAfter = false
+                }
+
+                // Create rotation animation
+                val rotateAnimation = android.view.animation.RotateAnimation(
+                    0f, 360f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f
+                ).apply {
+                    duration = 1000
+                    startOffset = 200  // Start after translate begins
+                    fillAfter = false
+                }
+
+                // Create scale animation for bounce effect
+                val scaleAnimation = android.view.animation.ScaleAnimation(
+                    1f, 1.2f,  // Scale from 100% to 120%
+                    1f, 1.2f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f
+                ).apply {
+                    duration = 300
+                    startOffset = 200
+                    repeatMode = android.view.animation.Animation.REVERSE
+                    repeatCount = 1
+                    fillAfter = false
+                }
+
+                // Combine all animations
+                val animationSet = android.view.animation.AnimationSet(false).apply {
+                    addAnimation(translateAnimation)
+                    addAnimation(rotateAnimation)
+                    addAnimation(scaleAnimation)
+                }
+
+                // Set animation listener to clear color after completion
+                animationSet.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
+                    override fun onAnimationStart(animation: android.view.animation.Animation?) {}
+
+                    override fun onAnimationEnd(animation: android.view.animation.Animation?) {
+                        if (isAdded && isFragmentAlive && _binding != null) {
+                            logoView.clearColorFilter()
+                        }
+                    }
+
+                    override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
+                })
+
+                // Start animation
+                logoView.startAnimation(animationSet)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error rotating logo", e)
+        }
+    }
+
     private fun setupSwipeRefresh() {
         swipeRefreshLayout = binding.swipeRefreshLayout
 
-        // Customize refresh colors
         swipeRefreshLayout.setColorSchemeResources(
             R.color.purple_500,
             R.color.teal_200,
@@ -89,6 +255,12 @@ class HomeFragment : Fragment() {
 
         swipeRefreshLayout.setOnRefreshListener {
             if (isAdded && isFragmentAlive) {
+                // Rotate logo with color change on refresh
+                rotateLogoWithColorChange()
+
+                // Update banner style on refresh
+                updateBannerStyle()
+
                 refreshData()
             }
         }
@@ -97,17 +269,14 @@ class HomeFragment : Fragment() {
     private fun refreshData() {
         if (!isAdded || !isFragmentAlive || _binding == null) return
 
-        // Reload user profile
         loadUserProfile()
 
-        // Reload notes based on current view state
         if (showOnlyPinned) {
             loadPinnedNotes()
         } else {
             loadAllNotes()
         }
 
-        // Stop refreshing animation after a short delay if it hasn't stopped
         binding.root.postDelayed({
             if (isAdded && isFragmentAlive && _binding != null && swipeRefreshLayout.isRefreshing) {
                 swipeRefreshLayout.isRefreshing = false
@@ -151,12 +320,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupSortButton() {
-        // Set initial icon to descending (default)
         updateSortIcon()
 
         binding.btnSort.setOnClickListener {
             if (isAdded && isFragmentAlive) {
-                // Toggle sort order
                 sortAscending = !sortAscending
                 updateSortIcon()
                 applyCurrentFiltersAndSort()
@@ -231,9 +398,11 @@ class HomeFragment : Fragment() {
         if (showOnlyPinned) {
             binding.tvSeeAll.text = "See all"
             binding.ivSeeAllArrow.rotation = 0f
+            binding.tvFavouritesTitle.text = "Favourites"
         } else {
             binding.tvSeeAll.text = "Show less"
             binding.ivSeeAllArrow.rotation = 180f
+            binding.tvFavouritesTitle.text = "All Notes"
         }
     }
 
@@ -256,7 +425,6 @@ class HomeFragment : Fragment() {
 
         val query = binding.edtTxtSrch.text.toString()
 
-        // Filter notes based on search query
         val filtered = if (query.isEmpty()) {
             allNotes.toList()
         } else {
@@ -284,16 +452,13 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Sort filtered notes
         val sorted = if (showOnlyPinned) {
-            // When showing only pinned, all are pinned, so just sort by time
             if (sortAscending) {
                 filtered.sortedBy { it.timeAdded }
             } else {
                 filtered.sortedByDescending { it.timeAdded }
             }
         } else {
-            // When showing all, sort pinned first, then by time
             if (sortAscending) {
                 filtered.sortedWith(
                     compareByDescending<UnifiedNoteItem> { it.isPinned }
@@ -310,7 +475,6 @@ class HomeFragment : Fragment() {
         Log.d(TAG, "Applying filters: query='$query', showOnlyPinned=$showOnlyPinned, sortAscending=$sortAscending")
         Log.d(TAG, "Filtered count: ${filtered.size}, Sorted count: ${sorted.size}")
 
-        // Update adapter with sorted list
         adapter.updateListSimple(sorted)
         updateEmptyState(sorted.isEmpty())
     }
@@ -334,6 +498,7 @@ class HomeFragment : Fragment() {
                     swipeRefreshLayout.isRefreshing = false
                     Log.d(TAG, "All notes loaded: ${allNotes.size} items")
                     applyCurrentFiltersAndSort()
+                    updateBannerVisibility()
                 }
             }
         }
@@ -428,8 +593,15 @@ class HomeFragment : Fragment() {
                 if (isAdded && isFragmentAlive && _binding != null) {
                     binding.progressBar.visibility = View.GONE
                     swipeRefreshLayout.isRefreshing = false
-                    Log.d(TAG, "Pinned notes loaded: ${allNotes.size} items")
-                    applyCurrentFiltersAndSort()
+
+                    if (allNotes.isEmpty()) {
+                        Log.d(TAG, "No pinned notes found, loading all notes")
+                        loadAllNotesAfterEmptyPinned()
+                    } else {
+                        Log.d(TAG, "Pinned notes loaded: ${allNotes.size} items")
+                        applyCurrentFiltersAndSort()
+                        updateBannerVisibility()
+                    }
                 }
             }
         }
@@ -511,22 +683,42 @@ class HomeFragment : Fragment() {
             }
     }
 
+    private fun loadAllNotesAfterEmptyPinned() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        showOnlyPinned = false
+        isExpanded = true
+        updateSeeAllUI()
+
+        loadAllNotes()
+    }
+
+    private fun updateBannerVisibility() {
+        if (!isAdded || !isFragmentAlive || _binding == null) return
+
+        binding.banner.visibility = View.VISIBLE
+    }
+
     private fun updateEmptyState(isEmpty: Boolean = allNotes.isEmpty()) {
         if (!isAdded || !isFragmentAlive || _binding == null) return
 
         val emptyLayout = binding.root.findViewById<View>(R.id.emptyStateLayout)
 
         if (isEmpty) {
+            // Show banner and empty state when no notes
+            binding.banner.visibility = View.VISIBLE
             emptyLayout?.visibility = View.VISIBLE
             binding.AllNotesRecyclerView.visibility = View.GONE
 
-            val emptyMessage = binding.root.findViewById<android.widget.TextView>(R.id.emptyStateMessage)
+            val emptyMessage = binding.root.findViewById<TextView>(R.id.emptyStateMessage)
             emptyMessage?.text = if (showOnlyPinned) {
                 "No pinned notes yet\nPin your important notes to see them here"
             } else {
                 "No notes yet\nStart creating your first note"
             }
         } else {
+            // Keep banner visible, hide empty state, show RecyclerView
+            binding.banner.visibility = View.VISIBLE  // ✅ Fixed: Banner stays visible
             emptyLayout?.visibility = View.GONE
             binding.AllNotesRecyclerView.visibility = View.VISIBLE
         }
@@ -601,6 +793,23 @@ class HomeFragment : Fragment() {
         binding.textCard.setOnClickListener {
             if (isAdded && isFragmentAlive) {
                 startActivity(Intent(requireContext(), TextNotesListActivity::class.java))
+            }
+        }
+
+        // Changed: Banner now opens VideoActivity instead of JournalListActivity
+        binding.banner.setOnClickListener {
+            if (isAdded && isFragmentAlive) {
+                val intent = Intent(requireContext(), VideoActivity::class.java)
+
+                intent.putExtra("VIDEO_URI", "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+
+                // Use drawable resource
+                val thumbnailUri = "android.resource://${requireContext().packageName}/${R.drawable.video_thumb}"
+                intent.putExtra("THUMBNAIL_URL", thumbnailUri)
+
+                intent.putExtra("VIDEO_TITLE", "App Tutorial")
+
+                startActivity(intent)
             }
         }
     }
