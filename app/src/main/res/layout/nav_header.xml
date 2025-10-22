@@ -20,8 +20,8 @@
         android:scaleType="centerCrop"
         android:src="@drawable/ic_profile"
         android:elevation="4dp"
-        app:strokeWidth="3dp"
-        app:strokeColor="@android:color/white"
+        app:strokeWidth="1dp"
+
         app:shapeAppearanceOverlay="@style/CircleImageView" />
 
     <TextView

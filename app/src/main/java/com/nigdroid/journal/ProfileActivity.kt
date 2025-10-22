@@ -94,17 +94,29 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        // Create UserProfile object
+        // Load data from SharedPreferences first (this is where updated data is stored)
+        val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+        val savedName = sharedPref.getString("username", currentUser.displayName ?: "Unknown User")
+        val savedBio = sharedPref.getString("userBio", "Software Developer | Passionate about coding")
+        val savedPhone = sharedPref.getString("userPhone", currentUser.phoneNumber ?: "Not provided")
+
+        // Create UserProfile object with saved data
         val user = UserProfile(
-            name = currentUser.displayName ?: "Unknown User",
+            name = savedName ?: "Unknown User",
             email = currentUser.email ?: "No email",
-            phone = currentUser.phoneNumber ?: "Not provided",
-            bio = "Software Developer | Passionate about coding", // Default bio
+            phone = savedPhone ?: "Not provided",
+            bio = savedBio ?: "Software Developer | Passionate about coding",
             profileImageUrl = currentUser.photoUrl?.toString() ?: ""
         )
 
         // Set user data to binding
         binding.user = user
+
+        // Also update individual TextViews to ensure they show the correct data
+        binding.userName.text = user.name
+        binding.userEmail.text = user.email
+        binding.userBio.text = user.bio
+        binding.userPhone.text = user.phone
 
         // Load profile image with Glide
         if (user.profileImageUrl.isNotEmpty()) {
@@ -115,14 +127,6 @@ class ProfileActivity : AppCompatActivity() {
                 .error(R.drawable.ic_profile)
                 .into(binding.profileImage)
         }
-
-        // Try to load additional user info from SharedPreferences
-        val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
-        val savedBio = sharedPref.getString("userBio", user.bio)
-        val savedPhone = sharedPref.getString("userPhone", user.phone)
-
-        binding.userBio.text = savedBio
-        binding.userPhone.text = savedPhone
     }
 
     private fun openImagePicker() {
@@ -202,8 +206,11 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun showEditProfileDialog() {
-        val dialog = BottomSheetDialog(this, R.style.BottomSheetDialogStyle)
         val dialogBinding = DialogEditProfileBinding.inflate(layoutInflater)
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .create()
 
         // Pre-fill with current data
         dialogBinding.etEditName.setText(binding.userName.text)
@@ -218,7 +225,7 @@ class ProfileActivity : AppCompatActivity() {
 
             // Validation
             if (newName.isEmpty()) {
-                dialogBinding.etEditName.error = "Name cannot be empty"
+                Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -231,7 +238,6 @@ class ProfileActivity : AppCompatActivity() {
             dialog.dismiss()
         }
 
-        dialog.setContentView(dialogBinding.root)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
     }
@@ -255,10 +261,19 @@ class ProfileActivity : AppCompatActivity() {
                     apply()
                 }
 
-                // Update UI
+                // Update UI immediately
                 binding.userName.text = name
                 binding.userBio.text = bio
                 binding.userPhone.text = phone
+
+                // Also update the user object in binding
+                binding.user = UserProfile(
+                    name = name,
+                    email = currentUser.email ?: "No email",
+                    phone = phone,
+                    bio = bio,
+                    profileImageUrl = currentUser.photoUrl?.toString() ?: ""
+                )
 
                 Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
             }

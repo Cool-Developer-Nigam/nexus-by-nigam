@@ -260,6 +260,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="text"
                             android:textSize="24sp"
+                            android:textCursorDrawable="@null"
                             android:backgroundTint="@color/semi_transparent_light"
                             android:textStyle="bold"
                             android:textColor="@color/DarkBrown"
@@ -308,10 +309,11 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="150dp"
+                                android:textCursorDrawable="@null"
+                                android:textColor="@color/DarkBrown"
                                 android:gravity="top|start"
                                 android:inputType="textMultiLine|textCapSentences"
                                 android:textSize="14sp"
-                                android:textColor="@color/DarkBrown"
                                 android:background="@android:color/transparent" />
 
                         </com.google.android.material.textfield.TextInputLayout>

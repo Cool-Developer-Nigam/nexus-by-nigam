@@ -182,45 +182,72 @@ class HomeFragment : Fragment() {
                 // Apply color tint to logo
                 logoView.setColorFilter(randomColor)
 
-                // Create translate (upward) animation
-                val translateAnimation = android.view.animation.TranslateAnimation(
+                // Create translate UP animation
+                val translateUpAnimation = android.view.animation.TranslateAnimation(
                     0f, 0f,  // No horizontal movement
-                    0f, -200f  // Move up by 200 pixels
+                    0f, -120f  // Move up by 120 pixels
                 ).apply {
-                    duration = 600
+                    duration = 500
+                    interpolator = android.view.animation.DecelerateInterpolator(1.5f)
+                    fillAfter = false
+                }
+
+                // Create translate DOWN animation (return to original position)
+                val translateDownAnimation = android.view.animation.TranslateAnimation(
+                    0f, 0f,  // No horizontal movement
+                    -120f, 0f  // Move down from -120 to 0 (original position)
+                ).apply {
+                    duration = 500
+                    startOffset = 900  // Start after rotation completes
+                    interpolator = android.view.animation.AccelerateInterpolator(1.5f)
                     fillAfter = false
                 }
 
                 // Create rotation animation
                 val rotateAnimation = android.view.animation.RotateAnimation(
-                    0f, 360f,
+                    0f, 360f,  // Full rotation
                     android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f,
                     android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f
                 ).apply {
-                    duration = 1000
-                    startOffset = 200  // Start after translate begins
+                    duration = 800
+                    startOffset = 300
+                    interpolator = android.view.animation.LinearInterpolator()  // Smooth constant rotation
                     fillAfter = false
                 }
 
-                // Create scale animation for bounce effect
-                val scaleAnimation = android.view.animation.ScaleAnimation(
-                    1f, 1.2f,  // Scale from 100% to 120%
-                    1f, 1.2f,
+                // Create scale UP animation
+                val scaleUpAnimation = android.view.animation.ScaleAnimation(
+                    1f, 1.15f,
+                    1f, 1.15f,
                     android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f,
                     android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f
                 ).apply {
-                    duration = 300
-                    startOffset = 200
-                    repeatMode = android.view.animation.Animation.REVERSE
-                    repeatCount = 1
+                    duration = 400
+                    startOffset = 300
+                    interpolator = android.view.animation.OvershootInterpolator(0.5f)
+                    fillAfter = false
+                }
+
+                // Create scale DOWN animation (return to original size)
+                val scaleDownAnimation = android.view.animation.ScaleAnimation(
+                    1.15f, 1f,
+                    1.15f, 1f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f,
+                    android.view.animation.Animation.RELATIVE_TO_SELF, 0.5f
+                ).apply {
+                    duration = 400
+                    startOffset = 700
+                    interpolator = android.view.animation.AnticipateInterpolator(0.5f)
                     fillAfter = false
                 }
 
                 // Combine all animations
                 val animationSet = android.view.animation.AnimationSet(false).apply {
-                    addAnimation(translateAnimation)
+                    addAnimation(translateUpAnimation)
+                    addAnimation(translateDownAnimation)
                     addAnimation(rotateAnimation)
-                    addAnimation(scaleAnimation)
+                    addAnimation(scaleUpAnimation)
+                    addAnimation(scaleDownAnimation)
                 }
 
                 // Set animation listener to clear color after completion

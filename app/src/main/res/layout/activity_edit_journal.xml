@@ -215,6 +215,7 @@
                         android:layout_marginEnd="12dp"
                         android:text="Cancel"
                         android:backgroundTint="#fff"
+                        android:textColor="@color/black"
                         android:textAllCaps="false"
                         app:cornerRadius="24dp"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton" />

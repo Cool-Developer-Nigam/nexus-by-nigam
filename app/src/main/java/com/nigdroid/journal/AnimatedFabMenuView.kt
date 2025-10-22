@@ -7,11 +7,13 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 
 class AnimatedFabMenuView @JvmOverloads constructor(
@@ -27,6 +29,15 @@ class AnimatedFabMenuView @JvmOverloads constructor(
         MenuOption("Text", GradientColors(0xFF92B7F0.toInt(), 0xFF4E7EF3.toInt(), 0xFF0034FF.toInt()))
     )
 
+    // Use dp to px conversion for consistent sizing
+    private fun dpToPx(dp: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        )
+    }
+
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.parseColor("#E6302E2E")
         style = Paint.Style.FILL
@@ -41,22 +52,10 @@ class AnimatedFabMenuView @JvmOverloads constructor(
         setShadowLayer(15f, 0f, 8f, Color.argb(60, 0, 0, 0))
     }
 
-    private val closePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#1F2937")
-        style = Paint.Style.FILL
-        setShadowLayer(20f, 0f, 10f, Color.argb(80, 0, 0, 0))
-    }
-
-    private val closeStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
-        style = Paint.Style.STROKE
-        strokeWidth = 3f
-    }
-
     private val iconPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         style = Paint.Style.STROKE
-        strokeWidth = 6f
+        strokeWidth = dpToPx(1.4f) // 30% smaller stroke width
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
     }
@@ -69,11 +68,11 @@ class AnimatedFabMenuView @JvmOverloads constructor(
     private var isOpen = false
     private var animationProgress = 0f
     private var blurProgress = 0f
-    private var closeButtonAlpha = 0f
 
-    private val optionRadius = 80f
-    private val closeButtonRadius = 80f
-    private val arcRadius = 370f
+    // Fixed sizes in DP for consistency
+    private val optionRadius = dpToPx(28f) // Fixed 28dp radius (30% smaller than 40dp)
+    private var arcRadius = 0f
+    private var fabCenterY = 0f
 
     private val optionPositions = mutableListOf<PointF>()
     private val optionScales = mutableListOf<Float>()
@@ -89,6 +88,26 @@ class AnimatedFabMenuView @JvmOverloads constructor(
             optionScales.add(0f)
             optionAlphas.add(0f)
         }
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+
+        // Calculate responsive values with proper constraints
+        val screenWidth = w.toFloat()
+        val screenHeight = h.toFloat()
+
+        // Use minimum dimension to ensure consistent spacing on all devices
+        val minDimension = min(screenWidth, screenHeight)
+
+        // Arc radius: 30% of smaller screen dimension, capped between 126dp and 168dp (30% smaller)
+        val minArcRadius = dpToPx(126f) // 30% smaller than 180dp
+        val maxArcRadius = dpToPx(168f) // 30% smaller than 240dp
+        val calculatedArcRadius = minDimension * 0.21f // 30% smaller (0.30 * 0.7 = 0.21)
+        arcRadius = calculatedArcRadius.coerceIn(minArcRadius, maxArcRadius)
+
+        // FAB center Y: Fixed distance from bottom in DP
+        fabCenterY = screenHeight - dpToPx(80f)
     }
 
     fun toggle() {
@@ -151,16 +170,6 @@ class AnimatedFabMenuView @JvmOverloads constructor(
             animators.add(alphaAnimator)
         }
 
-        val closeAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 400
-            startDelay = 550
-            addUpdateListener {
-                closeButtonAlpha = it.animatedValue as Float
-                invalidate()
-            }
-        }
-        animators.add(closeAnimator)
-
         AnimatorSet().apply {
             playTogether(animators)
             start()
@@ -194,15 +203,6 @@ class AnimatedFabMenuView @JvmOverloads constructor(
             }
             animators.add(alphaAnimator)
         }
-
-        val closeAnimator = ValueAnimator.ofFloat(closeButtonAlpha, 0f).apply {
-            duration = 250
-            addUpdateListener {
-                closeButtonAlpha = it.animatedValue as Float
-                invalidate()
-            }
-        }
-        animators.add(closeAnimator)
 
         val blurAnimator = ValueAnimator.ofFloat(blurProgress, 0f).apply {
             duration = 350
@@ -242,7 +242,6 @@ class AnimatedFabMenuView @JvmOverloads constructor(
         if (!isOpen && animationProgress == 0f) return
 
         val fabCenterX = width / 2f
-        val fabCenterY = height - 280f
 
         if (blurProgress > 0) {
             val gradientShader = LinearGradient(
@@ -279,12 +278,14 @@ class AnimatedFabMenuView @JvmOverloads constructor(
                 val currentScale = optionScales[i]
                 val currentAlpha = optionAlphas[i]
 
-                // Create diagonal gradient (135 degrees)
+                // Use fixed option radius (no scaling with screen)
                 val cardSize = optionRadius * currentScale
+                val cornerRadius = dpToPx(22f) // Fixed corner radius (30% smaller)
+
                 val colors = menuOptions[i].gradientColors
                 val gradient = LinearGradient(
-                    x - cardSize, y - cardSize,  // Top-left
-                    x + cardSize, y + cardSize,  // Bottom-right (135° diagonal)
+                    x - cardSize, y - cardSize,
+                    x + cardSize, y + cardSize,
                     intArrayOf(colors.startColor, colors.centerColor, colors.endColor),
                     floatArrayOf(0f, 0.5f, 1f),
                     Shader.TileMode.CLAMP
@@ -296,109 +297,66 @@ class AnimatedFabMenuView @JvmOverloads constructor(
                     x - cardSize, y - cardSize,
                     x + cardSize, y + cardSize
                 )
-                canvas.drawRoundRect(rect, 65f, 65f, cardPaint)
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, cardPaint)
 
                 // Glass overlay for depth
                 optionPaint.color = Color.WHITE
                 optionPaint.alpha = (currentAlpha * 30).toInt()
-                canvas.drawRoundRect(rect, 65f, 65f, optionPaint)
+                canvas.drawRoundRect(rect, cornerRadius, cornerRadius, optionPaint)
 
                 drawIcon(canvas, i, x, y, currentScale * currentAlpha)
             }
-        }
-
-        if (closeButtonAlpha > 0) {
-            closePaint.alpha = (closeButtonAlpha * 255).toInt()
-            canvas.drawCircle(fabCenterX, fabCenterY, closeButtonRadius, closePaint)
-
-            optionPaint.color = Color.WHITE
-            optionPaint.alpha = (closeButtonAlpha * 20).toInt()
-            canvas.drawCircle(fabCenterX, fabCenterY, closeButtonRadius, optionPaint)
-
-            closeStrokePaint.alpha = (closeButtonAlpha * 80).toInt()
-            canvas.drawCircle(fabCenterX, fabCenterY, closeButtonRadius - 1.5f, closeStrokePaint)
-
-            iconPaint.alpha = (closeButtonAlpha * 255).toInt()
-            iconPaint.strokeWidth = 7f
-            val crossSize = 18f
-            canvas.drawLine(
-                fabCenterX - crossSize, fabCenterY - crossSize,
-                fabCenterX + crossSize, fabCenterY + crossSize,
-                iconPaint
-            )
-            canvas.drawLine(
-                fabCenterX + crossSize, fabCenterY - crossSize,
-                fabCenterX - crossSize, fabCenterY + crossSize,
-                iconPaint
-            )
-            iconPaint.strokeWidth = 6f
         }
     }
 
     private fun drawIcon(canvas: Canvas, index: Int, x: Float, y: Float, scale: Float) {
         iconPaint.alpha = (scale * 255).toInt()
-        val size = 45f * scale
+        val size = dpToPx(15.4f) * scale // Fixed icon size in DP (30% smaller)
 
         when (index) {
             0 -> { // Journal - Book icon with spine
-                // Main rectangle
                 val rect = RectF(x - size * 0.83f, y - size * 0.75f, x + size * 0.83f, y + size * 0.75f)
                 canvas.drawRoundRect(rect, size * 0.08f, size * 0.08f, iconPaint)
-                // Vertical spine line
                 canvas.drawLine(x - size * 0.5f, y - size * 0.75f, x - size * 0.5f, y + size * 0.75f, iconPaint)
-                // Horizontal lines
                 canvas.drawLine(x, y - size * 0.33f, x + size * 0.5f, y - size * 0.33f, iconPaint)
                 canvas.drawLine(x, y, x + size * 0.5f, y, iconPaint)
                 canvas.drawLine(x, y + size * 0.33f, x + size * 0.33f, y + size * 0.33f, iconPaint)
             }
             1 -> { // Todo - List with bullets
-                // Three horizontal lines
                 canvas.drawLine(x - size * 0.125f, y - size * 0.5f, x + size * 0.83f, y - size * 0.5f, iconPaint)
                 canvas.drawLine(x - size * 0.125f, y, x + size * 0.83f, y, iconPaint)
                 canvas.drawLine(x - size * 0.125f, y + size * 0.5f, x + size * 0.83f, y + size * 0.5f, iconPaint)
 
-                // Save paint settings
                 val originalStyle = iconPaint.style
                 iconPaint.style = Paint.Style.FILL
 
-                // Three bullet dots
                 canvas.drawCircle(x - size * 0.58f, y - size * 0.5f, size * 0.125f, iconPaint)
                 canvas.drawCircle(x - size * 0.58f, y, size * 0.125f, iconPaint)
                 canvas.drawCircle(x - size * 0.58f, y + size * 0.5f, size * 0.125f, iconPaint)
 
-                // Restore paint
                 iconPaint.style = originalStyle
             }
-            2 -> { // Audio - Microphone (filled style)
+            2 -> { // Audio - Microphone
                 val originalStyle = iconPaint.style
                 iconPaint.style = Paint.Style.FILL
 
-                // Microphone capsule
                 val micRect = RectF(x - size * 0.25f, y - size * 0.58f, x + size * 0.25f, y + size * 0.08f)
                 canvas.drawRoundRect(micRect, size * 0.25f, size * 0.25f, iconPaint)
 
-                // Stand base and neck
                 val standPath = Path().apply {
-                    // Arc around microphone
                     val arcRect = RectF(x - size * 0.45f, y - size * 0.33f, x + size * 0.45f, y + size * 0.42f)
                     arcTo(arcRect, 0f, 180f, false)
-                    // Vertical line down
-                    lineTo(x, y + size * 0.73f)
                     lineTo(x, y + size * 0.73f)
                 }
                 iconPaint.style = Paint.Style.STROKE
                 canvas.drawPath(standPath, iconPaint)
-
-                // Bottom horizontal line
                 canvas.drawLine(x - size * 0.17f, y + size * 0.73f, x + size * 0.17f, y + size * 0.73f, iconPaint)
 
                 iconPaint.style = originalStyle
             }
-            3 -> { // Text - Note/Document icon
-                // Main rectangle
+            3 -> { // Text - Document icon
                 val rect = RectF(x - size * 0.67f, y - size * 0.67f, x + size * 0.67f, y + size * 0.67f)
                 canvas.drawRoundRect(rect, size * 0.17f, size * 0.17f, iconPaint)
-                // Two horizontal lines
                 canvas.drawLine(x - size * 0.42f, y - size * 0.17f, x + size * 0.42f, y - size * 0.17f, iconPaint)
                 canvas.drawLine(x - size * 0.42f, y + size * 0.17f, x + size * 0.25f, y + size * 0.17f, iconPaint)
             }
@@ -410,15 +368,7 @@ class AnimatedFabMenuView @JvmOverloads constructor(
             val x = event.x
             val y = event.y
 
-            val fabCenterX = width / 2f
-            val fabCenterY = height - 280f
-
-            val distToClose = distance(x, y, fabCenterX, fabCenterY)
-            if (distToClose < closeButtonRadius * 1.3f) {
-                close()
-                return true
-            }
-
+            // Check if clicked on any menu option
             for (i in optionPositions.indices) {
                 val pos = optionPositions[i]
                 val dist = distance(x, y, pos.x, pos.y)
@@ -429,10 +379,18 @@ class AnimatedFabMenuView @JvmOverloads constructor(
                 }
             }
 
+            // Clicked on background/shadow - close menu
             close()
             return true
         }
         return super.onTouchEvent(event)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        // Make the view fill the entire screen
+        val width = MeasureSpec.getSize(widthMeasureSpec)
+        val height = MeasureSpec.getSize(heightMeasureSpec)
+        setMeasuredDimension(width, height)
     }
 
     private fun distance(x1: Float, y1: Float, x2: Float, y2: Float): Float {

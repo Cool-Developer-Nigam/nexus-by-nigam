@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
@@ -14,6 +15,15 @@ class AnimatedBottomNavigationView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : BottomNavigationView(context, attrs, defStyleAttr) {
+
+    // Use dp to px conversion for consistent sizing
+    private fun dpToPx(dp: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        )
+    }
 
     private val path = Path()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -38,7 +48,9 @@ class AnimatedBottomNavigationView @JvmOverloads constructor(
 
     private var navigationBarWidth = 0
     private var navigationBarHeight = 0
-    private val cornerRadius = 80f
+
+    // Fixed corner radius in DP
+    private val cornerRadius = dpToPx(40f)
 
     // Curve points
     private val firstCurveStartPoint = Point()
@@ -74,8 +86,8 @@ class AnimatedBottomNavigationView @JvmOverloads constructor(
                 val centerX = totalWidth / 2
                 val itemCount = it.childCount
 
-                // Reduce spacing between items to bring them closer to center
-                val itemSpacing = totalWidth * 0.27f // Reduced from default spacing
+                // Fixed spacing in DP for consistency across devices
+                val itemSpacing = dpToPx(80f) // Fixed 80dp spacing between items
                 val totalItemsWidth = itemSpacing * (itemCount - 1)
                 val startX = centerX - totalItemsWidth / 2
 
@@ -100,34 +112,42 @@ class AnimatedBottomNavigationView @JvmOverloads constructor(
         navigationBarWidth = width
         navigationBarHeight = height
 
-        // Calculate curve points
+        // Use percentage-based curve positioning like the original
         val curveStartX = (width * 0.33f).toInt()
         val curveEndX = (width * 0.67f).toInt()
         val centerX = width / 2
-        val curveDepth = 70
+
+        // Fixed curve depth in DP (matching original 70px on standard density)
+        val curveDepth = dpToPx(26f).toInt()
+
+        // Control point offsets in DP (matching original 40px and 80px)
+        val controlPointOffset1 = dpToPx(20f).toInt()
+        val controlPointOffset2 = dpToPx(40f).toInt()
 
         // First curve (left side going up)
         firstCurveStartPoint.set(curveStartX, 0)
         firstCurveEndPoint.set(centerX, curveDepth)
-        firstCurveControlPoint1.set(curveStartX + 40, 5)
-        firstCurveControlPoint2.set(centerX - 80, curveDepth)
+        firstCurveControlPoint1.set(curveStartX + controlPointOffset1, 5)
+        firstCurveControlPoint2.set(centerX - controlPointOffset2, curveDepth)
 
         // Second curve (right side going down)
         secondCurveStartPoint.set(centerX, curveDepth)
         secondCurveEndPoint.set(curveEndX, 0)
-        secondCurveControlPoint1.set(centerX + 80, curveDepth)
-        secondCurveControlPoint2.set(curveEndX - 40, 5)
+        secondCurveControlPoint1.set(centerX + controlPointOffset2, curveDepth)
+        secondCurveControlPoint2.set(curveEndX - controlPointOffset1, 5)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(
-            (56 * resources.displayMetrics.density).toInt(),
-            MeasureSpec.EXACTLY
-        ))
+        // Fixed height in DP
+        val fixedHeight = dpToPx(56f).toInt()
+        super.onMeasure(
+            widthMeasureSpec,
+            MeasureSpec.makeMeasureSpec(fixedHeight, MeasureSpec.EXACTLY)
+        )
     }
 
     fun animateFabPulse() {
-        val pulseAnimator = ValueAnimator.ofFloat(0f, 80f, 0f).apply {
+        val pulseAnimator = ValueAnimator.ofFloat(0f, dpToPx(40f), 0f).apply {
             duration = 500
             interpolator = DecelerateInterpolator()
             addUpdateListener { animation ->

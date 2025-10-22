@@ -97,6 +97,7 @@
                             android:textSize="24sp"
                             android:textStyle="bold"
                             android:textColor="@color/DarkBrown"
+                            android:textCursorDrawable="@drawable/black_cursor"
                             android:padding="20dp"
                             android:background="@android:color/transparent" />
 

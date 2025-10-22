@@ -27,13 +27,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:clipChildren="false"
+                    android:padding="16dp">
 
                     <!-- Header Section with Profile -->
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp">
+                        android:layout_marginBottom="16dp">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -47,7 +48,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="Hello"
                                 android:textColor="#DF3F7E"
-                                android:textSize="14sp" />
+                                android:textSize="12sp" />
 
                             <TextView
                                 android:id="@+id/username"
@@ -55,14 +56,16 @@
                                 android:layout_height="wrap_content"
                                 android:text="User"
                                 android:textColor="#1F2937"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:maxLines="1"
+                                android:ellipsize="end" />
                         </LinearLayout>
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/profileImage"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
                             android:scaleType="centerCrop"
@@ -74,7 +77,7 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="16dp"
                         android:backgroundTint="#fff"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp">
@@ -84,13 +87,13 @@
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
                             android:gravity="center_vertical"
-                            android:padding="2dp">
+                            android:padding="4dp">
 
                             <EditText
                                 android:id="@+id/edt_txt_srch"
                                 android:layout_width="0dp"
-                                android:layout_height="50dp"
-                                android:layout_weight="0.5"
+                                android:layout_height="48dp"
+                                android:layout_weight="1"
                                 android:background="@null"
                                 android:drawableStart="@drawable/search_icon"
                                 android:drawablePadding="8dp"
@@ -101,7 +104,9 @@
                                 android:paddingTop="8dp"
                                 android:paddingBottom="8dp"
                                 android:textColor="@color/black"
-                                android:textColorHint="@color/grey" />
+                                android:textColorHint="@color/grey"
+                                android:textCursorDrawable="@drawable/black_cursor"
+                                android:textSize="16sp" />
 
                             <ImageView
                                 android:id="@+id/chatbot"
@@ -119,27 +124,36 @@
 
                     </androidx.cardview.widget.CardView>
 
+                    <!-- In your fragment_home.xml, update the banner CardView section -->
+
                     <androidx.cardview.widget.CardView
                         android:id="@+id/banner"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="#00FFFFFF"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="4dp"
+                        android:clipChildren="false"
+                        android:clipToPadding="false">
 
-                        >
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@drawable/costum_bg"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:minHeight="140dp"
+                            android:clipChildren="false"
+                            android:clipToPadding="false">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal"
-                                android:padding="24dp">
+                                android:padding="16dp"
+                                android:clipChildren="false"
+                                android:clipToPadding="false">
 
                                 <TextView
                                     android:layout_width="0dp"
@@ -147,19 +161,28 @@
                                     android:layout_weight="1"
                                     android:text="Discover More Features \nTap to Explore"
                                     android:textColor="#FFFFFF"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold" />
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:lineSpacingMultiplier="1.2" />
 
-                                <com.google.android.material.imageview.ShapeableImageView
-                                    android:id="@+id/app_logo"
-                                    android:layout_width="100dp"
-                                    android:layout_height="100dp"
-                                    android:layout_marginStart="16dp"
-                                    android:scaleType="centerCrop"
-                                    app:shapeAppearance="@style/RoundedImageStyle"
-                                    android:src="@drawable/app_logo"
-                                    android:background="@drawable/glassy_profile_bg"
-                                    />
+                                <FrameLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:clipChildren="false"
+                                    android:clipToPadding="false"
+                                    android:padding="20dp">
+
+                                    <com.google.android.material.imageview.ShapeableImageView
+                                        android:id="@+id/app_logo"
+                                        android:layout_width="80dp"
+                                        android:layout_height="80dp"
+                                        android:scaleType="centerCrop"
+                                        app:shapeAppearance="@style/RoundedImageStyle"
+                                        android:src="@drawable/app_logo"
+                                        android:background="@drawable/circular_trnsparent_bg"
+                                        android:elevation="28dp" />
+                                </FrameLayout>
                             </LinearLayout>
 
                             <TextView
@@ -168,10 +191,10 @@
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/white"
                                 android:text="Pull to refresh for a colour change ."
-                                android:layout_marginBottom="16dp"
-                                />
+                                android:layout_marginBottom="12dp"
+                                android:textSize="12sp"
+                                android:alpha="0.9" />
                         </LinearLayout>
-
 
                     </androidx.cardview.widget.CardView>
 
@@ -179,9 +202,10 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="16dp"
                         android:orientation="horizontal"
-                        android:weightSum="4">
+                        android:weightSum="4"
+                        android:gravity="center">
 
                         <!-- Journal Icon -->
                         <LinearLayout
@@ -189,13 +213,14 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="4dp">
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/JournalCard"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
-                                app:cardCornerRadius="16dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
+                                app:cardCornerRadius="14dp"
                                 app:cardElevation="2dp">
 
                                 <LinearLayout
@@ -206,8 +231,8 @@
                                     android:orientation="vertical">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_journal"
                                         app:tint="#F0ECEE" />
                                 </LinearLayout>
@@ -216,10 +241,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="6dp"
                                 android:text="Journals"
                                 android:textColor="#1F2937"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
@@ -229,14 +254,15 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="4dp">
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/TodoCard"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
                                 android:backgroundTint="@color/white"
-                                app:cardCornerRadius="16dp"
+                                app:cardCornerRadius="14dp"
                                 app:cardElevation="2dp">
 
                                 <LinearLayout
@@ -247,8 +273,8 @@
                                     android:orientation="vertical">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_list"
                                         app:tint="#F0ECEE" />
                                 </LinearLayout>
@@ -257,10 +283,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="6dp"
                                 android:text="List"
                                 android:textColor="#1F2937"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
@@ -270,14 +296,15 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="4dp">
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/audioCard"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
                                 android:backgroundTint="@color/white"
-                                app:cardCornerRadius="16dp"
+                                app:cardCornerRadius="14dp"
                                 app:cardElevation="2dp">
 
                                 <LinearLayout
@@ -288,8 +315,8 @@
                                     android:orientation="vertical">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_mic"
                                         app:tint="#F0ECEE" />
                                 </LinearLayout>
@@ -298,10 +325,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="6dp"
                                 android:text="Audio"
                                 android:textColor="#1F2937"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
 
@@ -311,14 +338,15 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:padding="4dp">
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/textCard"
-                                android:layout_width="64dp"
-                                android:layout_height="64dp"
+                                android:layout_width="56dp"
+                                android:layout_height="56dp"
                                 android:backgroundTint="@color/white"
-                                app:cardCornerRadius="16dp"
+                                app:cardCornerRadius="14dp"
                                 app:cardElevation="2dp">
 
                                 <LinearLayout
@@ -329,8 +357,8 @@
                                     android:orientation="vertical">
 
                                     <ImageView
-                                        android:layout_width="32dp"
-                                        android:layout_height="32dp"
+                                        android:layout_width="28dp"
+                                        android:layout_height="28dp"
                                         android:src="@drawable/ic_text"
                                         app:tint="#F0ECEE" />
                                 </LinearLayout>
@@ -339,10 +367,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="6dp"
                                 android:text="Text"
                                 android:textColor="#1F2937"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
@@ -350,8 +378,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:paddingHorizontal="16dp">
+                        android:layout_marginBottom="12dp"
+                        android:paddingHorizontal="8dp">
 
                         <TextView
                             android:id="@+id/tvFavouritesTitle"
@@ -361,7 +389,7 @@
                             android:layout_centerVertical="true"
                             android:text="Favourites"
                             android:textColor="#EC4899"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
@@ -379,26 +407,26 @@
                             <!-- Grid/List Toggle Button -->
                             <ImageView
                                 android:id="@+id/btnLayoutToggle"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:background="?attr/selectableItemBackgroundBorderless"
                                 android:padding="4dp"
                                 android:src="@drawable/ic_grid_view"
                                 android:contentDescription="Toggle layout"
                                 app:tint="#EC4899"
-                                android:layout_marginEnd="8dp" />
+                                android:layout_marginEnd="6dp" />
 
                             <!-- Sort Button -->
                             <ImageView
                                 android:id="@+id/btnSort"
-                                android:layout_width="32dp"
-                                android:layout_height="32dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
                                 android:background="?attr/selectableItemBackgroundBorderless"
                                 android:padding="4dp"
                                 android:src="@drawable/ic_sort_descending"
                                 android:contentDescription="Sort options"
                                 app:tint="#EC4899"
-                                android:layout_marginEnd="16dp" />
+                                android:layout_marginEnd="12dp" />
 
                             <!-- See All Text -->
                             <TextView
@@ -408,14 +436,14 @@
                                 android:text="See all"
                                 android:textStyle="italic"
                                 android:textColor="#1976D2"
-                                android:textSize="14sp"
+                                android:textSize="13sp"
                                 android:layout_marginEnd="4dp" />
 
                             <!-- Dropdown Arrow -->
                             <ImageView
                                 android:id="@+id/ivSeeAllArrow"
-                                android:layout_width="26dp"
-                                android:layout_height="26dp"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
                                 android:src="@drawable/ic_arrow_drop_down"
                                 android:contentDescription="Expand"
                                 app:tint="#1976D2" />
@@ -430,7 +458,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
-                        android:paddingBottom="16dp"
+                        android:paddingBottom="12dp"
                         android:clipToPadding="false" />
 
                     <LinearLayout
@@ -440,35 +468,34 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="32dp"
+                        android:padding="24dp"
                         android:visibility="gone"
                         android:layout_marginTop="0dp">
 
                         <ImageView
-                            android:layout_width="120dp"
-                            android:layout_height="120dp"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
                             android:alpha="0.3"
-                            android:src="@drawable/ic_notes_colorful"
-                             />
+                            android:src="@drawable/ic_notes_colorful" />
 
                         <TextView
                             android:id="@+id/emptyStateMessage"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="12dp"
                             android:gravity="center"
                             android:text="No favourite notes yet\nAdd your important notes to favourites to see them here"
                             android:textColor="@color/grey"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:lineSpacingExtra="4dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="6dp"
                             android:text="Tap the favourite icon on any note"
                             android:textColor="@color/grey"
-                            android:textSize="12sp"
+                            android:textSize="11sp"
                             android:alpha="0.7" />
 
                     </LinearLayout>

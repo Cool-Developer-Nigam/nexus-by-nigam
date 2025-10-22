@@ -20,7 +20,8 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="?attr/actionBarSize"
+                android:minHeight="48dp"
                 android:elevation="0dp"
                 android:background="@color/purple_700"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -32,35 +33,34 @@
                 app:titleTextAppearance="@style/AppTitle"
                 app:titleTextColor="@color/white" />
 
-            <!-- Bottom Navigation with Animation (Lower z-order) -->
+            <!-- Fragment Container -->
             <FrameLayout
                 android:id="@+id/fragment_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toTopOf="@id/bottom_nav"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
+            <!-- Bottom Navigation -->
             <com.nigdroid.journal.AnimatedBottomNavigationView
                 android:id="@+id/bottom_nav"
                 android:layout_width="0dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="44dp"
-                android:layout_marginEnd="44dp"
-                android:layout_marginBottom="24dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
                 app:itemIconTint="@color/bottom_nav_item_color"
                 app:itemTextColor="@color/bottom_nav_item_color"
-                app:itemIconSize="26dp"
+                app:itemIconSize="24dp"
                 app:itemRippleColor="@color/purple_200"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:menu="@menu/bottom_nav_menu" />
 
-            <!-- Animated FAB Menu Overlay - FULL SCREEN (No bottom margin) -->
+            <!-- Animated FAB Menu Overlay - FULL SCREEN (Behind FAB) -->
             <com.nigdroid.journal.AnimatedFabMenuView
                 android:id="@+id/fab_menu"
                 android:layout_width="match_parent"
@@ -72,33 +72,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Smaller FAB with rotation (Highest z-order) -->
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <!-- Rotating FAB - Above everything -->
+            <com.nigdroid.journal.RotatingFabView
                 android:id="@+id/fab_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="60dp"
+                android:layout_marginBottom="48dp"
                 android:clickable="true"
-                android:contentDescription="Add"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.CircleFAB"
                 android:focusable="true"
-                android:src="@drawable/add"
-                app:backgroundTint="@color/purple_500"
-                app:borderWidth="0dp"
-                app:elevation="20dp"
-                app:fabSize="normal"
-                app:maxImageSize="28dp"
-                app:rippleColor="#4DFFFFFF"
-                app:tint="@android:color/white"
+                android:elevation="20dp"
+                style="@style/CircleImageView"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Navigation Drawer -->
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/nav_view"
-            android:layout_width="270dp"
+            android:layout_width="280dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@drawable/nav_drawer_bg"
@@ -106,14 +99,13 @@
             app:headerLayout="@layout/nav_header"
             app:menu="@menu/drawer_menu"
             app:itemIconTint="@null"
-
-        app:itemTextColor="#2C3E50"
-        app:itemShapeFillColor="@color/nav_item_background"
-        app:itemShapeInsetStart="16dp"
-        app:itemShapeInsetEnd="16dp"
-        app:itemIconSize="30dp"
-        app:itemVerticalPadding="18dp"
-        app:itemHorizontalPadding="20dp" />
+            app:itemTextColor="#2C3E50"
+            app:itemShapeFillColor="@color/nav_item_background"
+            app:itemShapeInsetStart="12dp"
+            app:itemShapeInsetEnd="12dp"
+            app:itemIconSize="26dp"
+            app:itemVerticalPadding="12dp"
+            app:itemHorizontalPadding="16dp" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

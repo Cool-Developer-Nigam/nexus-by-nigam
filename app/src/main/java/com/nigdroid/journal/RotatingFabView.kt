@@ -4,9 +4,10 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.view.animation.OvershootInterpolator
-import androidx.core.content.ContextCompat
+import kotlin.math.min
 
 class RotatingFabView @JvmOverloads constructor(
     context: Context,
@@ -14,7 +15,15 @@ class RotatingFabView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    private val diamondPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    private fun dpToPx(dp: Float): Float {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dp,
+            resources.displayMetrics
+        )
+    }
+
+    private val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
     }
 
@@ -31,7 +40,6 @@ class RotatingFabView @JvmOverloads constructor(
     private val iconPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
         style = Paint.Style.STROKE
-        strokeWidth = 8f
         strokeCap = Paint.Cap.ROUND
     }
 
@@ -41,10 +49,44 @@ class RotatingFabView @JvmOverloads constructor(
     var isOpen = false
         private set
 
-    private val size = 200f // 84dp * 2.38 for diamond
+    // Responsive size - base size in DP
+    private val baseSizeDp = 56f // Standard FAB size
+    private var fabSize = 0f
+    private var iconStrokeWidth = 0f
+    private var iconSize = 0f
 
     init {
         setLayerType(LAYER_TYPE_SOFTWARE, null)
+        calculateSizes()
+    }
+
+    private fun calculateSizes() {
+        // Convert base size to pixels
+        val baseSizePx = dpToPx(baseSizeDp)
+
+        // Get screen dimensions
+        val displayMetrics = resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels.toFloat()
+        val screenHeight = displayMetrics.heightPixels.toFloat()
+        val minDimension = min(screenWidth, screenHeight)
+
+        // Calculate responsive FAB size (between 56dp and 72dp based on screen size)
+        val minSize = dpToPx(56f)
+        val maxSize = dpToPx(72f)
+        val calculatedSize = minDimension * 0.15f // 15% of smaller dimension
+        fabSize = calculatedSize.coerceIn(minSize, maxSize)
+
+        // Icon stroke width scales with FAB size
+        iconStrokeWidth = fabSize * 0.04f // 4% of FAB size
+        iconPaint.strokeWidth = iconStrokeWidth
+
+        // Icon size is proportional to FAB size
+        iconSize = fabSize * 0.3f // 30% of FAB size
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        calculateSizes()
     }
 
     fun toggle(open: Boolean) {
@@ -86,15 +128,15 @@ class RotatingFabView @JvmOverloads constructor(
 
         val centerX = width / 2f
         val centerY = height / 2f
+        val radius = fabSize / 2f
 
         canvas.save()
         canvas.translate(centerX, centerY)
-        canvas.rotate(45f) // Base diamond rotation
         canvas.scale(scale, scale)
 
         // Draw glow effect
         if (glowIntensity > 0) {
-            val glowRadius = (size / 2) * (1 + glowIntensity * 0.5f)
+            val glowRadius = radius * (1 + glowIntensity * 0.5f)
             glowPaint.shader = RadialGradient(
                 0f, 0f,
                 glowRadius,
@@ -105,10 +147,10 @@ class RotatingFabView @JvmOverloads constructor(
             canvas.drawCircle(0f, 0f, glowRadius, glowPaint)
         }
 
-        // Draw diamond background with gradient
+        // Draw circular background with gradient
         val gradient = LinearGradient(
-            -size / 2, -size / 2,
-            size / 2, size / 2,
+            -radius, -radius,
+            radius, radius,
             intArrayOf(
                 Color.parseColor("#A855F7"),
                 Color.parseColor("#7C3AED")
@@ -116,25 +158,16 @@ class RotatingFabView @JvmOverloads constructor(
             null,
             Shader.TileMode.CLAMP
         )
-        diamondPaint.shader = gradient
-
-        val path = Path().apply {
-            moveTo(0f, -size / 2)
-            lineTo(size / 2, 0f)
-            lineTo(0f, size / 2)
-            lineTo(-size / 2, 0f)
-            close()
-        }
-        canvas.drawPath(path, diamondPaint)
+        circlePaint.shader = gradient
+        canvas.drawCircle(0f, 0f, radius, circlePaint)
 
         // Draw glass overlay for glassmorphism
-        canvas.drawPath(path, glassPaint)
+        canvas.drawCircle(0f, 0f, radius, glassPaint)
 
         // Rotate icon
-        canvas.rotate(rotation - 45f)
+        canvas.rotate(rotation)
 
-        // Draw + icon
-        val iconSize = 30f
+        // Draw + icon with responsive size
         canvas.drawLine(-iconSize, 0f, iconSize, 0f, iconPaint)
         canvas.drawLine(0f, -iconSize, 0f, iconSize, iconPaint)
 
@@ -142,7 +175,7 @@ class RotatingFabView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val desiredSize = size.toInt()
+        val desiredSize = fabSize.toInt()
         setMeasuredDimension(desiredSize, desiredSize)
     }
 }

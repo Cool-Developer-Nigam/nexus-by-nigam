@@ -95,11 +95,11 @@
                                 android:id="@+id/profileImage"
                                 android:layout_width="120dp"
                                 android:layout_height="120dp"
-                                app:shapeAppearance="@style/ShapeAppearance.App.CircleFAB"
-                                android:src="@drawable/ic_profile"
-                                android:scaleType="centerCrop"
                                 android:contentDescription="Profile Picture"
-                                app:strokeColor="@color/purple_500"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_profile"
+                                app:shapeAppearance="@style/ShapeAppearance.App.CircleFAB"
+
                                 app:strokeWidth="3dp" />
 
                             <com.google.android.material.imageview.ShapeableImageView
