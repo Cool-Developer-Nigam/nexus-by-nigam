@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -53,6 +54,89 @@ class ProfileActivity : AppCompatActivity() {
 
         loadUserProfile()
         setupClickListeners()
+        animateEntrance()
+    }
+
+    private fun animateEntrance() {
+        // Animate profile image with scale and fade
+        binding.profileImage.alpha = 0f
+        binding.profileImage.scaleX = 0.8f
+        binding.profileImage.scaleY = 0.8f
+
+        binding.profileImage.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(800)
+            .setStartDelay(100)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+
+        // Animate change photo button
+        binding.changePhotoButton.alpha = 0f
+        binding.changePhotoButton.scaleX = 0.7f
+        binding.changePhotoButton.scaleY = 0.7f
+
+        binding.changePhotoButton.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(600)
+            .setStartDelay(400)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+
+        // Animate user info card
+        binding.root.findViewById<androidx.cardview.widget.CardView>(R.id.userInfoCard)?.let { card ->
+            card.alpha = 0f
+            card.translationY = 30f
+
+            card.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(700)
+                .setStartDelay(200)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .start()
+        }
+
+        // Animate account settings card
+        binding.root.findViewById<androidx.cardview.widget.CardView>(R.id.accountSettingsCard)?.let { card ->
+            card.alpha = 0f
+            card.translationY = 30f
+
+            card.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(700)
+                .setStartDelay(300)
+                .setInterpolator(AccelerateDecelerateInterpolator())
+                .start()
+        }
+
+        // Animate logout button
+        binding.logoutButton.alpha = 0f
+        binding.logoutButton.translationY = 20f
+
+        binding.logoutButton.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(600)
+            .setStartDelay(400)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
+
+        // Animate delete account button
+        binding.deleteAccountButton.alpha = 0f
+        binding.deleteAccountButton.translationY = 20f
+
+        binding.deleteAccountButton.animate()
+            .alpha(1f)
+            .translationY(0f)
+            .setDuration(600)
+            .setStartDelay(500)
+            .setInterpolator(AccelerateDecelerateInterpolator())
+            .start()
     }
 
     private fun setupClickListeners() {
@@ -147,11 +231,24 @@ class ProfileActivity : AppCompatActivity() {
         dialogBinding.btnConfirmYes.setOnClickListener {
             selectedImageUri = imageUri
 
-            // Display selected image in profile
-            Glide.with(this)
-                .load(selectedImageUri)
-                .centerCrop()
-                .into(binding.profileImage)
+            // Display selected image in profile with animation
+            binding.profileImage.animate()
+                .scaleX(0.9f)
+                .scaleY(0.9f)
+                .setDuration(150)
+                .withEndAction {
+                    Glide.with(this)
+                        .load(selectedImageUri)
+                        .centerCrop()
+                        .into(binding.profileImage)
+
+                    binding.profileImage.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(150)
+                        .start()
+                }
+                .start()
 
             // Upload to Firebase Storage
             uploadProfileImage(selectedImageUri!!)
@@ -261,10 +358,10 @@ class ProfileActivity : AppCompatActivity() {
                     apply()
                 }
 
-                // Update UI immediately
-                binding.userName.text = name
-                binding.userBio.text = bio
-                binding.userPhone.text = phone
+                // Update UI immediately with animation
+                animateTextChange(binding.userName, name)
+                animateTextChange(binding.userBio, bio)
+                animateTextChange(binding.userPhone, phone)
 
                 // Also update the user object in binding
                 binding.user = UserProfile(
@@ -280,6 +377,20 @@ class ProfileActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Failed to update profile: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun animateTextChange(textView: android.widget.TextView, newText: String) {
+        textView.animate()
+            .alpha(0f)
+            .setDuration(150)
+            .withEndAction {
+                textView.text = newText
+                textView.animate()
+                    .alpha(1f)
+                    .setDuration(150)
+                    .start()
+            }
+            .start()
     }
 
     private fun changePassword() {

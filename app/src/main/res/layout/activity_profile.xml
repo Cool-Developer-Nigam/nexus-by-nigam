@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-
         android:background="@color/background">
 
         <!-- Header with Back Button -->
@@ -72,6 +71,7 @@
 
                 <!-- Profile Picture Section -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/profilePictureCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
@@ -99,7 +99,6 @@
                                 android:scaleType="centerCrop"
                                 android:src="@drawable/ic_profile"
                                 app:shapeAppearance="@style/ShapeAppearance.App.CircleFAB"
-
                                 app:strokeWidth="3dp" />
 
                             <com.google.android.material.imageview.ShapeableImageView
@@ -119,6 +118,7 @@
 
                 <!-- User Info Card -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/userInfoCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -236,6 +236,7 @@
 
                 <!-- Account Settings Card -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/accountSettingsCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -334,7 +335,6 @@
                                 android:contentDescription="Arrow" />
                         </LinearLayout>
 
-
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
 
@@ -345,7 +345,7 @@
                     android:orientation="vertical">
 
                     <!-- Logout Button -->
-                   <androidx.appcompat.widget.AppCompatButton
+                    <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/logoutButton"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"

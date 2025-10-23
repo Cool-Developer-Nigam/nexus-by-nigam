@@ -81,7 +81,7 @@ class RotatingFabView @JvmOverloads constructor(
         iconPaint.strokeWidth = iconStrokeWidth
 
         // Icon size is proportional to FAB size
-        iconSize = fabSize * 0.3f // 30% of FAB size
+        iconSize = fabSize * 0.2f // 30% of FAB size
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

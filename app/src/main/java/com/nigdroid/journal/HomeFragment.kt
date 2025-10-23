@@ -828,7 +828,7 @@ class HomeFragment : Fragment() {
             if (isAdded && isFragmentAlive) {
                 val intent = Intent(requireContext(), VideoActivity::class.java)
 
-                intent.putExtra("VIDEO_URI", "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+                intent.putExtra("VIDEO_URI", "https://firebasestorage.googleapis.com/v0/b/journal-app-62caa.firebasestorage.app/o/video%2FAdd%20a%20subheading.mp4?alt=media&token=8928904d-ca35-429c-98aa-d3620f07c6c3")
 
                 // Use drawable resource
                 val thumbnailUri = "android.resource://${requireContext().packageName}/${R.drawable.video_thumb}"

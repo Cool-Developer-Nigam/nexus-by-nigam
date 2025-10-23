@@ -7,10 +7,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -30,9 +32,13 @@ class VideoActivity : AppCompatActivity() {
     private lateinit var tvVideoTitle: TextView
     private lateinit var cardContainer: androidx.cardview.widget.CardView
     private lateinit var mainLayout: ConstraintLayout
+    private lateinit var progressBar: android.widget.ProgressBar
 
     private val handler = Handler(Looper.getMainLooper())
     private var isPlaying = false
+    private var isPrepared = false
+    private var shouldAutoPlay = false
+    private var currentPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +77,7 @@ class VideoActivity : AppCompatActivity() {
         tvVideoTitle = findViewById(R.id.tvVideoTitle)
         cardContainer = findViewById(R.id.cardContainer)
         mainLayout = findViewById(R.id.main)
+        progressBar = findViewById(R.id.progressBar)
     }
 
     private fun setupClickListeners() {
@@ -97,7 +104,7 @@ class VideoActivity : AppCompatActivity() {
         // Rewind 5 seconds
         btnRewind.setOnClickListener {
             val currentPosition = videoView.currentPosition
-            val newPosition = maxOf(0, currentPosition - 5000) // 5 seconds = 5000ms
+            val newPosition = maxOf(0, currentPosition - 5000)
             videoView.seekTo(newPosition)
         }
 
@@ -105,14 +112,14 @@ class VideoActivity : AppCompatActivity() {
         btnForward.setOnClickListener {
             val currentPosition = videoView.currentPosition
             val duration = videoView.duration
-            val newPosition = minOf(duration, currentPosition + 5000) // 5 seconds = 5000ms
+            val newPosition = minOf(duration, currentPosition + 5000)
             videoView.seekTo(newPosition)
         }
 
         // SeekBar change listener
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
+                if (fromUser && isPrepared) {
                     videoView.seekTo(progress)
                 }
             }
@@ -122,28 +129,30 @@ class VideoActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                handler.post(updateSeekBar)
+                if (isPlaying) {
+                    handler.post(updateSeekBar)
+                }
             }
         })
     }
 
     private fun setupDismissOnOutsideClick() {
-        // Dismiss when clicking outside the card
         mainLayout.setOnClickListener {
             finish()
         }
 
-        // Prevent clicks on the card from dismissing
         cardContainer.setOnClickListener {
-            // Do nothing - consume the click
+            // Consume click
         }
     }
 
     private fun setupVideoPlayer() {
-        // Get video URI and thumbnail from intent
         val videoUri = intent.getStringExtra("VIDEO_URI")
         val videoTitle = intent.getStringExtra("VIDEO_TITLE")
         val thumbnailUrl = intent.getStringExtra("THUMBNAIL_URL")
+
+        Log.d("VideoActivity", "Video URI: $videoUri")
+        Log.d("VideoActivity", "Thumbnail URL: $thumbnailUrl")
 
         if (videoTitle != null) {
             tvVideoTitle.text = videoTitle
@@ -151,56 +160,142 @@ class VideoActivity : AppCompatActivity() {
             tvVideoTitle.text = "Video Player"
         }
 
-        // Load thumbnail if provided
         if (thumbnailUrl != null) {
             loadThumbnail(thumbnailUrl)
         } else {
-            // Show default thumbnail or hide it
             videoThumbnail.setImageResource(android.R.drawable.ic_media_play)
         }
 
         if (videoUri != null) {
-            videoView.setVideoURI(Uri.parse(videoUri))
+            if (videoUri.startsWith("gs://")) {
+                Log.w("VideoActivity", "gs:// URL detected, converting to download URL")
+                convertFirebaseUrl(videoUri)
+            } else if (videoUri.startsWith("http://") || videoUri.startsWith("https://")) {
+                setVideoUri(videoUri)
+            } else {
+                Log.e("VideoActivity", "Invalid video URI format: $videoUri")
+                Toast.makeText(this, "Invalid video URL format", Toast.LENGTH_SHORT).show()
+                finish()
+            }
         } else {
-            // Default test video if no URI provided
             val defaultVideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            videoView.setVideoURI(Uri.parse(defaultVideoUrl))
+            setVideoUri(defaultVideoUrl)
             tvVideoTitle.text = "Sample Video"
         }
 
+        setupVideoListeners()
+    }
+
+    private fun setupVideoListeners() {
         // Video prepared listener
         videoView.setOnPreparedListener { mediaPlayer ->
+            isPrepared = true
             val duration = videoView.duration
             seekBar.max = duration
             tvTotalTime.text = formatTime(duration)
 
-            // Don't auto-play, wait for user to click
-            // User needs to click thumbnail or play button to start
+            progressBar.visibility = android.view.View.GONE
+
+            Log.d("VideoActivity", "Video prepared. Duration: $duration")
+
+            if (currentPosition > 0) {
+                videoView.seekTo(currentPosition)
+                currentPosition = 0
+            }
+
+            if (shouldAutoPlay) {
+                videoView.start()
+                isPlaying = true
+                updatePlayPauseButton()
+                handler.post(updateSeekBar)
+                handler.postDelayed(bufferingCheck, 100)
+                shouldAutoPlay = false
+            }
         }
 
         // Video completion listener
         videoView.setOnCompletionListener {
             isPlaying = false
+            isPrepared = false
             updatePlayPauseButton()
             handler.removeCallbacks(updateSeekBar)
+            handler.removeCallbacks(bufferingCheck)
             seekBar.progress = 0
             tvCurrentTime.text = "00:00"
 
-            // Show thumbnail again
             videoThumbnail.visibility = android.view.View.VISIBLE
             btnPlayOverlay.visibility = android.view.View.VISIBLE
+            progressBar.visibility = android.view.View.GONE
+
+            Log.d("VideoActivity", "Video completed")
         }
 
         // Error listener
         videoView.setOnErrorListener { _, what, extra ->
-            // Handle error
+            Log.e("VideoActivity", "Video error - what: $what, extra: $extra")
+            progressBar.visibility = android.view.View.GONE
+            Toast.makeText(this, "Error playing video", Toast.LENGTH_SHORT).show()
             finish()
             true
+        }
+
+        // Info listener for buffering
+        videoView.setOnInfoListener { _, what, extra ->
+            when (what) {
+                android.media.MediaPlayer.MEDIA_INFO_BUFFERING_START -> {
+                    Log.d("VideoActivity", "Buffering started")
+                    progressBar.visibility = android.view.View.VISIBLE
+                }
+                android.media.MediaPlayer.MEDIA_INFO_BUFFERING_END -> {
+                    Log.d("VideoActivity", "Buffering ended")
+                    progressBar.visibility = android.view.View.GONE
+                }
+            }
+            false
+        }
+    }
+
+    private fun convertFirebaseUrl(gsUrl: String) {
+        try {
+            val path = gsUrl.removePrefix("gs://").substringAfter("/")
+            val storageRef = com.google.firebase.storage.FirebaseStorage.getInstance()
+                .reference.child(path)
+
+            storageRef.downloadUrl.addOnSuccessListener { uri ->
+                Log.d("VideoActivity", "Converted to download URL: $uri")
+                setVideoUri(uri.toString())
+            }.addOnFailureListener { exception ->
+                Log.e("VideoActivity", "Failed to get download URL", exception)
+                Toast.makeText(this, "Failed to load video from Firebase", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        } catch (e: Exception) {
+            Log.e("VideoActivity", "Error converting Firebase URL", e)
+            Toast.makeText(this, "Error loading video", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    private fun setVideoUri(videoUrl: String) {
+        try {
+            Log.d("VideoActivity", "Setting video URI: $videoUrl")
+
+            if (videoUrl.contains("firebasestorage.googleapis.com")) {
+                val uri = Uri.parse(videoUrl)
+                val headers = HashMap<String, String>()
+                headers["Accept-Encoding"] = "identity"
+                videoView.setVideoURI(uri, headers)
+            } else {
+                videoView.setVideoURI(Uri.parse(videoUrl))
+            }
+        } catch (e: Exception) {
+            Log.e("VideoActivity", "Error setting video URI", e)
+            Toast.makeText(this, "Error loading video", Toast.LENGTH_SHORT).show()
+            finish()
         }
     }
 
     private fun loadThumbnail(thumbnailUrl: String) {
-        // Using Glide to load thumbnail (make sure Glide is in your dependencies)
         try {
             com.bumptech.glide.Glide.with(this)
                 .load(thumbnailUrl)
@@ -209,32 +304,48 @@ class VideoActivity : AppCompatActivity() {
                 .centerCrop()
                 .into(videoThumbnail)
         } catch (e: Exception) {
-            // If Glide is not available, use default
+            Log.e("VideoActivity", "Error loading thumbnail with Glide", e)
             videoThumbnail.setImageResource(android.R.drawable.ic_media_play)
         }
     }
 
     private fun startVideoPlayback() {
-        // Hide thumbnail and play button overlay
+        Log.d("VideoActivity", "startVideoPlayback called. isPrepared: $isPrepared")
+
         videoThumbnail.visibility = android.view.View.GONE
         btnPlayOverlay.visibility = android.view.View.GONE
 
-        // Start video
-        videoView.start()
-        isPlaying = true
-        updatePlayPauseButton()
-        handler.post(updateSeekBar)
+        if (isPrepared) {
+            videoView.start()
+            isPlaying = true
+            updatePlayPauseButton()
+            handler.post(updateSeekBar)
+            handler.postDelayed(bufferingCheck, 100)
+        } else {
+            shouldAutoPlay = true
+            isPlaying = true
+            updatePlayPauseButton()
+            progressBar.visibility = android.view.View.VISIBLE
+            Toast.makeText(this, "Loading video...", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun togglePlayPause() {
+        if (!isPrepared) {
+            startVideoPlayback()
+            return
+        }
+
         if (isPlaying) {
             videoView.pause()
             isPlaying = false
             handler.removeCallbacks(updateSeekBar)
+            handler.removeCallbacks(bufferingCheck)
         } else {
             videoView.start()
             isPlaying = true
             handler.post(updateSeekBar)
+            handler.postDelayed(bufferingCheck, 100)
         }
         updatePlayPauseButton()
     }
@@ -249,11 +360,54 @@ class VideoActivity : AppCompatActivity() {
 
     private val updateSeekBar = object : Runnable {
         override fun run() {
-            if (isPlaying) {
-                val currentPosition = videoView.currentPosition
-                seekBar.progress = currentPosition
-                tvCurrentTime.text = formatTime(currentPosition)
-                handler.postDelayed(this, 100) // Update every 100ms
+            if (isPlaying && isPrepared) {
+                try {
+                    val currentPosition = videoView.currentPosition
+                    seekBar.progress = currentPosition
+                    tvCurrentTime.text = formatTime(currentPosition)
+                    handler.postDelayed(this, 100)
+                } catch (e: Exception) {
+                    Log.e("VideoActivity", "Error updating seekbar", e)
+                    handler.removeCallbacks(this)
+                }
+            }
+        }
+    }
+
+    private var lastPosition = -1
+    private var stallCount = 0
+    private val bufferingCheck = object : Runnable {
+        override fun run() {
+            if (isPlaying && isPrepared) {
+                try {
+                    val current = videoView.currentPosition
+
+                    if (current == lastPosition && current < videoView.duration - 100) {
+                        stallCount++
+                        Log.d("VideoActivity", "Video stalled. Count: $stallCount, Position: $current")
+
+                        if (stallCount > 2) {
+                            progressBar.visibility = android.view.View.VISIBLE
+                        }
+
+                        if (stallCount > 50) {
+                            Log.w("VideoActivity", "Video stalled for too long, attempting to resume")
+                            currentPosition = current
+                            videoView.pause()
+                            videoView.resume()
+                            stallCount = 0
+                        }
+                    } else {
+                        stallCount = 0
+                        progressBar.visibility = android.view.View.GONE
+                    }
+
+                    lastPosition = current
+                    handler.postDelayed(this, 100)
+                } catch (e: Exception) {
+                    Log.e("VideoActivity", "Error in buffering check", e)
+                    handler.removeCallbacks(this)
+                }
             }
         }
     }
@@ -273,22 +427,33 @@ class VideoActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         if (isPlaying) {
+            currentPosition = videoView.currentPosition
             videoView.pause()
             handler.removeCallbacks(updateSeekBar)
+            handler.removeCallbacks(bufferingCheck)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (isPlaying) {
+        if (isPlaying && isPrepared) {
+            if (currentPosition > 0) {
+                videoView.seekTo(currentPosition)
+            }
             videoView.start()
             handler.post(updateSeekBar)
+            handler.postDelayed(bufferingCheck, 100)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         handler.removeCallbacks(updateSeekBar)
-        videoView.stopPlayback()
+        handler.removeCallbacks(bufferingCheck)
+        try {
+            videoView.stopPlayback()
+        } catch (e: Exception) {
+            Log.e("VideoActivity", "Error stopping playback", e)
+        }
     }
 }
