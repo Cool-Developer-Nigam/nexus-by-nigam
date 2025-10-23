@@ -212,7 +212,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="💬 Let's Connect!"
+                            android:text="✨ Special Thanks ✨"
                             android:textColor="@color/DarkBrown"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -223,10 +223,23 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:gravity="center"
-                            android:text="Follow me on social media for updates and more!"
+                            android:text="Ajit &amp; Shaswat"
                             android:textColor="#566376"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
                             android:lineSpacingExtra="4dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center"
+                            android:text="For their creative contributions in UI design ideas, color combinations, and crafting the promotional video"
+                            android:textColor="#7B8A9E"
+                            android:textSize="14sp"
+                            android:lineSpacingExtra="4dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp" />
 
                     </LinearLayout>
 
