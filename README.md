@@ -144,9 +144,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
+**Cool Developer Nigam**
+- GitHub: [@Cool-Developer-Nigam](https://github.com/Cool-Developer-Nigam)
+- Email: [nigam.nps@gmail.com](mailto:nigam.nps@gmail.com)
+
 
 ---
 
@@ -160,7 +161,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact & Support
 
-For support, email your.email@example.com or create an issue in this repository.
+For support, email [nigam.nps@gmail.com](mailto:nigam.nps@gmail.com) or create an issue in this repository.
 
 ---
 
